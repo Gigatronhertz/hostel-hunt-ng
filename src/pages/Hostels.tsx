@@ -1,79 +1,110 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter } from "lucide-react";
+import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hostels = () => {
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedCampus, setSelectedCampus] = useState(searchParams.get('campus') || "");
   const [priceRange, setPriceRange] = useState("");
 
-  // Sample hostels data
+  const campuses = [
+    "University of Lagos",
+    "University of Ibadan", 
+    "Ahmadu Bello University",
+    "University of Nigeria, Nsukka",
+    "Obafemi Awolowo University",
+    "University of Benin",
+    "Federal University of Technology, Akure",
+    "Lagos State University"
+  ];
+
+  // Sample hostels data with campus-based structure
   const allHostels = [
     {
       id: 1,
       name: "Unity Lodge",
-      location: "Near University of Lagos",
-      price: 45000,
+      campus: "University of Lagos",
+      location: "Akoka, Lagos",
+      exactLocation: "23 Unity Road, Akoka",
+      yearlyPrice: 540000,
+      inspectionFee: 5000,
       image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=500&h=300&fit=crop",
       amenities: ["WiFi", "24/7 Power", "Water Supply", "Security", "Laundry"],
       rating: 4.8,
-      description: "Modern hostel with excellent facilities"
+      description: "Modern hostel with excellent facilities near UNILAG"
     },
     {
       id: 2,
       name: "Scholar's Haven",
-      location: "Near University of Ibadan",
-      price: 38000,
+      campus: "University of Ibadan",
+      location: "Bodija, Ibadan",
+      exactLocation: "15 Academic Road, Bodija",
+      yearlyPrice: 456000,
+      inspectionFee: 4000,
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&h=300&fit=crop",
       amenities: ["WiFi", "Security", "Study Room", "24/7 Power"],
       rating: 4.6,
-      description: "Quiet environment perfect for studying"
+      description: "Quiet environment perfect for studying at UI"
     },
     {
       id: 3,
       name: "Campus View Hostel",
-      location: "Near Ahmadu Bello University",
-      price: 42000,
+      campus: "Ahmadu Bello University",
+      location: "Samaru, Zaria",
+      exactLocation: "12 Campus Road, Samaru",
+      yearlyPrice: 504000,
+      inspectionFee: 4500,
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&h=300&fit=crop",
       amenities: ["WiFi", "Laundry", "24/7 Power", "Parking"],
       rating: 4.7,
-      description: "Beautiful view of the campus"
+      description: "Beautiful view of ABU campus"
     },
     {
       id: 4,
       name: "Green Valley Lodge",
-      location: "Near University of Nigeria, Nsukka",
-      price: 35000,
+      campus: "University of Nigeria, Nsukka",
+      location: "Nsukka, Enugu",
+      exactLocation: "45 University Road, Nsukka",
+      yearlyPrice: 420000,
+      inspectionFee: 3500,
       image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&h=300&fit=crop",
       amenities: ["WiFi", "Security", "Water Supply", "Study Room"],
       rating: 4.5,
-      description: "Affordable and comfortable accommodation"
+      description: "Affordable and comfortable accommodation at UNN"
     },
     {
       id: 5,
       name: "Elite Student Residence",
-      location: "Near University of Lagos",
-      price: 55000,
+      campus: "University of Lagos",
+      location: "Yaba, Lagos",
+      exactLocation: "78 Herbert Macaulay Way, Yaba",
+      yearlyPrice: 660000,
+      inspectionFee: 6000,
       image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=500&h=300&fit=crop",
       amenities: ["WiFi", "24/7 Power", "Water Supply", "Gym", "Security", "Parking"],
       rating: 4.9,
-      description: "Premium hostel with luxury amenities"
+      description: "Premium hostel with luxury amenities near UNILAG"
     },
     {
       id: 6,
       name: "Budget Comfort Lodge",
-      location: "Near University of Ibadan",
-      price: 28000,
+      campus: "University of Ibadan",
+      location: "Agbowo, Ibadan",
+      exactLocation: "23 Agbowo Road, UI",
+      yearlyPrice: 336000,
+      inspectionFee: 3000,
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&h=300&fit=crop",
       amenities: ["WiFi", "Security", "Water Supply"],
       rating: 4.2,
-      description: "Affordable option with basic amenities"
+      description: "Affordable option with basic amenities at UI"
     }
   ];
 
@@ -94,14 +125,14 @@ const Hostels = () => {
     const matchesSearch = hostel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          hostel.location.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesLocation = !selectedLocation || hostel.location.includes(selectedLocation);
+    const matchesCampus = !selectedCampus || hostel.campus === selectedCampus;
     
     const matchesPrice = !priceRange || 
-      (priceRange === "under-30k" && hostel.price < 30000) ||
-      (priceRange === "30k-45k" && hostel.price >= 30000 && hostel.price <= 45000) ||
-      (priceRange === "above-45k" && hostel.price > 45000);
+      (priceRange === "under-400k" && hostel.yearlyPrice < 400000) ||
+      (priceRange === "400k-550k" && hostel.yearlyPrice >= 400000 && hostel.yearlyPrice <= 550000) ||
+      (priceRange === "above-550k" && hostel.yearlyPrice > 550000);
 
-    return matchesSearch && matchesLocation && matchesPrice;
+    return matchesSearch && matchesCampus && matchesPrice;
   });
 
   return (
@@ -122,6 +153,9 @@ const Hostels = () => {
             <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
               Contact
             </Link>
+            <Link to="/agent-login" className="text-muted-foreground hover:text-primary transition-colors">
+              Agent Login
+            </Link>
           </nav>
         </div>
       </header>
@@ -129,7 +163,7 @@ const Hostels = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-          <h1 className="text-2xl font-bold mb-6">Find Your Perfect Hostel</h1>
+          <h1 className="text-2xl font-bold mb-6">Find Your Perfect Campus Hostel</h1>
           
           <div className="grid md:grid-cols-4 gap-4">
             <div className="relative">
@@ -142,26 +176,27 @@ const Hostels = () => {
               />
             </div>
             
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+            <Select value={selectedCampus} onValueChange={setSelectedCampus}>
               <SelectTrigger>
-                <SelectValue placeholder="Select location" />
+                <SelectValue placeholder="Select campus" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="University of Lagos">University of Lagos</SelectItem>
-                <SelectItem value="University of Ibadan">University of Ibadan</SelectItem>
-                <SelectItem value="Ahmadu Bello University">Ahmadu Bello University</SelectItem>
-                <SelectItem value="University of Nigeria, Nsukka">University of Nigeria, Nsukka</SelectItem>
+                {campuses.map((campus) => (
+                  <SelectItem key={campus} value={campus}>
+                    {campus}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             
             <Select value={priceRange} onValueChange={setPriceRange}>
               <SelectTrigger>
-                <SelectValue placeholder="Price range" />
+                <SelectValue placeholder="Price range (yearly)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="under-30k">Under ₦30,000</SelectItem>
-                <SelectItem value="30k-45k">₦30,000 - ₦45,000</SelectItem>
-                <SelectItem value="above-45k">Above ₦45,000</SelectItem>
+                <SelectItem value="under-400k">Under ₦400,000</SelectItem>
+                <SelectItem value="400k-550k">₦400,000 - ₦550,000</SelectItem>
+                <SelectItem value="above-550k">Above ₦550,000</SelectItem>
               </SelectContent>
             </Select>
             
@@ -169,7 +204,7 @@ const Hostels = () => {
               variant="outline" 
               onClick={() => {
                 setSearchTerm("");
-                setSelectedLocation("");
+                setSelectedCampus("");
                 setPriceRange("");
               }}
             >
@@ -183,6 +218,7 @@ const Hostels = () => {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold">
             {filteredHostels.length} hostel{filteredHostels.length !== 1 ? 's' : ''} found
+            {selectedCampus && ` around ${selectedCampus}`}
           </h2>
         </div>
 
@@ -203,6 +239,10 @@ const Hostels = () => {
                 </div>
                 <CardContent className="p-4">
                   <h3 className="font-semibold text-lg mb-1">{hostel.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-1 flex items-center gap-1">
+                    <GraduationCap className="w-3 h-3" />
+                    {hostel.campus}
+                  </p>
                   <p className="text-muted-foreground text-sm mb-2 flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
                     {hostel.location}
@@ -228,10 +268,15 @@ const Hostels = () => {
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-primary">
-                      ₦{hostel.price.toLocaleString()}
-                      <span className="text-sm font-normal text-muted-foreground">/month</span>
-                    </span>
+                    <div>
+                      <span className="text-lg font-bold text-primary">
+                        ₦{hostel.yearlyPrice.toLocaleString()}
+                      </span>
+                      <span className="text-sm font-normal text-muted-foreground block">per year</span>
+                      <span className="text-xs text-muted-foreground">
+                        Inspection: ₦{hostel.inspectionFee.toLocaleString()}
+                      </span>
+                    </div>
                     <Button size="sm" variant="outline">
                       View Details
                     </Button>
@@ -246,12 +291,12 @@ const Hostels = () => {
           <div className="text-center py-12">
             <h3 className="text-lg font-semibold mb-2">No hostels found</h3>
             <p className="text-muted-foreground mb-4">
-              Try adjusting your search criteria or clearing the filters.
+              Try adjusting your search criteria or selecting a different campus.
             </p>
             <Button 
               onClick={() => {
                 setSearchTerm("");
-                setSelectedLocation("");
+                setSelectedCampus("");
                 setPriceRange("");
               }}
             >
