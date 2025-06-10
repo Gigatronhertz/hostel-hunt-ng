@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { ArrowLeft, UserPlus, LogIn } from "lucide-react";
 
 const AgentLogin = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: ""
@@ -26,7 +27,18 @@ const AgentLogin = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // This would normally authenticate with backend/Supabase
+    // BACKEND INTEGRATION: Authenticate with Supabase
+    // Example: supabase.auth.signInWithPassword({
+    //   email: loginData.email,
+    //   password: loginData.password
+    // }).then(({ data, error }) => {
+    //   if (error) {
+    //     toast({ title: "Error", description: error.message, variant: "destructive" });
+    //   } else {
+    //     navigate("/agent-dashboard");
+    //   }
+    // });
+    
     console.log("Agent login attempt:", loginData);
     
     toast({
@@ -34,8 +46,8 @@ const AgentLogin = () => {
       description: "Welcome back to your agent dashboard.",
     });
     
-    // Redirect to agent dashboard (when implemented)
-    // navigate("/agent-dashboard");
+    // Redirect to agent dashboard
+    navigate("/agent-dashboard");
   };
 
   const handleRegister = (e: React.FormEvent) => {
@@ -50,7 +62,32 @@ const AgentLogin = () => {
       return;
     }
     
-    // This would normally register with backend/Supabase
+    // BACKEND INTEGRATION: Register with Supabase and create agent profile
+    // Example: supabase.auth.signUp({
+    //   email: registerData.email,
+    //   password: registerData.password,
+    //   options: {
+    //     data: {
+    //       name: registerData.name,
+    //       phone: registerData.phone,
+    //       role: 'agent'
+    //     }
+    //   }
+    // }).then(({ data, error }) => {
+    //   if (error) {
+    //     toast({ title: "Error", description: error.message, variant: "destructive" });
+    //   } else {
+    //     // Create agent profile in separate table
+    //     supabase.from('agents').insert([{
+    //       user_id: data.user?.id,
+    //       name: registerData.name,
+    //       phone: registerData.phone,
+    //       subscription_status: 'pending',
+    //       verification_status: 'pending'
+    //     }]);
+    //   }
+    // });
+    
     console.log("Agent registration attempt:", registerData);
     
     toast({
@@ -77,8 +114,8 @@ const AgentLogin = () => {
             Hostel.ng
           </Link>
           <nav className="hidden md:flex space-x-6">
-            <Link to="/hostels" className="text-muted-foreground hover:text-primary transition-colors">
-              Browse Hostels
+            <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">
+              Browse Rooms
             </Link>
             <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
               About
@@ -101,7 +138,7 @@ const AgentLogin = () => {
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold mb-2">Agent Portal</h1>
             <p className="text-muted-foreground">
-              Login or register to manage your hostel listings
+              Login or register to manage your room listings
             </p>
           </div>
 
@@ -204,11 +241,12 @@ const AgentLogin = () => {
                     </div>
                     
                     <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
-                      <p className="font-medium mb-1">Agent Requirements:</p>
+                      <p className="font-medium mb-1">Hostel.ng Business Model:</p>
                       <ul className="text-xs space-y-1">
-                        <li>• Valid identification required</li>
-                        <li>• Account verification needed</li>
-                        <li>• Must own or manage hostels</li>
+                        <li>• ₦5,000 monthly platform fee</li>
+                        <li>• 2.5% service charge per booking</li>
+                        <li>• We facilitate student-agent connections</li>
+                        <li>• Payments handled off-platform</li>
                       </ul>
                     </div>
                     

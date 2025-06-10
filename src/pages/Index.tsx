@@ -13,8 +13,8 @@ const Index = () => {
 
   const campuses = [
     "University of Lagos",
-    "University of Ibadan",
-    "Ahmadu Bello University", 
+    "University of Ibadan", 
+    "Ahmadu Bello University",
     "University of Nigeria, Nsukka",
     "Obafemi Awolowo University",
     "University of Benin",
@@ -22,6 +22,11 @@ const Index = () => {
     "Lagos State University"
   ];
 
+  // BACKEND INTEGRATION: Replace with Supabase query
+  // Example: const { data: featuredRooms } = useQuery({
+  //   queryKey: ['featured-rooms'],
+  //   queryFn: () => supabase.from('rooms').select('*').eq('featured', true).limit(6)
+  // });
   const featuredRooms = [
     {
       id: 1,
@@ -29,59 +34,52 @@ const Index = () => {
       campus: "University of Lagos",
       location: "Akoka, Lagos",
       yearlyPrice: 540000,
-      inspectionFee: 5000,
       roomType: "Single Room",
       bedCount: 1,
       image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=250&fit=crop",
-      amenities: ["WiFi", "24/7 Power", "Security"],
       rating: 4.8
     },
     {
       id: 2,
-      name: "Scholar's Haven - Two Bedroom",
+      name: "Scholar's Haven",
       campus: "University of Ibadan",
       location: "Bodija, Ibadan",
       yearlyPrice: 456000,
-      inspectionFee: 4000,
       roomType: "Two Bedroom",
       bedCount: 2,
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=250&fit=crop",
-      amenities: ["WiFi", "Security", "Study Room"],
       rating: 4.6
     },
     {
       id: 5,
-      name: "Elite Residence - One Bedroom",
+      name: "Elite Residence",
       campus: "University of Lagos",
-      location: "Yaba, Lagos", 
+      location: "Yaba, Lagos",
       yearlyPrice: 660000,
-      inspectionFee: 6000,
       roomType: "One Bedroom",
       bedCount: 1,
       image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=250&fit=crop",
-      amenities: ["WiFi", "24/7 Power", "Gym"],
       rating: 4.9
+    },
+    {
+      id: 6,
+      name: "Campus View",
+      campus: "University of Ibadan",
+      location: "UI Gate, Ibadan",
+      yearlyPrice: 380000,
+      roomType: "Single Room",
+      bedCount: 1,
+      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop",
+      rating: 4.4
     }
   ];
 
   const handleSearchRooms = () => {
+    // BACKEND INTEGRATION: Filter rooms by campus using Supabase
     if (selectedCampus) {
-      navigate(`/hostels?campus=${encodeURIComponent(selectedCampus)}`);
+      navigate(`/rooms?campus=${encodeURIComponent(selectedCampus)}`);
     } else {
-      navigate('/hostels');
-    }
-  };
-
-  const getAmenityIcon = (amenity: string) => {
-    switch (amenity.toLowerCase()) {
-      case 'wifi':
-        return <Wifi className="w-3 h-3" />;
-      case '24/7 power':
-        return <Zap className="w-3 h-3" />;
-      case 'water supply':
-        return <Droplets className="w-3 h-3" />;
-      default:
-        return <Users className="w-3 h-3" />;
+      navigate('/rooms');
     }
   };
 
@@ -94,7 +92,7 @@ const Index = () => {
             Hostel.ng
           </Link>
           <nav className="hidden md:flex space-x-6">
-            <Link to="/hostels" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">
               Browse Rooms
             </Link>
             <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
@@ -192,19 +190,20 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Rooms */}
+      {/* Featured Rooms - 2 per row layout */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold">Featured Rooms</h2>
-            <Link to="/hostels">
+            <Link to="/rooms">
               <Button variant="outline">View All Rooms</Button>
             </Link>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Grid with 2 columns per row */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {featuredRooms.map((room) => (
-              <Link key={room.id} to={`/hostel/${room.id}`}>
+              <Link key={room.id} to={`/room/${room.id}`}>
                 <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div className="relative overflow-hidden rounded-t-lg">
                     <img
@@ -233,19 +232,6 @@ const Index = () => {
                     <Badge variant="outline" className="text-xs mb-3">
                       {room.roomType}
                     </Badge>
-                    
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {room.amenities.map((amenity, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          <span className="mr-1">{getAmenityIcon(amenity)}</span>
-                          {amenity}
-                        </Badge>
-                      ))}
-                    </div>
                     
                     <div className="flex items-center justify-between">
                       <div>
@@ -280,7 +266,7 @@ const Index = () => {
             <div>
               <h4 className="font-medium mb-4">For Students</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/hostels">Browse Rooms</Link></li>
+                <li><Link to="/rooms">Browse Rooms</Link></li>
                 <li><Link to="/how-it-works">How It Works</Link></li>
                 <li><Link to="/safety">Safety Guide</Link></li>
               </ul>
