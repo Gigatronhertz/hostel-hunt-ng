@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap, Bed } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap, Bed, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hostels = () => {
@@ -15,17 +15,7 @@ const Hostels = () => {
   const [selectedCampus, setSelectedCampus] = useState(searchParams.get('campus') || "");
   const [priceRange, setPriceRange] = useState("");
   const [roomType, setRoomType] = useState("");
-
-  const campuses = [
-    "University of Lagos",
-    "University of Ibadan", 
-    "Ahmadu Bello University",
-    "University of Nigeria, Nsukka",
-    "Obafemi Awolowo University",
-    "University of Benin",
-    "Federal University of Technology, Akure",
-    "Lagos State University"
-  ];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Sample rooms data with campus-based structure
   const allRooms = [
@@ -121,6 +111,17 @@ const Hostels = () => {
     }
   ];
 
+  const campuses = [
+    "University of Lagos",
+    "University of Ibadan", 
+    "Ahmadu Bello University",
+    "University of Nigeria, Nsukka",
+    "Obafemi Awolowo University",
+    "University of Benin",
+    "Federal University of Technology, Akure",
+    "Lagos State University"
+  ];
+
   const getAmenityIcon = (amenity: string) => {
     switch (amenity.toLowerCase()) {
       case 'wifi':
@@ -158,6 +159,8 @@ const Hostels = () => {
           <Link to="/" className="text-2xl font-bold text-primary">
             Hostel.ng
           </Link>
+          
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6">
             <Link to="/hostels" className="text-primary font-medium">
               Browse Rooms
@@ -172,6 +175,48 @@ const Hostels = () => {
               Agent Login
             </Link>
           </nav>
+
+          {/* Mobile Menu */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col space-y-4 mt-8">
+                <Link 
+                  to="/hostels" 
+                  className="text-lg font-medium text-primary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Browse Rooms
+                </Link>
+                <Link 
+                  to="/about" 
+                  className="text-lg text-muted-foreground hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  About
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className="text-lg text-muted-foreground hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+                <Link 
+                  to="/agent-login" 
+                  className="text-lg text-muted-foreground hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Agent Login
+                </Link>
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
@@ -250,8 +295,8 @@ const Hostels = () => {
           </h2>
         </div>
 
-        {/* Rooms Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Rooms Grid - Updated to show 2 columns on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {filteredRooms.map((room) => (
             <Link key={room.id} to={`/hostel/${room.id}`}>
               <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -259,61 +304,61 @@ const Hostels = () => {
                   <img
                     src={room.image}
                     alt={room.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-sm font-medium">
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium">
                     ⭐ {room.rating}
                   </div>
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-sm font-medium flex items-center gap-1">
-                    <Bed className="w-3 h-3" />
+                  <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium flex items-center gap-1">
+                    <Bed className="w-2 h-2 md:w-3 md:h-3" />
                     {room.bedCount} bed{room.bedCount !== 1 ? 's' : ''}
                   </div>
                 </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">{room.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-1 flex items-center gap-1">
-                    <GraduationCap className="w-3 h-3" />
-                    {room.campus}
+                <CardContent className="p-2 md:p-4">
+                  <h3 className="font-semibold text-sm md:text-lg mb-1 line-clamp-1">{room.name}</h3>
+                  <p className="text-muted-foreground text-xs md:text-sm mb-1 flex items-center gap-1">
+                    <GraduationCap className="w-2 h-2 md:w-3 md:h-3 flex-shrink-0" />
+                    <span className="line-clamp-1">{room.campus}</span>
                   </p>
-                  <p className="text-muted-foreground text-sm mb-2 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {room.location}
+                  <p className="text-muted-foreground text-xs md:text-sm mb-2 flex items-center gap-1">
+                    <MapPin className="w-2 h-2 md:w-3 md:h-3 flex-shrink-0" />
+                    <span className="line-clamp-1">{room.location}</span>
                   </p>
                   <Badge variant="outline" className="text-xs mb-2">
                     {room.roomType}
                   </Badge>
-                  <p className="text-sm text-muted-foreground mb-3">{room.description}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3 line-clamp-2">{room.description}</p>
                   
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {room.amenities.slice(0, 4).map((amenity, index) => (
+                  <div className="flex flex-wrap gap-1 mb-2 md:mb-3">
+                    {room.amenities.slice(0, 3).map((amenity, index) => (
                       <Badge
                         key={index}
                         variant="secondary"
                         className="text-xs"
                       >
                         <span className="mr-1">{getAmenityIcon(amenity)}</span>
-                        {amenity}
+                        <span className="hidden md:inline">{amenity}</span>
                       </Badge>
                     ))}
-                    {room.amenities.length > 4 && (
+                    {room.amenities.length > 3 && (
                       <Badge variant="outline" className="text-xs">
-                        +{room.amenities.length - 4} more
+                        +{room.amenities.length - 3}
                       </Badge>
                     )}
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-lg font-bold text-primary">
-                        ₦{room.yearlyPrice.toLocaleString()}
+                      <span className="text-sm md:text-lg font-bold text-primary">
+                        ₦{(room.yearlyPrice / 1000).toFixed(0)}k
                       </span>
-                      <span className="text-sm font-normal text-muted-foreground block">per year</span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs font-normal text-muted-foreground block">per year</span>
+                      <span className="text-xs text-muted-foreground hidden md:block">
                         Inspection: ₦{room.inspectionFee.toLocaleString()}
                       </span>
                     </div>
-                    <Button size="sm" variant="outline">
-                      View Details
+                    <Button size="sm" variant="outline" className="text-xs md:text-sm">
+                      View
                     </Button>
                   </div>
                 </CardContent>
