@@ -16,11 +16,11 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  DollarSign, 
   Users, 
   MapPin,
   Bed,
-  Upload
+  Upload,
+  MessageCircle
 } from "lucide-react";
 
 const AgentDashboard = () => {
@@ -37,16 +37,13 @@ const AgentDashboard = () => {
   const agentData = {
     name: "John Doe",
     email: "john@example.com",
-    phone: "08012345678",
-    subscriptionStatus: "active",
-    monthlyFee: 5000,
-    serviceFeeRate: 2.5 // percentage
+    phone: "08012345678"
   };
 
   // BACKEND INTEGRATION: Replace with Supabase query for agent's rooms
   // Example: const { data: rooms } = useQuery({
   //   queryKey: ['agent-rooms'],
-  //   queryFn: () => supabase.from('rooms').select('*').eq('agent_id', agent.id)
+  //   queryFn: () => supabase.from('rooms').select('*, room_views(*), booking_requests(*)').eq('agent_id', agent.id)
   // });
   const [rooms, setRooms] = useState([
     {
@@ -58,9 +55,8 @@ const AgentDashboard = () => {
       roomType: "Single Room",
       bedCount: 1,
       bathrooms: 1,
-      status: "available",
       views: 45,
-      bookings: 3
+      bookingRequests: 3
     },
     {
       id: 2,
@@ -71,9 +67,8 @@ const AgentDashboard = () => {
       roomType: "One Bedroom",
       bedCount: 1,
       bathrooms: 1,
-      status: "occupied",
       views: 67,
-      bookings: 8
+      bookingRequests: 8
     }
   ]);
 
@@ -156,11 +151,8 @@ const AgentDashboard = () => {
     });
   };
 
-  const totalRevenue = rooms.reduce((sum, room) => 
-    room.status === "occupied" ? sum + room.yearlyPrice : sum, 0
-  );
-
-  const serviceFee = totalRevenue * (agentData.serviceFeeRate / 100);
+  const totalViews = rooms.reduce((sum, room) => sum + room.views, 0);
+  const totalBookingRequests = rooms.reduce((sum, room) => sum + room.bookingRequests, 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -189,20 +181,19 @@ const AgentDashboard = () => {
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Agent Dashboard</h1>
           <p className="text-muted-foreground">
-            Manage your room listings and track your earnings
+            Manage your room listings and track performance
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="rooms">My Rooms</TabsTrigger>
             <TabsTrigger value="add-room">Add Room</TabsTrigger>
-            <TabsTrigger value="earnings">Earnings</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Rooms</CardTitle>
@@ -215,37 +206,21 @@ const AgentDashboard = () => {
               
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Occupied Rooms</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {rooms.filter(room => room.status === "occupied").length}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Views</CardTitle>
                   <Eye className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {rooms.reduce((sum, room) => sum + room.views, 0)}
-                  </div>
+                  <div className="text-2xl font-bold">{totalViews}</div>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Booking Requests</CardTitle>
+                  <MessageCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {rooms.reduce((sum, room) => sum + room.bookings, 0)}
-                  </div>
+                  <div className="text-2xl font-bold">{totalBookingRequests}</div>
                 </CardContent>
               </Card>
             </div>
@@ -259,7 +234,7 @@ const AgentDashboard = () => {
                   <div className="flex items-center space-x-4">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <div>
-                      <p className="text-sm font-medium">New booking for Unity Lodge</p>
+                      <p className="text-sm font-medium">New booking request for Unity Lodge</p>
                       <p className="text-xs text-muted-foreground">2 hours ago</p>
                     </div>
                   </div>
@@ -292,9 +267,6 @@ const AgentDashboard = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="text-lg font-semibold">{room.name}</h3>
-                          <Badge variant={room.status === "occupied" ? "default" : "secondary"}>
-                            {room.status}
-                          </Badge>
                         </div>
                         <p className="text-muted-foreground text-sm mb-1 flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
@@ -303,12 +275,22 @@ const AgentDashboard = () => {
                         <p className="text-muted-foreground text-sm mb-2">
                           {room.roomType} • {room.bedCount} bed{room.bedCount !== 1 ? 's' : ''} • {room.bathrooms} bathroom{room.bathrooms !== 1 ? 's' : ''}
                         </p>
-                        <p className="text-lg font-bold text-primary">
+                        <p className="text-lg font-bold text-primary mb-3">
                           ₦{room.yearlyPrice.toLocaleString()}/year
                         </p>
-                        <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
-                          <span>{room.views} views</span>
-                          <span>{room.bookings} bookings</span>
+                        
+                        {/* Key metrics prominently displayed */}
+                        <div className="flex gap-6 mb-2">
+                          <div className="flex items-center gap-2">
+                            <Eye className="w-4 h-4 text-blue-500" />
+                            <span className="font-semibold">{room.views}</span>
+                            <span className="text-sm text-muted-foreground">views</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MessageCircle className="w-4 h-4 text-green-500" />
+                            <span className="font-semibold">{room.bookingRequests}</span>
+                            <span className="text-sm text-muted-foreground">booking requests</span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -457,70 +439,6 @@ const AgentDashboard = () => {
                     Create Room Listing
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="earnings" className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium">Monthly Subscription</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">₦{agentData.monthlyFee.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Due on 15th of each month
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium">Service Fee ({agentData.serviceFeeRate}%)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">₦{serviceFee.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Per successful booking
-                  </p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">₦{totalRevenue.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">
-                    From occupied rooms
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Revenue Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {rooms.filter(room => room.status === "occupied").map((room) => (
-                    <div key={room.id} className="flex justify-between items-center py-2 border-b">
-                      <div>
-                        <p className="font-medium">{room.name}</p>
-                        <p className="text-sm text-muted-foreground">{room.location}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">₦{room.yearlyPrice.toLocaleString()}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Fee: ₦{(room.yearlyPrice * agentData.serviceFeeRate / 100).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </CardContent>
             </Card>
           </TabsContent>

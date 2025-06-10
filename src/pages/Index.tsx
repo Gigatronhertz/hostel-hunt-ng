@@ -190,7 +190,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Rooms - 2 per row layout */}
+      {/* Featured Rooms - 2 per row on all screen sizes */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
@@ -200,8 +200,8 @@ const Index = () => {
             </Link>
           </div>
           
-          {/* Grid with 2 columns per row */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Grid with 2 columns on all screen sizes */}
+          <div className="grid grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto">
             {featuredRooms.map((room) => (
               <Link key={room.id} to={`/room/${room.id}`}>
                 <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -209,39 +209,39 @@ const Index = () => {
                     <img
                       src={room.image}
                       alt={room.name}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-sm font-medium">
+                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium">
                       ⭐ {room.rating}
                     </div>
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-sm font-medium flex items-center gap-1">
-                      <Bed className="w-3 h-3" />
-                      {room.bedCount} bed{room.bedCount !== 1 ? 's' : ''}
+                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium flex items-center gap-1">
+                      <Bed className="w-2 h-2 md:w-3 md:h-3" />
+                      {room.bedCount}
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{room.name}</h3>
-                    <p className="text-muted-foreground text-sm mb-1 flex items-center gap-1">
-                      <GraduationCap className="w-3 h-3" />
-                      {room.campus}
+                  <CardContent className="p-2 md:p-4">
+                    <h3 className="font-semibold text-sm md:text-lg mb-1 line-clamp-1">{room.name}</h3>
+                    <p className="text-muted-foreground text-xs md:text-sm mb-1 flex items-center gap-1">
+                      <GraduationCap className="w-2 h-2 md:w-3 md:h-3 flex-shrink-0" />
+                      <span className="line-clamp-1">{room.campus}</span>
                     </p>
-                    <p className="text-muted-foreground text-sm mb-2 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {room.location}
+                    <p className="text-muted-foreground text-xs md:text-sm mb-2 flex items-center gap-1">
+                      <MapPin className="w-2 h-2 md:w-3 md:h-3 flex-shrink-0" />
+                      <span className="line-clamp-1">{room.location}</span>
                     </p>
-                    <Badge variant="outline" className="text-xs mb-3">
+                    <Badge variant="outline" className="text-xs mb-2 md:mb-3">
                       {room.roomType}
                     </Badge>
                     
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-lg font-bold text-primary">
-                          ₦{room.yearlyPrice.toLocaleString()}
+                        <span className="text-sm md:text-lg font-bold text-primary">
+                          ₦{(room.yearlyPrice / 1000).toFixed(0)}k
                         </span>
-                        <span className="text-sm font-normal text-muted-foreground block">per year</span>
+                        <span className="text-xs font-normal text-muted-foreground block">per year</span>
                       </div>
-                      <Button size="sm" variant="outline">
-                        View Details
+                      <Button size="sm" variant="outline" className="text-xs md:text-sm">
+                        View
                       </Button>
                     </div>
                   </CardContent>
