@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +10,7 @@ const Index = () => {
   const [selectedCampus, setSelectedCampus] = useState("");
   const navigate = useNavigate();
 
+  // Expanded campuses list to match Hostels page
   const campuses = [
     "University of Lagos",
     "University of Ibadan", 
@@ -19,7 +19,12 @@ const Index = () => {
     "Obafemi Awolowo University",
     "University of Benin",
     "Federal University of Technology, Akure",
-    "Lagos State University"
+    "Lagos State University",
+    "University of Agriculture, Abeokuta",
+    "Federal University of Agriculture, Makurdi",
+    "University of Port Harcourt",
+    "Federal University of Technology, Minna",
+    "Bayero University, Kano"
   ];
 
   // BACKEND INTEGRATION: Replace with Supabase query
@@ -267,8 +272,8 @@ const Index = () => {
               <h4 className="font-medium mb-4">For Students</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/rooms">Browse Rooms</Link></li>
-                <li><Link to="/how-it-works">How It Works</Link></li>
-                <li><Link to="/safety">Safety Guide</Link></li>
+                <li><Link to="/about">How It Works</Link></li>
+                <li><Link to="/contact">Safety Guide</Link></li>
               </ul>
             </div>
             
@@ -276,8 +281,8 @@ const Index = () => {
               <h4 className="font-medium mb-4">For Agents</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/agent-login">Agent Login</Link></li>
-                <li><Link to="/list-property">List Your Room</Link></li>
-                <li><Link to="/agent-guide">Agent Guide</Link></li>
+                <li><Link to="/agent-dashboard">List Your Room</Link></li>
+                <li><Link to="/about">Agent Guide</Link></li>
               </ul>
             </div>
             
@@ -285,8 +290,8 @@ const Index = () => {
               <h4 className="font-medium mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/contact">Contact Us</Link></li>
-                <li><Link to="/faq">FAQ</Link></li>
-                <li><Link to="/terms">Terms & Conditions</Link></li>
+                <li><Link to="/about">FAQ</Link></li>
+                <li><Link to="/about">Terms & Conditions</Link></li>
               </ul>
             </div>
           </div>

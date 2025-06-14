@@ -17,7 +17,24 @@ const Hostels = () => {
   const [roomType, setRoomType] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Sample rooms data with campus-based structure
+  // Expanded campuses list with new universities
+  const campuses = [
+    "University of Lagos",
+    "University of Ibadan", 
+    "Ahmadu Bello University",
+    "University of Nigeria, Nsukka",
+    "Obafemi Awolowo University",
+    "University of Benin",
+    "Federal University of Technology, Akure",
+    "Lagos State University",
+    "University of Agriculture, Abeokuta",
+    "Federal University of Agriculture, Makurdi",
+    "University of Port Harcourt",
+    "Federal University of Technology, Minna",
+    "Bayero University, Kano"
+  ];
+
+  // Expanded rooms data with new campuses
   const allRooms = [
     {
       id: 1,
@@ -108,18 +125,37 @@ const Hostels = () => {
       amenities: ["WiFi", "Security", "Water Supply"],
       rating: 4.2,
       description: "Affordable shared room with 2 beds at UI"
+    },
+    {
+      id: 7,
+      name: "Agric Lodge - Single Room",
+      campus: "University of Agriculture, Abeokuta",
+      location: "Abeokuta, Ogun",
+      exactLocation: "10 Campus Gate, UNAAB",
+      yearlyPrice: 380000,
+      inspectionFee: 3500,
+      roomType: "Single Room",
+      bedCount: 1,
+      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=300&fit=crop",
+      amenities: ["WiFi", "Security", "Water Supply", "Study Room"],
+      rating: 4.3,
+      description: "Comfortable single room close to UNAAB campus"
+    },
+    {
+      id: 8,
+      name: "Port City Residence",
+      campus: "University of Port Harcourt",
+      location: "Choba, Port Harcourt",
+      exactLocation: "25 University Road, Choba",
+      yearlyPrice: 520000,
+      inspectionFee: 4500,
+      roomType: "One Bedroom",
+      bedCount: 1,
+      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=300&fit=crop",
+      amenities: ["WiFi", "24/7 Power", "Security", "Laundry", "Parking"],
+      rating: 4.6,
+      description: "Modern one-bedroom near UNIPORT with great amenities"
     }
-  ];
-
-  const campuses = [
-    "University of Lagos",
-    "University of Ibadan", 
-    "Ahmadu Bello University",
-    "University of Nigeria, Nsukka",
-    "Obafemi Awolowo University",
-    "University of Benin",
-    "Federal University of Technology, Akure",
-    "Lagos State University"
   ];
 
   const getAmenityIcon = (amenity: string) => {
@@ -162,7 +198,7 @@ const Hostels = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6">
-            <Link to="/hostels" className="text-primary font-medium">
+            <Link to="/rooms" className="text-primary font-medium">
               Browse Rooms
             </Link>
             <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
@@ -187,7 +223,7 @@ const Hostels = () => {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <nav className="flex flex-col space-y-4 mt-8">
                 <Link 
-                  to="/hostels" 
+                  to="/rooms" 
                   className="text-lg font-medium text-primary"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -295,10 +331,10 @@ const Hostels = () => {
           </h2>
         </div>
 
-        {/* Rooms Grid - Updated to show 2 columns on mobile */}
+        {/* Rooms Grid - 2 columns on mobile, 3 on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {filteredRooms.map((room) => (
-            <Link key={room.id} to={`/hostel/${room.id}`}>
+            <Link key={room.id} to={`/room/${room.id}`}>
               <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img

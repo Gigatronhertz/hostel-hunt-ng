@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { ArrowLeft, MapPin, Wifi, Zap, Droplets, Users, MessageSquare, GraduationCap, CreditCard, Bed, Bath } from "lucide-react";
+import { ArrowLeft, MapPin, Wifi, Zap, Droplets, Users, MessageSquare, GraduationCap, CreditCard, Bed, Bath, Car, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const HostelDetail = () => {
@@ -21,7 +21,7 @@ const HostelDetail = () => {
     message: ""
   });
 
-  // Sample room data with campus-based structure
+  // Updated room data with videos and media types
   const roomsData = {
     "1": {
       id: 1,
@@ -35,12 +35,32 @@ const HostelDetail = () => {
       bedCount: 1,
       hasPrivateBathroom: true,
       hasPrivateToilet: true,
-      images: [
-        "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop"
+      media: [
+        {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=800&h=600&fit=crop",
+          thumbnail: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=300&h=200&fit=crop"
+        },
+        {
+          type: "video",
+          url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+          thumbnail: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=200&fit=crop"
+        },
+        {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop",
+          thumbnail: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=200&fit=crop"
+        },
+        {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop",
+          thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=300&h=200&fit=crop"
+        },
+        {
+          type: "video",
+          url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
+          thumbnail: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=300&h=200&fit=crop"
+        }
       ],
       amenities: ["WiFi", "24/7 Power", "Water Supply", "Security", "Laundry", "Study Room", "Parking"],
       rating: 4.8,
@@ -81,10 +101,22 @@ const HostelDetail = () => {
       bedCount: 2,
       hasPrivateBathroom: true,
       hasPrivateToilet: true,
-      images: [
-        "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop"
+      media: [
+        {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop",
+          thumbnail: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=200&fit=crop"
+        },
+        {
+          type: "image",
+          url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
+          thumbnail: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=200&fit=crop"
+        },
+        {
+          type: "video",
+          url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+          thumbnail: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=300&h=200&fit=crop"
+        }
       ],
       amenities: ["WiFi", "Security", "Study Room", "24/7 Power", "Water Supply", "Laundry"],
       rating: 4.6,
@@ -120,7 +152,7 @@ const HostelDetail = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Room not found</h1>
-          <Link to="/hostels">
+          <Link to="/rooms">
             <Button>Back to Rooms</Button>
           </Link>
         </div>
@@ -144,7 +176,8 @@ const HostelDetail = () => {
   const handleSubmitMessage = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // In a real app, this would send the message to the backend
+    // BACKEND INTEGRATION: Replace with Supabase inspection booking
+    // Example: const { error } = await supabase.from('inspection_bookings').insert([{...formData, room_id: id}])
     console.log("Inspection request:", {
       roomId: id,
       roomName: room.name,
@@ -171,7 +204,7 @@ const HostelDetail = () => {
             Hostel.ng
           </Link>
           <nav className="hidden md:flex space-x-6">
-            <Link to="/hostels" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">
               Browse Rooms
             </Link>
             <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
@@ -189,7 +222,7 @@ const HostelDetail = () => {
 
       <div className="container mx-auto px-4 py-6">
         {/* Back Button */}
-        <Link to="/hostels" className="inline-flex items-center text-primary hover:underline mb-4">
+        <Link to="/rooms" className="inline-flex items-center text-primary hover:underline mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Rooms
         </Link>
@@ -197,18 +230,34 @@ const HostelDetail = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Image Carousel */}
+            {/* Media Carousel with Video Support */}
             <div className="mb-6">
               <Carousel className="w-full">
                 <CarouselContent>
-                  {room.images.map((image, index) => (
+                  {room.media.map((item, index) => (
                     <CarouselItem key={index}>
                       <div className="relative">
-                        <img
-                          src={image}
-                          alt={`${room.name} view ${index + 1}`}
-                          className="w-full h-64 md:h-80 object-cover rounded-lg"
-                        />
+                        {item.type === "video" ? (
+                          <div className="relative">
+                            <video
+                              controls
+                              className="w-full h-64 md:h-80 object-cover rounded-lg"
+                              poster={item.thumbnail}
+                            >
+                              <source src={item.url} type="video/mp4" />
+                              Your browser does not support the video tag.
+                            </video>
+                            <div className="absolute top-4 left-4 bg-black/70 text-white px-2 py-1 rounded text-sm">
+                              Video Tour
+                            </div>
+                          </div>
+                        ) : (
+                          <img
+                            src={item.url}
+                            alt={`${room.name} view ${index + 1}`}
+                            className="w-full h-64 md:h-80 object-cover rounded-lg"
+                          />
+                        )}
                       </div>
                     </CarouselItem>
                   ))}
@@ -310,6 +359,17 @@ const HostelDetail = () => {
               <CardContent>
                 {!showMessageForm ? (
                   <div className="space-y-4">
+                    {/* Free Ride Highlight */}
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Car className="w-5 h-5 text-green-600" />
+                        <span className="font-semibold text-green-800">FREE Ride Included!</span>
+                      </div>
+                      <p className="text-sm text-green-700">
+                        We provide free transportation to and from your room inspection. No extra charges!
+                      </p>
+                    </div>
+                    
                     <Button 
                       onClick={() => setShowMessageForm(true)}
                       className="w-full"
@@ -320,6 +380,7 @@ const HostelDetail = () => {
                     </Button>
                     <div className="text-sm text-muted-foreground space-y-2">
                       <p>✓ Pay ₦{room.inspectionFee.toLocaleString()} inspection fee</p>
+                      <p>✓ FREE pickup and drop-off included</p>
                       <p>✓ Schedule physical inspection</p>
                       <p>✓ Yearly payment upon approval</p>
                     </div>
@@ -361,8 +422,11 @@ const HostelDetail = () => {
                     </div>
 
                     <div className="bg-blue-50 p-3 rounded-lg text-sm">
-                      <p className="font-medium text-blue-900">Total Cost:</p>
-                      <p className="text-blue-700">Inspection: ₦{room.inspectionFee.toLocaleString()}</p>
+                      <p className="font-medium text-blue-900">What's Included:</p>
+                      <p className="text-blue-700">✓ Inspection: ₦{room.inspectionFee.toLocaleString()}</p>
+                      <p className="text-blue-700">✓ FREE transportation both ways</p>
+                      <p className="text-blue-700">✓ Personal tour with agent</p>
+                      <p className="font-medium text-blue-900 mt-2">If approved:</p>
                       <p className="text-blue-700">Yearly fee: ₦{room.yearlyPrice.toLocaleString()}</p>
                     </div>
                     
