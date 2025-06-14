@@ -1,43 +1,56 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import AmenitiesSelector, { availableAmenities } from "@/components/AmenitiesSelector";
-import MediaUpload, { MediaFile } from "@/components/MediaUpload";
-import { 
-  ArrowLeft, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Users, 
-  MapPin,
-  Bed,
-  MessageCircle,
-  Image,
-  Video
-} from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
+
+// Refactored components
+import DashboardStats from "@/components/dashboard/DashboardStats";
+import RoomCard, { Room } from "@/components/dashboard/RoomCard";
+import RoomForm, { RoomFormData } from "@/components/dashboard/RoomForm";
+import { MediaFile } from "@/components/MediaUpload";
+
+// MongoDB API service (replace with actual implementation)
+// import { roomService, agentAuthService } from "@/services/mongoService";
 
 const AgentDashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // BACKEND INTEGRATION: Replace with actual agent data from Supabase
+  // MONGODB INTEGRATION: Replace with actual agent data from MongoDB
+  // const [agentData, setAgentData] = useState(null);
+  // useEffect(() => {
+  //   const fetchAgentData = async () => {
+  //     const token = localStorage.getItem('agentToken');
+  //     const agent = await agentAuthService.getProfile(token);
+  //     setAgentData(agent);
+  //   };
+  //   fetchAgentData();
+  // }, []);
+  
   const agentData = {
     name: "John Doe",
     email: "john@example.com",
     phone: "08012345678"
   };
 
-  // BACKEND INTEGRATION: Replace with Supabase query for agent's rooms
-  const [rooms, setRooms] = useState([
+  // MONGODB INTEGRATION: Replace with MongoDB query for agent's rooms
+  // const [rooms, setRooms] = useState<Room[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // useEffect(() => {
+  //   const fetchRooms = async () => {
+  //     const token = localStorage.getItem('agentToken');
+  //     const agentId = localStorage.getItem('agentId');
+  //     const roomsData = await roomService.getAgentRooms(agentId, token);
+  //     setRooms(roomsData);
+  //     setLoading(false);
+  //   };
+  //   fetchRooms();
+  // }, []);
+  
+  const [rooms, setRooms] = useState<Room[]>([
     {
       id: 1,
       name: "Unity Lodge - Single Room",
@@ -70,93 +83,65 @@ const AgentDashboard = () => {
     }
   ]);
 
-  const [newRoom, setNewRoom] = useState({
-    name: "",
-    campus: "",
-    location: "",
-    yearlyPrice: "",
-    roomType: "",
-    bedCount: 1,
-    bathrooms: 1,
-    description: "",
-    amenities: [] as string[]
-  });
+  // MONGODB INTEGRATION: Create room in MongoDB
+  const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
+    console.log("Creating room:", { ...formData, images, videos });
 
-  const [roomImages, setRoomImages] = useState<MediaFile[]>([]);
-  const [roomVideos, setRoomVideos] = useState<MediaFile[]>([]);
-
-  const campuses = [
-    "University of Lagos",
-    "University of Ibadan", 
-    "Ahmadu Bello University",
-    "University of Nigeria, Nsukka",
-    "Obafemi Awolowo University",
-    "University of Benin",
-    "Federal University of Technology, Akure",
-    "Lagos State University",
-    "University of Agriculture, Abeokuta",
-    "Federal University of Agriculture, Makurdi",
-    "University of Port Harcourt",
-    "Federal University of Technology, Minna",
-    "Bayero University, Kano"
-  ];
-
-  const roomTypes = [
-    "Single Room",
-    "One Bedroom", 
-    "Two Bedroom",
-    "Three Bedroom",
-    "Shared Apartment"
-  ];
-
-  // BACKEND INTEGRATION: Create room in Supabase
-  const handleCreateRoom = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    console.log("Creating room:", {
-      ...newRoom,
-      images: roomImages,
-      videos: roomVideos
-    });
+    // const token = localStorage.getItem('agentToken');
+    // try {
+    //   const result = await roomService.createRoom({
+    //     ...formData,
+    //     images,
+    //     videos
+    //   }, token);
+    //   
+    //   if (result.success) {
+    //     toast({
+    //       title: "Room Created!",
+    //       description: "Your room has been successfully listed with media files.",
+    //     });
+    //     
+    //     // Refresh rooms list
+    //     const updatedRooms = await roomService.getAgentRooms(localStorage.getItem('agentId'), token);
+    //     setRooms(updatedRooms);
+    //   }
+    // } catch (error) {
+    //   toast({
+    //     title: "Error",
+    //     description: "Failed to create room. Please try again.",
+    //     variant: "destructive"
+    //   });
+    // }
 
     toast({
       title: "Room Created!",
       description: "Your room has been successfully listed with media files.",
     });
-    
-    // Reset form
-    setNewRoom({
-      name: "",
-      campus: "",
-      location: "",
-      yearlyPrice: "",
-      roomType: "",
-      bedCount: 1,
-      bathrooms: 1,
-      description: "",
-      amenities: []
-    });
-    setRoomImages([]);
-    setRoomVideos([]);
   };
 
-  // BACKEND INTEGRATION: Delete room from Supabase
-  const handleDeleteRoom = (roomId: number) => {
+  // MONGODB INTEGRATION: Delete room from MongoDB
+  const handleDeleteRoom = async (roomId: number) => {
+    // const token = localStorage.getItem('agentToken');
+    // try {
+    //   await roomService.deleteRoom(roomId.toString(), token);
+    //   setRooms(rooms.filter(room => room.id !== roomId));
+    //   toast({
+    //     title: "Room Deleted",
+    //     description: "Room has been removed from your listings.",
+    //   });
+    // } catch (error) {
+    //   toast({
+    //     title: "Error",
+    //     description: "Failed to delete room. Please try again.",
+    //     variant: "destructive"
+    //   });
+    // }
+
     setRooms(rooms.filter(room => room.id !== roomId));
     toast({
       title: "Room Deleted",
       description: "Room has been removed from your listings.",
     });
-  };
-
-  const getAmenityIcon = (amenityId: string) => {
-    const amenity = availableAmenities.find(a => a.id === amenityId);
-    return amenity?.icon;
-  };
-
-  const getAmenityName = (amenityId: string) => {
-    const amenity = availableAmenities.find(a => a.id === amenityId);
-    return amenity?.name || amenityId;
   };
 
   const totalViews = rooms.reduce((sum, room) => sum + room.views, 0);
@@ -201,37 +186,11 @@ const AgentDashboard = () => {
           </TabsList>
           
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Rooms</CardTitle>
-                  <Bed className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{rooms.length}</div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Views</CardTitle>
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{totalViews}</div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Booking Requests</CardTitle>
-                  <MessageCircle className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{totalBookingRequests}</div>
-                </CardContent>
-              </Card>
-            </div>
+            <DashboardStats
+              totalRooms={rooms.length}
+              totalViews={totalViews}
+              totalBookingRequests={totalBookingRequests}
+            />
 
             <Card>
               <CardHeader>
@@ -269,85 +228,11 @@ const AgentDashboard = () => {
             
             <div className="grid gap-6">
               {rooms.map((room) => (
-                <Card key={room.id}>
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="text-lg font-semibold">{room.name}</h3>
-                        </div>
-                        <p className="text-muted-foreground text-sm mb-1 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {room.location} • {room.campus}
-                        </p>
-                        <p className="text-muted-foreground text-sm mb-2">
-                          {room.roomType} • {room.bedCount} bed{room.bedCount !== 1 ? 's' : ''} • {room.bathrooms} bathroom{room.bathrooms !== 1 ? 's' : ''}
-                        </p>
-                        <p className="text-lg font-bold text-primary mb-3">
-                          ₦{room.yearlyPrice.toLocaleString()}/year
-                        </p>
-                        
-                        {/* Amenities display with icons */}
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {room.amenities.slice(0, 6).map((amenityId) => (
-                            <Badge key={amenityId} variant="outline" className="flex items-center gap-1">
-                              {getAmenityIcon(amenityId)}
-                              <span className="text-xs">{getAmenityName(amenityId)}</span>
-                            </Badge>
-                          ))}
-                          {room.amenities.length > 6 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{room.amenities.length - 6} more
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {/* Media count */}
-                        <div className="flex gap-4 mb-2">
-                          <div className="flex items-center gap-1">
-                            <Image className="w-4 h-4 text-blue-500" />
-                            <span className="text-sm font-medium">{room.imageCount}</span>
-                            <span className="text-sm text-muted-foreground">images</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Video className="w-4 h-4 text-purple-500" />
-                            <span className="text-sm font-medium">{room.videoCount}</span>
-                            <span className="text-sm text-muted-foreground">videos</span>
-                          </div>
-                        </div>
-                        
-                        {/* Key metrics */}
-                        <div className="flex gap-6 mb-2">
-                          <div className="flex items-center gap-2">
-                            <Eye className="w-4 h-4 text-blue-500" />
-                            <span className="font-semibold">{room.views}</span>
-                            <span className="text-sm text-muted-foreground">views</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MessageCircle className="w-4 h-4 text-green-500" />
-                            <span className="font-semibold">{room.bookingRequests}</span>
-                            <span className="text-sm text-muted-foreground">booking requests</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleDeleteRoom(room.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <RoomCard
+                  key={room.id}
+                  room={room}
+                  onDelete={handleDeleteRoom}
+                />
               ))}
             </div>
           </TabsContent>
@@ -358,113 +243,7 @@ const AgentDashboard = () => {
                 <CardTitle>Add New Room</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleCreateRoom} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Room Name</Label>
-                      <Input
-                        id="name"
-                        value={newRoom.name}
-                        onChange={(e) => setNewRoom({...newRoom, name: e.target.value})}
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="campus">Campus</Label>
-                      <Select value={newRoom.campus} onValueChange={(value) => setNewRoom({...newRoom, campus: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select campus" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {campuses.map((campus) => (
-                            <SelectItem key={campus} value={campus}>
-                              {campus}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="location">Location</Label>
-                      <Input
-                        id="location"
-                        value={newRoom.location}
-                        onChange={(e) => setNewRoom({...newRoom, location: e.target.value})}
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="yearlyPrice">Yearly Price (₦)</Label>
-                      <Input
-                        id="yearlyPrice"
-                        type="number"
-                        value={newRoom.yearlyPrice}
-                        onChange={(e) => setNewRoom({...newRoom, yearlyPrice: e.target.value})}
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="roomType">Room Type</Label>
-                      <Select value={newRoom.roomType} onValueChange={(value) => setNewRoom({...newRoom, roomType: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select room type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {roomTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="bedCount">Number of Beds</Label>
-                      <Select value={newRoom.bedCount.toString()} onValueChange={(value) => setNewRoom({...newRoom, bedCount: parseInt(value)})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 Bed</SelectItem>
-                          <SelectItem value="2">2 Beds</SelectItem>
-                          <SelectItem value="3">3 Beds</SelectItem>
-                          <SelectItem value="4">4 Beds</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={newRoom.description}
-                      onChange={(e) => setNewRoom({...newRoom, description: e.target.value})}
-                      rows={4}
-                    />
-                  </div>
-                  
-                  <AmenitiesSelector
-                    selectedAmenities={newRoom.amenities}
-                    onAmenitiesChange={(amenities) => setNewRoom({...newRoom, amenities})}
-                  />
-                  
-                  <MediaUpload
-                    images={roomImages}
-                    videos={roomVideos}
-                    onImagesChange={setRoomImages}
-                    onVideosChange={setRoomVideos}
-                  />
-                  
-                  <Button type="submit" className="w-full">
-                    Create Room Listing
-                  </Button>
-                </form>
+                <RoomForm onSubmit={handleCreateRoom} />
               </CardContent>
             </Card>
           </TabsContent>
