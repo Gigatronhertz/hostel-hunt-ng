@@ -527,3 +527,4 @@ export interface Amenity {
  * - { conversationId: 1, sentAt: -1 }
  * - { senderId: 1, sentAt: -1 }
  */
+
