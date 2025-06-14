@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import AmenitiesSelector, { availableAmenities } from "@/components/AmenitiesSelector";
+import MediaUpload, { MediaFile } from "@/components/MediaUpload";
 import { 
   ArrowLeft, 
   Plus, 
@@ -19,8 +20,9 @@ import {
   Users, 
   MapPin,
   Bed,
-  Upload,
-  MessageCircle
+  MessageCircle,
+  Image,
+  Video
 } from "lucide-react";
 
 const AgentDashboard = () => {
@@ -28,12 +30,6 @@ const AgentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   
   // BACKEND INTEGRATION: Replace with actual agent data from Supabase
-  // Example: const { data: agent } = useQuery({
-  //   queryKey: ['agent'],
-  //   queryFn: () => supabase.auth.getUser().then(user => 
-  //     supabase.from('agents').select('*').eq('user_id', user.id).single()
-  //   )
-  // });
   const agentData = {
     name: "John Doe",
     email: "john@example.com",
@@ -41,10 +37,6 @@ const AgentDashboard = () => {
   };
 
   // BACKEND INTEGRATION: Replace with Supabase query for agent's rooms
-  // Example: const { data: rooms } = useQuery({
-  //   queryKey: ['agent-rooms'],
-  //   queryFn: () => supabase.from('rooms').select('*, room_views(*), booking_requests(*)').eq('agent_id', agent.id)
-  // });
   const [rooms, setRooms] = useState([
     {
       id: 1,
@@ -56,7 +48,10 @@ const AgentDashboard = () => {
       bedCount: 1,
       bathrooms: 1,
       views: 45,
-      bookingRequests: 3
+      bookingRequests: 3,
+      amenities: ["wifi", "power", "security", "water"],
+      imageCount: 5,
+      videoCount: 2
     },
     {
       id: 2,
@@ -68,7 +63,10 @@ const AgentDashboard = () => {
       bedCount: 1,
       bathrooms: 1,
       views: 67,
-      bookingRequests: 8
+      bookingRequests: 8,
+      amenities: ["wifi", "power", "security", "ac", "kitchen", "parking"],
+      imageCount: 7,
+      videoCount: 1
     }
   ]);
 
@@ -81,15 +79,26 @@ const AgentDashboard = () => {
     bedCount: 1,
     bathrooms: 1,
     description: "",
-    amenities: ""
+    amenities: [] as string[]
   });
+
+  const [roomImages, setRoomImages] = useState<MediaFile[]>([]);
+  const [roomVideos, setRoomVideos] = useState<MediaFile[]>([]);
 
   const campuses = [
     "University of Lagos",
     "University of Ibadan", 
     "Ahmadu Bello University",
     "University of Nigeria, Nsukka",
-    "Obafemi Awolowo University"
+    "Obafemi Awolowo University",
+    "University of Benin",
+    "Federal University of Technology, Akure",
+    "Lagos State University",
+    "University of Agriculture, Abeokuta",
+    "Federal University of Agriculture, Makurdi",
+    "University of Port Harcourt",
+    "Federal University of Technology, Minna",
+    "Bayero University, Kano"
   ];
 
   const roomTypes = [
@@ -104,27 +113,15 @@ const AgentDashboard = () => {
   const handleCreateRoom = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Example Supabase implementation:
-    // const roomData = {
-    //   ...newRoom,
-    //   agent_id: agent.id,
-    //   yearly_price: parseInt(newRoom.yearlyPrice),
-    //   created_at: new Date().toISOString()
-    // };
-    // 
-    // supabase.from('rooms').insert([roomData]).then(({ data, error }) => {
-    //   if (error) {
-    //     toast({ title: "Error", description: error.message, variant: "destructive" });
-    //   } else {
-    //     toast({ title: "Success", description: "Room created successfully!" });
-    //     setNewRoom({ name: "", campus: "", location: "", yearlyPrice: "", roomType: "", bedCount: 1, bathrooms: 1, description: "", amenities: "" });
-    //   }
-    // });
+    console.log("Creating room:", {
+      ...newRoom,
+      images: roomImages,
+      videos: roomVideos
+    });
 
-    console.log("Creating room:", newRoom);
     toast({
       title: "Room Created!",
-      description: "Your room has been successfully listed.",
+      description: "Your room has been successfully listed with media files.",
     });
     
     // Reset form
@@ -137,18 +134,29 @@ const AgentDashboard = () => {
       bedCount: 1,
       bathrooms: 1,
       description: "",
-      amenities: ""
+      amenities: []
     });
+    setRoomImages([]);
+    setRoomVideos([]);
   };
 
   // BACKEND INTEGRATION: Delete room from Supabase
   const handleDeleteRoom = (roomId: number) => {
-    // Example: supabase.from('rooms').delete().eq('id', roomId)
     setRooms(rooms.filter(room => room.id !== roomId));
     toast({
       title: "Room Deleted",
       description: "Room has been removed from your listings.",
     });
+  };
+
+  const getAmenityIcon = (amenityId: string) => {
+    const amenity = availableAmenities.find(a => a.id === amenityId);
+    return amenity?.icon;
+  };
+
+  const getAmenityName = (amenityId: string) => {
+    const amenity = availableAmenities.find(a => a.id === amenityId);
+    return amenity?.name || amenityId;
   };
 
   const totalViews = rooms.reduce((sum, room) => sum + room.views, 0);
@@ -279,7 +287,36 @@ const AgentDashboard = () => {
                           ₦{room.yearlyPrice.toLocaleString()}/year
                         </p>
                         
-                        {/* Key metrics prominently displayed */}
+                        {/* Amenities display with icons */}
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {room.amenities.slice(0, 6).map((amenityId) => (
+                            <Badge key={amenityId} variant="outline" className="flex items-center gap-1">
+                              {getAmenityIcon(amenityId)}
+                              <span className="text-xs">{getAmenityName(amenityId)}</span>
+                            </Badge>
+                          ))}
+                          {room.amenities.length > 6 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{room.amenities.length - 6} more
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        {/* Media count */}
+                        <div className="flex gap-4 mb-2">
+                          <div className="flex items-center gap-1">
+                            <Image className="w-4 h-4 text-blue-500" />
+                            <span className="text-sm font-medium">{room.imageCount}</span>
+                            <span className="text-sm text-muted-foreground">images</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Video className="w-4 h-4 text-purple-500" />
+                            <span className="text-sm font-medium">{room.videoCount}</span>
+                            <span className="text-sm text-muted-foreground">videos</span>
+                          </div>
+                        </div>
+                        
+                        {/* Key metrics */}
                         <div className="flex gap-6 mb-2">
                           <div className="flex items-center gap-2">
                             <Eye className="w-4 h-4 text-blue-500" />
@@ -321,7 +358,7 @@ const AgentDashboard = () => {
                 <CardTitle>Add New Room</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleCreateRoom} className="space-y-4">
+                <form onSubmit={handleCreateRoom} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="name">Room Name</Label>
@@ -412,28 +449,17 @@ const AgentDashboard = () => {
                     />
                   </div>
                   
-                  <div>
-                    <Label htmlFor="amenities">Amenities (comma separated)</Label>
-                    <Input
-                      id="amenities"
-                      value={newRoom.amenities}
-                      onChange={(e) => setNewRoom({...newRoom, amenities: e.target.value})}
-                      placeholder="WiFi, 24/7 Power, Security, etc."
-                    />
-                  </div>
+                  <AmenitiesSelector
+                    selectedAmenities={newRoom.amenities}
+                    onAmenitiesChange={(amenities) => setNewRoom({...newRoom, amenities})}
+                  />
                   
-                  <div>
-                    <Label>Room Images</Label>
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                      <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">
-                        Click to upload images or drag and drop
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        PNG, JPG up to 10MB each
-                      </p>
-                    </div>
-                  </div>
+                  <MediaUpload
+                    images={roomImages}
+                    videos={roomVideos}
+                    onImagesChange={setRoomImages}
+                    onVideosChange={setRoomVideos}
+                  />
                   
                   <Button type="submit" className="w-full">
                     Create Room Listing
