@@ -31,6 +31,7 @@ export interface Amenity {
 const availableAmenities: Amenity[] = [
   { id: "wifi", name: "WiFi", icon: <Wifi className="w-4 h-4" />, category: "Technology" },
   { id: "power", name: "24/7 Power", icon: <Zap className="w-4 h-4" />, category: "Utilities" },
+  { id: "prepaid_meter", name: "Prepaid Meter", icon: <Zap className="w-4 h-4" />, category: "Utilities" },
   { id: "security", name: "Security", icon: <Shield className="w-4 h-4" />, category: "Safety" },
   { id: "parking", name: "Parking", icon: <Car className="w-4 h-4" />, category: "Transportation" },
   { id: "kitchen", name: "Kitchen", icon: <ChefHat className="w-4 h-4" />, category: "Facilities" },
