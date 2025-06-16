@@ -51,17 +51,8 @@ const AgentLogin = () => {
   };
 
   const handleGoogleLogin = () => {
-    // BACKEND INTEGRATION: Google OAuth with Supabase
-    // Example: supabase.auth.signInWithOAuth({
-    //   provider: 'google',
-    //   options: {
-    //     redirectTo: `${window.location.origin}/agent-dashboard`
-    //   }
-    // }).then(({ data, error }) => {
-    //   if (error) {
-    //     toast({ title: "Error", description: error.message, variant: "destructive" });
-    //   }
-    // });
+  
+
     
     console.log("Google login attempt");
     
@@ -69,11 +60,11 @@ const AgentLogin = () => {
       title: "Google Login",
       description: "Redirecting to Google authentication...",
     });
-    
+    window.location.href = "https://hostelng.onrender.com/auth/google"
     // Simulate Google login success
-    setTimeout(() => {
-      navigate("/agent-dashboard");
-    }, 1000);
+    // setTimeout(() => {
+    //   navigate("/agent-dashboard");
+    // }, 1000);
   };
 
   const handleRegister = (e: React.FormEvent) => {
