@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus } from "lucide-react";
-import { useEffect, useState } from 'react';
-
 
 // Refactored components
 import DashboardStats from "@/components/dashboard/DashboardStats";
@@ -21,27 +19,22 @@ const AgentDashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   
-  const AgentProfile = () => {
-    const [agentData, setAgentData] = useState(null);
-    const [loading, setLoading] = useState(true);
+  // MONGODB INTEGRATION: Replace with actual agent data from MongoDB
+  // const [agentData, setAgentData] = useState(null);
+  // useEffect(() => {
+  //   const fetchAgentData = async () => {
+  //     const token = localStorage.getItem('agentToken');
+  //     const agent = await agentAuthService.getProfile(token);
+  //     setAgentData(agent);
+  //   };
+  //   fetchAgentData();
+  // }, []);
   
-    useEffect(() => {
-      const fetchAgentData = async () => {
-        const agentId = localStorage.getItem('agentId'); // you must store this after login
-        if (!agentId) {
-          console.error("No agent ID found");
-          setLoading(false);
-          return;
-        }
-  
-        try {
-          const res = await fetch(`https://volunteer-ng.onrender.com/projects?userId=${agentId}`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          };
+  const agentData = {
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "08012345678"
+  };
 
   // MONGODB INTEGRATION: Replace with MongoDB query for agent's rooms
   // const [rooms, setRooms] = useState<Room[]>([]);
