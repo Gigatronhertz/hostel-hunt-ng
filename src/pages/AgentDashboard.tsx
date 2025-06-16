@@ -29,27 +29,12 @@ const AgentDashboard = () => {
   //   };
   //   fetchAgentData();
   // }, []);
-
-    const [agentData, setAgentData] = useState(null);
-
   
-    useEffect(() => {
-      fetch('https://volunteer-ng.onrender.com/api/agents/profile', {
-        method: 'GET',
-        credentials: 'include', // Make sure backend allows cookies (CORS settings)
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-        .then(res => res.json())
-        .then(data => {
-          setAgentData(data);
-        })
-        .catch(err => {
-          console.error('Error fetching profile:', err);
-        })
-        .finally(() => setLoading(false));
-    }, []);
+  const agentData = {
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "08012345678"
+  };
 
   // MONGODB INTEGRATION: Replace with MongoDB query for agent's rooms
   // const [rooms, setRooms] = useState<Room[]>([]);
