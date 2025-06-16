@@ -41,7 +41,7 @@ const AgentDashboard = () => {
             headers: {
               'Content-Type': 'application/json',
             }
-          }
+          };
 
   // MONGODB INTEGRATION: Replace with MongoDB query for agent's rooms
   // const [rooms, setRooms] = useState<Room[]>([]);
