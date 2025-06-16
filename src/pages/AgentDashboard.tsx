@@ -13,75 +13,75 @@ import RoomForm, { RoomFormData } from "@/components/dashboard/RoomForm";
 import { MediaFile } from "@/components/MediaUpload";
 
 // MongoDB API service (replace with actual implementation)
-// import { roomService, agentAuthService } from "@/services/mongoService";
+ import { roomService, agentAuthService } from "@/services/mongoService";
 
 const AgentDashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   
   // MONGODB INTEGRATION: Replace with actual agent data from MongoDB
-  // const [agentData, setAgentData] = useState(null);
-  // useEffect(() => {
-  //   const fetchAgentData = async () => {
-  //     const token = localStorage.getItem('agentToken');
-  //     const agent = await agentAuthService.getProfile(token);
-  //     setAgentData(agent);
-  //   };
-  //   fetchAgentData();
-  // }, []);
+   const [agentData, setAgentData] = useState(null);
+  useEffect(() => {
+    const fetchAgentData = async () => {
+      const token = localStorage.getItem('agentToken');
+      const agent = await agentAuthService.getProfile(token);
+      setAgentData(agent);
+    };
+    fetchAgentData();
+  }, []);
   
-  const agentData = {
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "08012345678"
-  };
+  // const agentData = {
+  //   name: "John Doe",
+  //   email: "john@example.com",
+  //   phone: "08012345678"
+  // };
 
   // MONGODB INTEGRATION: Replace with MongoDB query for agent's rooms
-  // const [rooms, setRooms] = useState<Room[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // useEffect(() => {
-  //   const fetchRooms = async () => {
-  //     const token = localStorage.getItem('agentToken');
-  //     const agentId = localStorage.getItem('agentId');
-  //     const roomsData = await roomService.getAgentRooms(agentId, token);
-  //     setRooms(roomsData);
-  //     setLoading(false);
-  //   };
-  //   fetchRooms();
-  // }, []);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const token = localStorage.getItem('agentToken');
+      const agentId = localStorage.getItem('agentId');
+      const roomsData = await roomService.getAgentRooms(agentId, token);
+      setRooms(roomsData);
+      setLoading(false);
+    };
+    fetchRooms();
+  }, []);
   
-  const [rooms, setRooms] = useState<Room[]>([
-    {
-      id: 1,
-      name: "Unity Lodge - Single Room",
-      campus: "University of Lagos",
-      location: "Akoka, Lagos",
-      yearlyPrice: 540000,
-      roomType: "Single Room",
-      bedCount: 1,
-      bathrooms: 1,
-      views: 45,
-      bookingRequests: 3,
-      amenities: ["wifi", "power", "security", "water"],
-      imageCount: 5,
-      videoCount: 2
-    },
-    {
-      id: 2,
-      name: "Elite Residence",
-      campus: "University of Lagos", 
-      location: "Yaba, Lagos",
-      yearlyPrice: 660000,
-      roomType: "One Bedroom",
-      bedCount: 1,
-      bathrooms: 1,
-      views: 67,
-      bookingRequests: 8,
-      amenities: ["wifi", "power", "security", "ac", "kitchen", "parking"],
-      imageCount: 7,
-      videoCount: 1
-    }
-  ]);
+  // const [rooms, setRooms] = useState<Room[]>([
+  //   {
+  //     id: 1,
+  //     name: "Unity Lodge - Single Room",
+  //     campus: "University of Lagos",
+  //     location: "Akoka, Lagos",
+  //     yearlyPrice: 540000,
+  //     roomType: "Single Room",
+  //     bedCount: 1,
+  //     bathrooms: 1,
+  //     views: 45,
+  //     bookingRequests: 3,
+  //     amenities: ["wifi", "power", "security", "water"],
+  //     imageCount: 5,
+  //     videoCount: 2
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Elite Residence",
+  //     campus: "University of Lagos", 
+  //     location: "Yaba, Lagos",
+  //     yearlyPrice: 660000,
+  //     roomType: "One Bedroom",
+  //     bedCount: 1,
+  //     bathrooms: 1,
+  //     views: 67,
+  //     bookingRequests: 8,
+  //     amenities: ["wifi", "power", "security", "ac", "kitchen", "parking"],
+  //     imageCount: 7,
+  //     videoCount: 1
+  //   }
+  // ]);
 
   // MONGODB INTEGRATION: Create room in MongoDB
   const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
