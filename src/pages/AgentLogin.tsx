@@ -8,10 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, UserPlus, LogIn } from "lucide-react";
+import { agentAuthService } from "@/services/mongoService";
 
 const AgentLogin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
     password: ""
@@ -24,50 +26,51 @@ const AgentLogin = () => {
     confirmPassword: ""
   });
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    // BACKEND INTEGRATION: Authenticate with Supabase
-    // Example: supabase.auth.signInWithPassword({
-    //   email: loginData.email,
-    //   password: loginData.password
-    // }).then(({ data, error }) => {
-    //   if (error) {
-    //     toast({ title: "Error", description: error.message, variant: "destructive" });
-    //   } else {
-    //     navigate("/agent-dashboard");
-    //   }
-    // });
-    
-    console.log("Agent login attempt:", loginData);
-    
-    toast({
-      title: "Login Successful!",
-      description: "Welcome back to your agent dashboard.",
-    });
-    
-    // Redirect to agent dashboard
-    navigate("/agent-dashboard");
+    try {
+      const result = await agentAuthService.login({
+        email: loginData.email,
+        password: loginData.password
+      });
+
+      if (result.success) {
+        toast({
+          title: "Login Successful!",
+          description: "Welcome back to your agent dashboard.",
+        });
+        navigate("/agent-dashboard");
+      } else {
+        toast({
+          title: "Login Failed",
+          description: result.error || "Invalid email or password.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
-  
-
-    
-    console.log("Google login attempt");
-    
+    console.log("Redirecting to Google authentication...");
     toast({
       title: "Google Login",
       description: "Redirecting to Google authentication...",
     });
-    window.location.href = "https://hostelng.onrender.com/auth/google"
-    // Simulate Google login success
-    // setTimeout(() => {
-    //   navigate("/agent-dashboard");
-    // }, 1000);
+    window.location.href = "https://hostelng.onrender.com/auth/google";
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (registerData.password !== registerData.confirmPassword) {
@@ -79,47 +82,47 @@ const AgentLogin = () => {
       return;
     }
     
-    // BACKEND INTEGRATION: Register with Supabase and create agent profile
-    // Example: supabase.auth.signUp({
-    //   email: registerData.email,
-    //   password: registerData.password,
-    //   options: {
-    //     data: {
-    //       name: registerData.name,
-    //       phone: registerData.phone,
-    //       role: 'agent'
-    //     }
-    //   }
-    // }).then(({ data, error }) => {
-    //   if (error) {
-    //     toast({ title: "Error", description: error.message, variant: "destructive" });
-    //   } else {
-    //     // Create agent profile in separate table
-    //     supabase.from('agents').insert([{
-    //       user_id: data.user?.id,
-    //       name: registerData.name,
-    //       phone: registerData.phone,
-    //       subscription_status: 'pending',
-    //       verification_status: 'pending'
-    //     }]);
-    //   }
-    // });
+    setIsLoading(true);
     
-    console.log("Agent registration attempt:", registerData);
-    
-    toast({
-      title: "Registration Submitted!",
-      description: "Your agent account is pending verification. We'll contact you soon.",
-    });
-    
-    // Reset form
-    setRegisterData({
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: ""
-    });
+    try {
+      const result = await agentAuthService.register({
+        name: registerData.name,
+        email: registerData.email,
+        phone: registerData.phone,
+        password: registerData.password
+      });
+
+      if (result.success) {
+        toast({
+          title: "Registration Submitted!",
+          description: "Your agent account is pending verification. We'll contact you soon.",
+        });
+        
+        // Reset form
+        setRegisterData({
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: ""
+        });
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: result.error || "Failed to register. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -177,6 +180,7 @@ const AgentLogin = () => {
                       onClick={handleGoogleLogin} 
                       variant="outline" 
                       className="w-full"
+                      disabled={isLoading}
                     >
                       <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -205,6 +209,7 @@ const AgentLogin = () => {
                           value={loginData.email}
                           onChange={(e) => setLoginData({...loginData, email: e.target.value})}
                           required
+                          disabled={isLoading}
                         />
                       </div>
                       
@@ -216,12 +221,13 @@ const AgentLogin = () => {
                           value={loginData.password}
                           onChange={(e) => setLoginData({...loginData, password: e.target.value})}
                           required
+                          disabled={isLoading}
                         />
                       </div>
                       
-                      <Button type="submit" className="w-full">
+                      <Button type="submit" className="w-full" disabled={isLoading}>
                         <LogIn className="w-4 h-4 mr-2" />
-                        Login
+                        {isLoading ? "Logging in..." : "Login"}
                       </Button>
                     </form>
                   </div>
@@ -236,6 +242,7 @@ const AgentLogin = () => {
                         value={registerData.name}
                         onChange={(e) => setRegisterData({...registerData, name: e.target.value})}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                     
@@ -247,6 +254,7 @@ const AgentLogin = () => {
                         value={registerData.email}
                         onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                     
@@ -258,6 +266,7 @@ const AgentLogin = () => {
                         value={registerData.phone}
                         onChange={(e) => setRegisterData({...registerData, phone: e.target.value})}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                     
@@ -269,6 +278,7 @@ const AgentLogin = () => {
                         value={registerData.password}
                         onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                     
@@ -280,6 +290,7 @@ const AgentLogin = () => {
                         value={registerData.confirmPassword}
                         onChange={(e) => setRegisterData({...registerData, confirmPassword: e.target.value})}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                     
@@ -293,9 +304,9 @@ const AgentLogin = () => {
                       </ul>
                     </div>
                     
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
                       <UserPlus className="w-4 h-4 mr-2" />
-                      Register as Agent
+                      {isLoading ? "Registering..." : "Register as Agent"}
                     </Button>
                   </form>
                 </TabsContent>
@@ -313,3 +324,4 @@ const AgentLogin = () => {
 };
 
 export default AgentLogin;
+
