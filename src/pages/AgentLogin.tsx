@@ -1,4 +1,11 @@
 
+// =============================================================================
+// AGENT LOGIN PAGE - Authentication Interface for Agents
+// =============================================================================
+// This component handles both login and registration for agents
+// It includes Google OAuth integration and traditional email/password authentication
+// =============================================================================
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,11 +20,19 @@ import { agentAuthService } from "@/services/mongoService";
 const AgentLogin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  
+  // =============================================================================
+  // COMPONENT STATE MANAGEMENT
+  // =============================================================================
+  const [isLoading, setIsLoading] = useState(false);     // Loading state for form submissions
+  
+  // Login form data state
   const [loginData, setLoginData] = useState({
     email: "",
     password: ""
   });
+  
+  // Registration form data state
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
@@ -26,23 +41,33 @@ const AgentLogin = () => {
     confirmPassword: ""
   });
 
+  // =============================================================================
+  // LOGIN FORM SUBMISSION HANDLER
+  // =============================================================================
+  // Handles traditional email/password login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
     try {
+      // STEP 1: Send login credentials to backend for verification
+      // Backend endpoint: POST /api/agents/login
       const result = await agentAuthService.login({
         email: loginData.email,
         password: loginData.password
       });
 
       if (result.success) {
+        // STEP 2: Login successful - authentication data is automatically stored
+        // The agentAuthService.login() method handles token storage in localStorage
         toast({
           title: "Login Successful!",
           description: "Welcome back to your agent dashboard.",
         });
+        // STEP 3: Redirect to dashboard
         navigate("/agent-dashboard");
       } else {
+        // STEP 4: Handle login failure
         toast({
           title: "Login Failed",
           description: result.error || "Invalid email or password.",
@@ -50,6 +75,7 @@ const AgentLogin = () => {
         });
       }
     } catch (error) {
+      // Handle unexpected errors (network issues, etc.)
       console.error("Login error:", error);
       toast({
         title: "Error",
@@ -61,18 +87,31 @@ const AgentLogin = () => {
     }
   };
 
+  // =============================================================================
+  // GOOGLE OAUTH LOGIN HANDLER
+  // =============================================================================
+  // Initiates Google OAuth flow by redirecting to backend OAuth endpoint
   const handleGoogleLogin = () => {
     console.log("Redirecting to Google authentication...");
     toast({
       title: "Google Login",
       description: "Redirecting to Google authentication...",
     });
+    
+    // IMPORTANT: This URL should match your backend's Google OAuth initiation endpoint
+    // Your backend should handle the OAuth flow and redirect back to /auth/google/callback
+    // TODO: Update this URL to match your deployed Render app
     window.location.href = "https://hostelng.onrender.com/auth/google";
   };
 
+  // =============================================================================
+  // REGISTRATION FORM SUBMISSION HANDLER
+  // =============================================================================
+  // Handles new agent registration
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // STEP 1: Validate that passwords match
     if (registerData.password !== registerData.confirmPassword) {
       toast({
         title: "Error",
@@ -85,6 +124,8 @@ const AgentLogin = () => {
     setIsLoading(true);
     
     try {
+      // STEP 2: Send registration data to backend
+      // Backend endpoint: POST /api/agents/register
       const result = await agentAuthService.register({
         name: registerData.name,
         email: registerData.email,
@@ -93,12 +134,13 @@ const AgentLogin = () => {
       });
 
       if (result.success) {
+        // STEP 3: Registration successful (account pending verification)
         toast({
           title: "Registration Submitted!",
           description: "Your agent account is pending verification. We'll contact you soon.",
         });
         
-        // Reset form
+        // STEP 4: Reset form to clear sensitive data
         setRegisterData({
           name: "",
           email: "",
@@ -107,6 +149,7 @@ const AgentLogin = () => {
           confirmPassword: ""
         });
       } else {
+        // Handle registration failure
         toast({
           title: "Registration Failed",
           description: result.error || "Failed to register. Please try again.",
@@ -125,9 +168,14 @@ const AgentLogin = () => {
     }
   };
 
+  // =============================================================================
+  // MAIN COMPONENT RENDER
+  // =============================================================================
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* =============================================================================
+          HEADER SECTION
+          ============================================================================= */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
@@ -148,13 +196,14 @@ const AgentLogin = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Back Button */}
+        {/* Back to home navigation */}
         <Link to="/" className="inline-flex items-center text-primary hover:underline mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
 
         <div className="max-w-md mx-auto">
+          {/* Page title and description */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold mb-2">Agent Portal</h1>
             <p className="text-muted-foreground">
@@ -162,6 +211,9 @@ const AgentLogin = () => {
             </p>
           </div>
 
+          {/* =============================================================================
+              AUTHENTICATION TABS SECTION
+              ============================================================================= */}
           <Card>
             <CardHeader>
               <CardTitle>Welcome Agent</CardTitle>
@@ -173,15 +225,21 @@ const AgentLogin = () => {
                   <TabsTrigger value="register">Register</TabsTrigger>
                 </TabsList>
                 
+                {/* =============================================================================
+                    LOGIN TAB - Handle User Login
+                    ============================================================================= */}
                 <TabsContent value="login">
                   <div className="space-y-4">
-                    {/* Google Login Button */}
+                    {/* =============================================================================
+                        GOOGLE OAUTH LOGIN BUTTON
+                        ============================================================================= */}
                     <Button 
                       onClick={handleGoogleLogin} 
                       variant="outline" 
                       className="w-full"
                       disabled={isLoading}
                     >
+                      {/* Google logo SVG */}
                       <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -191,6 +249,7 @@ const AgentLogin = () => {
                       Continue with Google
                     </Button>
                     
+                    {/* Divider between Google and email login */}
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-muted"></div>
@@ -200,6 +259,9 @@ const AgentLogin = () => {
                       </div>
                     </div>
 
+                    {/* =============================================================================
+                        EMAIL/PASSWORD LOGIN FORM
+                        ============================================================================= */}
                     <form onSubmit={handleLogin} className="space-y-4">
                       <div>
                         <Label htmlFor="login-email">Email</Label>
@@ -233,8 +295,12 @@ const AgentLogin = () => {
                   </div>
                 </TabsContent>
                 
+                {/* =============================================================================
+                    REGISTRATION TAB - Handle New Agent Registration
+                    ============================================================================= */}
                 <TabsContent value="register">
                   <form onSubmit={handleRegister} className="space-y-4">
+                    {/* Full name input */}
                     <div>
                       <Label htmlFor="register-name">Full Name</Label>
                       <Input
@@ -246,6 +312,7 @@ const AgentLogin = () => {
                       />
                     </div>
                     
+                    {/* Email input */}
                     <div>
                       <Label htmlFor="register-email">Email</Label>
                       <Input
@@ -258,6 +325,7 @@ const AgentLogin = () => {
                       />
                     </div>
                     
+                    {/* Phone number input */}
                     <div>
                       <Label htmlFor="register-phone">Phone Number</Label>
                       <Input
@@ -270,6 +338,7 @@ const AgentLogin = () => {
                       />
                     </div>
                     
+                    {/* Password input */}
                     <div>
                       <Label htmlFor="register-password">Password</Label>
                       <Input
@@ -282,6 +351,7 @@ const AgentLogin = () => {
                       />
                     </div>
                     
+                    {/* Confirm password input */}
                     <div>
                       <Label htmlFor="register-confirm">Confirm Password</Label>
                       <Input
@@ -294,6 +364,9 @@ const AgentLogin = () => {
                       />
                     </div>
                     
+                    {/* =============================================================================
+                        BUSINESS MODEL INFORMATION SECTION
+                        ============================================================================= */}
                     <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
                       <p className="font-medium mb-1">Hostel.ng Business Model:</p>
                       <ul className="text-xs space-y-1">
@@ -304,6 +377,7 @@ const AgentLogin = () => {
                       </ul>
                     </div>
                     
+                    {/* Registration submit button */}
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       <UserPlus className="w-4 h-4 mr-2" />
                       {isLoading ? "Registering..." : "Register as Agent"}
@@ -314,6 +388,7 @@ const AgentLogin = () => {
             </CardContent>
           </Card>
 
+          {/* Support link */}
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Need help? <Link to="/contact" className="text-primary hover:underline">Contact Support</Link></p>
           </div>
@@ -324,4 +399,3 @@ const AgentLogin = () => {
 };
 
 export default AgentLogin;
-
