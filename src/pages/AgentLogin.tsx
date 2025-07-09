@@ -24,7 +24,7 @@ const AgentLogin = () => {
     // 1. Handle Google OAuth flow
     // 2. Create session cookie
     // 3. Redirect directly to /agent-dashboard
-    window.location.href = "http://localhost:3000/auth/google";
+    window.location.href = "https://hostelng.onrender.com/auth/google";
   };
 
   // =============================================================================
