@@ -19,7 +19,7 @@ import DashboardStats from "@/components/dashboard/DashboardStats";
 import RoomCard, { Room } from "@/components/dashboard/RoomCard";
 import RoomForm, { RoomFormData } from "@/components/dashboard/RoomForm";
 import { MediaFile } from "@/components/MediaUpload";
-import { agentAuthService, roomService } from "@/services/mongoService";
+import AgentRegistration from "@/components/auth/AgentRegistration";
 
 const AgentDashboard = () => {
   const { toast } = useToast();
@@ -34,54 +34,61 @@ const AgentDashboard = () => {
   const [rooms, setRooms] = useState<Room[]>([]);          // Agent's room listings
 
   // =============================================================================
-  // AUTHENTICATION CHECK AND DATA INITIALIZATION
+  // COOKIE-BASED AUTHENTICATION CHECK AND DATA INITIALIZATION
   // =============================================================================
-  // This useEffect runs when the component mounts and handles:
-  // 1. Authentication verification
-  // 2. Loading cached agent data
-  // 3. Fetching fresh profile data
-  // 4. Loading agent's room listings
+  // New simplified flow:
+  // 1. Check authentication with cookie-based endpoint
+  // 2. If authenticated: fetch user profile and rooms
+  // 3. If not authenticated: redirect to registration form
   useEffect(() => {
     const initializeDashboard = async () => {
-      // STEP 1: Check if user is authenticated
-      // If not authenticated, redirect to login page
-      if (!agentAuthService.isAuthenticated()) {
-        toast({
-          title: "Authentication Required",
-          description: "Please login to access your dashboard.",
-          variant: "destructive"
-        });
-        navigate("/agent-login");
-        return;
-      }
-
       try {
-        // STEP 2: Try to get cached agent data first for immediate display
-        // This provides a better user experience while we fetch fresh data
-        const cachedAgentData = localStorage.getItem('agentData');
-        if (cachedAgentData) {
-          setAgentData(JSON.parse(cachedAgentData));
-        }
-
-        // STEP 3: Fetch fresh agent profile from backend
-        // This ensures we have the most up-to-date agent information
-        const profileResult = await agentAuthService.getProfile();
-        if (profileResult.success) {
-          setAgentData(profileResult.data);
-          // Update cached data with fresh information
-          localStorage.setItem('agentData', JSON.stringify(profileResult.data));
-        }
-
-        // STEP 4: Fetch agent's room listings
-        // Get the agent ID from localStorage and fetch their rooms
-        const agentId = localStorage.getItem('agentId');
-        if (agentId) {
-          const roomsResult = await roomService.getAgentRooms(agentId);
-          if (roomsResult.success) {
-            setRooms(roomsResult.data);
-          } else {
-            console.error("Failed to fetch rooms:", roomsResult.error);
+        // STEP 1: Check authentication status with cookie-based endpoint
+        // Backend endpoint: POST /auth/login (with credentials: 'include')
+        // This will use the session cookie set by Google OAuth
+        const authResponse = await fetch('/auth/login', {
+          method: 'POST',
+          credentials: 'include', // ✅ Include session cookie
+          headers: {
+            'Content-Type': 'application/json'
           }
+        });
+
+        if (authResponse.ok) {
+          // STEP 2: User is authenticated, fetch their profile
+          const profileResponse = await fetch('/api/agents/profile', {
+            method: 'GET',
+            credentials: 'include' // ✅ Include session cookie
+          });
+
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            setAgentData(profileData);
+
+            // STEP 3: Fetch agent's room listings
+            const roomsResponse = await fetch('/api/agents/rooms', {
+              method: 'GET',
+              credentials: 'include' // ✅ Include session cookie
+            });
+
+            if (roomsResponse.ok) {
+              const roomsData = await roomsResponse.json();
+              setRooms(roomsData);
+            }
+          } else {
+            // STEP 4: Authenticated but no profile - need registration
+            // This means Google OAuth worked but agent needs to complete profile
+            setActiveTab("registration");
+          }
+        } else {
+          // STEP 5: Not authenticated - redirect to login
+          toast({
+            title: "Authentication Required",
+            description: "Please login with Google to access your dashboard.",
+            variant: "destructive"
+          });
+          navigate("/agent-login");
+          return;
         }
       } catch (error) {
         console.error("Dashboard initialization error:", error);
@@ -90,8 +97,8 @@ const AgentDashboard = () => {
           description: "Failed to load dashboard data.",
           variant: "destructive"
         });
+        navigate("/agent-login");
       } finally {
-        // Always set loading to false, whether success or error
         setLoading(false);
       }
     };
@@ -100,23 +107,39 @@ const AgentDashboard = () => {
   }, [navigate, toast]);
 
   // =============================================================================
-  // ROOM CREATION HANDLER
+  // ROOM CREATION HANDLER (COOKIE-BASED)
   // =============================================================================
-  // Handles the creation of new room listings with file uploads
+  // Handles the creation of new room listings with file uploads using cookies
   const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
     console.log("Creating room:", { ...formData, images, videos });
 
     try {
-      // STEP 1: Convert MediaFile objects to actual File objects
-      // The MediaFile type includes additional metadata, but the API expects raw File objects
-      const imageFiles = images.map(img => img.file);
-      const videoFiles = videos.map(vid => vid.file);
-
-      // STEP 2: Send room creation request to backend
-      // This includes form data, image files, and video files
-      const result = await roomService.createRoom(formData, imageFiles, videoFiles);
+      // STEP 1: Create FormData object for multipart upload
+      const uploadData = new FormData();
       
-      if (result.success) {
+      // Add form fields
+      Object.entries(formData).forEach(([key, value]) => {
+        uploadData.append(key, value.toString());
+      });
+
+      // Add image files
+      images.forEach((img) => {
+        uploadData.append('images', img.file);
+      });
+
+      // Add video files
+      videos.forEach((vid) => {
+        uploadData.append('videos', vid.file);
+      });
+
+      // STEP 2: Send room creation request to backend with cookie authentication
+      const response = await fetch('/api/rooms', {
+        method: 'POST',
+        credentials: 'include', // ✅ Include session cookie
+        body: uploadData
+      });
+
+      if (response.ok) {
         // STEP 3: Show success message to user
         toast({
           title: "Room Created!",
@@ -124,21 +147,24 @@ const AgentDashboard = () => {
         });
         
         // STEP 4: Refresh the rooms list to show the new room
-        const agentId = localStorage.getItem('agentId');
-        if (agentId) {
-          const roomsResult = await roomService.getAgentRooms(agentId);
-          if (roomsResult.success) {
-            setRooms(roomsResult.data);
-          }
+        const roomsResponse = await fetch('/api/agents/rooms', {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (roomsResponse.ok) {
+          const roomsData = await roomsResponse.json();
+          setRooms(roomsData);
         }
         
         // STEP 5: Switch to rooms tab to show the newly created room
         setActiveTab("rooms");
       } else {
         // Handle creation failure
+        const errorData = await response.json();
         toast({
           title: "Error",
-          description: result.error || "Failed to create room. Please try again.",
+          description: errorData.message || "Failed to create room. Please try again.",
           variant: "destructive"
         });
       }
@@ -153,15 +179,18 @@ const AgentDashboard = () => {
   };
 
   // =============================================================================
-  // ROOM DELETION HANDLER
+  // ROOM DELETION HANDLER (COOKIE-BASED)
   // =============================================================================
-  // Handles the deletion of existing room listings
+  // Handles the deletion of existing room listings using cookie authentication
   const handleDeleteRoom = async (roomId: number) => {
     try {
-      // STEP 1: Send deletion request to backend
-      const result = await roomService.deleteRoom(roomId.toString());
+      // STEP 1: Send deletion request to backend with cookie authentication
+      const response = await fetch(`/api/rooms/${roomId}`, {
+        method: 'DELETE',
+        credentials: 'include' // ✅ Include session cookie
+      });
       
-      if (result.success) {
+      if (response.ok) {
         // STEP 2: Remove the room from local state immediately
         // This provides immediate feedback without waiting for a server refresh
         setRooms(rooms.filter(room => room.id !== roomId));
@@ -171,9 +200,10 @@ const AgentDashboard = () => {
         });
       } else {
         // Handle deletion failure
+        const errorData = await response.json();
         toast({
           title: "Error",
-          description: result.error || "Failed to delete room. Please try again.",
+          description: errorData.message || "Failed to delete room. Please try again.",
           variant: "destructive"
         });
       }
@@ -188,18 +218,46 @@ const AgentDashboard = () => {
   };
 
   // =============================================================================
-  // LOGOUT HANDLER
+  // LOGOUT HANDLER (COOKIE-BASED)
   // =============================================================================
-  // Handles user logout by clearing authentication data and redirecting
-  const handleLogout = () => {
-    // Clear all authentication data from localStorage
-    agentAuthService.logout();
+  // Handles user logout by clearing session cookie and redirecting
+  const handleLogout = async () => {
+    try {
+      // STEP 1: Send logout request to backend to clear session cookie
+      await fetch('/auth/logout', {
+        method: 'POST',
+        credentials: 'include' // ✅ Include session cookie for logout
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+    
+    // STEP 2: Show logout message and redirect regardless of API response
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
-    // Redirect to home page
     navigate("/");
+  };
+
+  // =============================================================================
+  // REGISTRATION SUCCESS HANDLER
+  // =============================================================================
+  // Called when agent completes registration form
+  const handleRegistrationSuccess = () => {
+    // STEP 1: Refetch agent profile after successful registration
+    fetch('/api/agents/profile', {
+      method: 'GET',
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(profileData => {
+      setAgentData(profileData);
+      setActiveTab("overview"); // Switch to overview tab
+    })
+    .catch(error => {
+      console.error("Failed to fetch profile after registration:", error);
+    });
   };
 
   // =============================================================================
@@ -265,14 +323,19 @@ const AgentDashboard = () => {
         </div>
 
         {/* =============================================================================
-            DASHBOARD TABS SECTION
+            REGISTRATION FORM OR DASHBOARD TABS
             ============================================================================= */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="rooms">My Rooms</TabsTrigger>
-            <TabsTrigger value="add-room">Add Room</TabsTrigger>
-          </TabsList>
+        {activeTab === "registration" ? (
+          // Show registration form if user needs to complete profile
+          <AgentRegistration onSuccess={handleRegistrationSuccess} />
+        ) : (
+          // Show regular dashboard tabs for registered agents
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="rooms">My Rooms</TabsTrigger>
+              <TabsTrigger value="add-room">Add Room</TabsTrigger>
+            </TabsList>
           
           {/* =============================================================================
               OVERVIEW TAB - Dashboard Statistics and Recent Activity
@@ -371,7 +434,8 @@ const AgentDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        )}
       </div>
     </div>
   );
