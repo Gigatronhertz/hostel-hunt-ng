@@ -13,7 +13,6 @@ import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashboard";
 import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
-import Register from "./pages/register";
 
 
 const queryClient = new QueryClient();
@@ -28,7 +27,6 @@ const App = () => (
           <div className="flex-1 flex flex-col">
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/register" element={<Register />} />
               <Route path="/rooms" element={<Hostels />} />
               <Route path="/room/:id" element={<HostelDetail />} />
               <Route path="/about" element={<About />} />
