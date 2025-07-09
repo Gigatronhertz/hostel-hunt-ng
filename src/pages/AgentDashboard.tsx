@@ -34,77 +34,56 @@ const AgentDashboard = () => {
   const [rooms, setRooms] = useState<Room[]>([]);          // Agent's room listings
 
   // =============================================================================
-  // COOKIE-BASED AUTHENTICATION CHECK AND DATA INITIALIZATION
+  // AUTHENTICATION CHECK - BACKEND HANDLES REGISTRATION REDIRECT
   // =============================================================================
-  // New simplified flow:
-  // 1. Check authentication with cookie-based endpoint
-  // 2. If authenticated: fetch user profile and rooms
-  // 3. If not authenticated: redirect to registration form
+  // 1. Make auth check request - backend will redirect if registration needed
+  // 2. If auth successful: fetch profile and rooms data
+  // 3. Show dashboard with data or empty state
   useEffect(() => {
-    const initializeDashboard = async () => {
+    const checkAuth = async () => {
       try {
-        // STEP 1: Check authentication status with cookie-based endpoint
-        // Backend endpoint: POST /auth/login (with credentials: 'include')
-        // This will use the session cookie set by Google OAuth
+        // Backend auth check - backend handles registration redirect
         const authResponse = await fetch('/auth/login', {
           method: 'POST',
-          credentials: 'include', // ✅ Include session cookie
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           }
         });
 
         if (authResponse.ok) {
-          // STEP 2: User is authenticated, fetch their profile
-          const profileResponse = await fetch('/api/agents/profile', {
-            method: 'GET',
-            credentials: 'include' // ✅ Include session cookie
-          });
+          // Try to fetch profile and rooms
+          const [profileResponse, roomsResponse] = await Promise.all([
+            fetch('/api/agents/profile', {
+              method: 'GET',
+              credentials: 'include'
+            }),
+            fetch('/api/agents/rooms', {
+              method: 'GET', 
+              credentials: 'include'
+            })
+          ]);
 
           if (profileResponse.ok) {
             const profileData = await profileResponse.json();
             setAgentData(profileData);
-
-            // STEP 3: Fetch agent's room listings
-            const roomsResponse = await fetch('/api/agents/rooms', {
-              method: 'GET',
-              credentials: 'include' // ✅ Include session cookie
-            });
-
-            if (roomsResponse.ok) {
-              const roomsData = await roomsResponse.json();
-              setRooms(roomsData);
-            }
-          } else {
-            // STEP 4: Authenticated but no profile - need registration
-            // This means Google OAuth worked but agent needs to complete profile
-            setActiveTab("registration");
           }
-        } else {
-          // STEP 5: Not authenticated - redirect to login
-          toast({
-            title: "Authentication Required",
-            description: "Please login with Google to access your dashboard.",
-            variant: "destructive"
-          });
-          navigate("/agent-login");
-          return;
+
+          if (roomsResponse.ok) {
+            const roomsData = await roomsResponse.json();
+            setRooms(roomsData);
+          }
         }
+        // If auth fails, just show empty dashboard - backend handles redirects
       } catch (error) {
-        console.error("Dashboard initialization error:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load dashboard data.",
-          variant: "destructive"
-        });
-        navigate("/agent-login");
+        console.error("Auth check error:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    initializeDashboard();
-  }, [navigate, toast]);
+    checkAuth();
+  }, []);
 
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
@@ -323,13 +302,9 @@ const AgentDashboard = () => {
         </div>
 
         {/* =============================================================================
-            REGISTRATION FORM OR DASHBOARD TABS
+            DASHBOARD TABS - BACKEND HANDLES REGISTRATION REDIRECT
             ============================================================================= */}
-        {activeTab === "registration" ? (
-          // Show registration form if user needs to complete profile
-          <AgentRegistration onSuccess={handleRegistrationSuccess} />
-        ) : (
-          // Show regular dashboard tabs for registered agents
+        {/* Always show dashboard - backend redirects if registration needed */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -435,7 +410,6 @@ const AgentDashboard = () => {
             </Card>
           </TabsContent>
           </Tabs>
-        )}
       </div>
     </div>
   );

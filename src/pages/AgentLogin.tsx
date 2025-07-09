@@ -18,12 +18,8 @@ const AgentLogin = () => {
   // Single authentication method - Google OAuth only
   // Backend handles the complete OAuth flow and redirects to dashboard
   const handleGoogleAuth = () => {
-    // DEPLOYMENT NOTE: Change this URL to your deployed backend URL
-    // Example: https://your-backend.render.com/auth/google
-    // Backend will:
-    // 1. Handle Google OAuth flow
-    // 2. Create session cookie
-    // 3. Redirect directly to /agent-dashboard
+    // Backend will handle OAuth and redirect to dashboard
+    // Dashboard will then check auth status with backend
     window.location.href = "https://hostelng.onrender.com/auth/google";
   };
 
