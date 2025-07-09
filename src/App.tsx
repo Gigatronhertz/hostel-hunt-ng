@@ -13,7 +13,7 @@ import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashboard";
 import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
-import GoogleCallback from "./components/auth/GoogleCallback";
+
 
 const queryClient = new QueryClient();
 
@@ -33,7 +33,6 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/agent-login" element={<AgentLogin />} />
               <Route path="/agent-dashboard" element={<AgentDashboard />} />
-              <Route path="/auth/google/callback" element={<GoogleCallback />} />
               <Route path="/docs" element={<Documentation />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
