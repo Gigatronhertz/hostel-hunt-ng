@@ -19,11 +19,8 @@ import DashboardStats from "@/components/dashboard/DashboardStats";
 import RoomCard, { Room } from "@/components/dashboard/RoomCard";
 import RoomForm, { RoomFormData } from "@/components/dashboard/RoomForm";
 import { MediaFile } from "@/components/MediaUpload";
-<<<<<<< HEAD
+
 //import AgentRegistration from "@/components/auth/AgentRegistration";
-=======
-import AgentRegistration from "@/components/auth/AgentRegistration";
->>>>>>> cc60ff5826264dcb1d3efdf3795231e61cedbecd
 
 const AgentDashboard = () => {
   const { toast } = useToast();
