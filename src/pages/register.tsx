@@ -36,7 +36,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
   } catch (error) {
     console.error('Error creating user:', error);
-    alert('Something went wrong. Please try again.');
+    alert(error);
   }
 };
 
