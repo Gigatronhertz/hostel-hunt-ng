@@ -121,7 +121,7 @@ const handleCreateRoom = async (
       videos: videoUrls,
     };
 
-    const response = await fetch("/create-room", {
+    const response = await fetch("https://hostelng.onrender.com/create-rooms", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -262,7 +262,7 @@ const handleCreateRoom = async (
           <p className="text-muted-foreground">
             Manage your room listings and track performance
           </p>
-        </div>
+        </div> 
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
