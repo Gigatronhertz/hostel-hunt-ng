@@ -77,7 +77,7 @@ const AgentDashboard = () => {
         }
       } catch (error) {
         console.error("Auth check failed:", error);
-        navigate("/login"); // Redirect to login on error
+        navigate("/agent-login"); // Redirect to login on error
       } finally {
         setLoading(false);
       }
