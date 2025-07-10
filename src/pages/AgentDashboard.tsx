@@ -78,101 +78,101 @@ const AgentDashboard = () => {
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
   // =============================================================================
-  const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
-    console.log("Creating room:", { ...formData, images, videos });
+  // const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
+  //   console.log("Creating room:", { ...formData, images, videos });
 
-    try {
-      const uploadData = new FormData();
+  //   try {
+  //     const uploadData = new FormData();
       
-      // Add form fields
-      Object.entries(formData).forEach(([key, value]) => {
-        uploadData.append(key, value.toString());
-      });
+  //     // Add form fields
+  //     Object.entries(formData).forEach(([key, value]) => {
+  //       uploadData.append(key, value.toString());
+  //     });
 
-      // Add image files
-      images.forEach((img) => {
-        uploadData.append('images', img.file);
-      });
+  //     // Add image files
+  //     images.forEach((img) => {
+  //       uploadData.append('images', img.file);
+  //     });
 
-      // Add video files
-      videos.forEach((vid) => {
-        uploadData.append('videos', vid.file);
-      });
+  //     // Add video files
+  //     videos.forEach((vid) => {
+  //       uploadData.append('videos', vid.file);
+  //     });
 
-      const response = await fetch('/api/rooms', {
-        method: 'POST',
-        credentials: 'include',
-        body: uploadData
-      });
+  //     const response = await fetch('/api/rooms', {
+  //       method: 'POST',
+  //       credentials: 'include',
+  //       body: uploadData
+  //     });
 
-      if (response.ok) {
-        toast({
-          title: "Room Created!",
-          description: "Your room has been successfully listed with media files.",
-        });
+  //     if (response.ok) {
+  //       toast({
+  //         title: "Room Created!",
+  //         description: "Your room has been successfully listed with media files.",
+  //       });
         
-        const roomsResponse = await fetch('/api/agents/rooms', {
-          method: 'GET',
-          credentials: 'include'
-        });
+  //       const roomsResponse = await fetch('/api/agents/rooms', {
+  //         method: 'GET',
+  //         credentials: 'include'
+  //       });
         
-        if (roomsResponse.ok) {
-          const roomsData = await roomsResponse.json();
-          setRooms(roomsData);
-        }
+  //       if (roomsResponse.ok) {
+  //         const roomsData = await roomsResponse.json();
+  //         setRooms(roomsData);
+  //       }
         
-        setActiveTab("rooms");
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to create room. Please try again.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error("Room creation error:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
+  //       setActiveTab("rooms");
+  //     } else {
+  //       const errorData = await response.json();
+  //       toast({
+  //         title: "Error",
+  //         description: errorData.message || "Failed to create room. Please try again.",
+  //         variant: "destructive"
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Room creation error:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "An unexpected error occurred. Please try again.",
+  //       variant: "destructive"
+  //     });
+  //   }
+  // };
 
   // =============================================================================
-  // ROOM DELETION HANDLER (COOKIE-BASED)
-  // =============================================================================
-  const handleDeleteRoom = async (roomId: number) => {
-    try {
-      const response = await fetch(`/api/rooms/${roomId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
+  // // ROOM DELETION HANDLER (COOKIE-BASED)
+  // // =============================================================================
+  // const handleDeleteRoom = async (roomId: number) => {
+  //   try {
+  //     const response = await fetch(`/api/rooms/${roomId}`, {
+  //       method: 'DELETE',
+  //       credentials: 'include'
+  //     });
       
-      if (response.ok) {
-        setRooms(rooms.filter(room => room.id !== roomId));
-        toast({
-          title: "Room Deleted",
-          description: "Room has been removed from your listings.",
-        });
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to delete room. Please try again.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error("Room deletion error:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
+  //     if (response.ok) {
+  //       setRooms(rooms.filter(room => room.id !== roomId));
+  //       toast({
+  //         title: "Room Deleted",
+  //         description: "Room has been removed from your listings.",
+  //       });
+  //     } else {
+  //       const errorData = await response.json();
+  //       toast({
+  //         title: "Error",
+  //         description: errorData.message || "Failed to delete room. Please try again.",
+  //         variant: "destructive"
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Room deletion error:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "An unexpected error occurred. Please try again.",
+  //       variant: "destructive"
+  //     });
+  //   }
+  // };
 
   // =============================================================================
   // LOGOUT HANDLER (COOKIE-BASED)
