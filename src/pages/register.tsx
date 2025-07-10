@@ -13,29 +13,34 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      const response = await fetch('https://hostelng.onrender.com/create-user', {
-        method: 'POST',
-        credentials: 'include', // ✅ send cookies if needed
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
+  try {
+    const response = await fetch('/create-user', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
 
-      if (!response.ok) throw new Error('Submission failed');
-
-      const result = await response.json();
-      alert('User created successfully!');
-      console.log(result);
-    } catch (error) {
-      alert('Failed to create user.');
-      console.error(error);
+    if (!response.ok) {
+      throw new Error('Submission failed');
     }
-  };
+
+    const result = await response.json();
+    console.log('User created:', result);
+
+    // ✅ Redirect to dashboard
+    window.location.href = '/dashboard';
+  } catch (error) {
+    console.error(error);
+    alert('Failed to create user. Please try again.');
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
