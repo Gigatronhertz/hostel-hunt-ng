@@ -20,7 +20,7 @@ const AgentLogin = () => {
   const handleGoogleAuth = () => {
     // Backend will handle OAuth and redirect to dashboard
     // Dashboard will then check auth status with backend
-    window.location.href = "https://hostelng.onrender.com";
+    window.location.href = "https://hostelng.onrender.com/auth/google";
   };
 
   // =============================================================================
