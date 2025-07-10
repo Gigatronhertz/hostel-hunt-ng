@@ -78,7 +78,7 @@ const AgentDashboard = () => {
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
   // =============================================================================
-  // const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
+   const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
   //   console.log("Creating room:", { ...formData, images, videos });
 
   //   try {
@@ -138,7 +138,7 @@ const AgentDashboard = () => {
   //       variant: "destructive"
   //     });
   //   }
-  // };
+   };
 
   // =============================================================================
   // // ROOM DELETION HANDLER (COOKIE-BASED)
