@@ -16,7 +16,7 @@ const Register = () => {
 const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  fetch('https://hostelng.onrender.com/onboardr', {
+  fetch('https://hostelng.onrender.com/onboard', {
     method: 'POST',
     credentials: 'include',
     headers: {
