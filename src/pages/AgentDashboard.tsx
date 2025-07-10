@@ -174,38 +174,38 @@ useEffect(() => {
   // =============================================================================
   // Handles the deletion of existing room listings using cookie authentication
   const handleDeleteRoom = async (roomId: number) => {
-    try {
-      // STEP 1: Send deletion request to backend with cookie authentication
-      const response = await fetch('/api/rooms/${roomId}', {
-        method: 'DELETE',
-        credentials: 'include' // ✅ Include session cookie
-      });
+    // try {
+    //   // STEP 1: Send deletion request to backend with cookie authentication
+    //   const response = await fetch('/api/rooms/${roomId}', {
+    //     method: 'DELETE',
+    //     credentials: 'include' // ✅ Include session cookie
+    //   });
       
-      if (response.ok) {
-        // STEP 2: Remove the room from local state immediately
-        // This provides immediate feedback without waiting for a server refresh
-        setRooms(rooms.filter(room => room.id !== roomId));
-        toast({
-          title: "Room Deleted",
-          description: "Room has been removed from your listings.",
-        });
-      } else {
-        // Handle deletion failure
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to delete room. Please try again.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error("Room deletion error:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
-    }
+    //   if (response.ok) {
+    //     // STEP 2: Remove the room from local state immediately
+    //     // This provides immediate feedback without waiting for a server refresh
+    //     setRooms(rooms.filter(room => room.id !== roomId));
+    //     toast({
+    //       title: "Room Deleted",
+    //       description: "Room has been removed from your listings.",
+    //     });
+    //   } else {
+    //     // Handle deletion failure
+    //     const errorData = await response.json();
+    //     toast({
+    //       title: "Error",
+    //       description: errorData.message || "Failed to delete room. Please try again.",
+    //       variant: "destructive"
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error("Room deletion error:", error);
+    //   toast({
+    //     title: "Error",
+    //     description: "An unexpected error occurred. Please try again.",
+    //     variant: "destructive"
+    //   });
+    // }
   };
 
   // =============================================================================
