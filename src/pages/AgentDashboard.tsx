@@ -34,57 +34,46 @@ const AgentDashboard = () => {
   // =============================================================================
   // AUTHENTICATION CHECK - USING FETCH WITH CREDENTIALS
   // =============================================================================
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // STEP 1: Fetch authenticated user profile
-        const userResponse = await fetch('https://hostelng.onrender.com/user', {
-          method: 'GET',
-          credentials: 'include', // ✅ include session cookie
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          console.log("Authenticated user:", userData);
-
-          // STEP 2: Save user profile to state
-          setAgentData({
-            name: userData.name,
-            email: userData.email,
-            phoneNumber: userData.phoneNumber,
-            isVerified: userData.isVerified,
-            businessName: userData.businessName,
-            googleId: userData.googleId,
-            address: userData.address
-          });
-
-          // STEP 3: Fetch the agent's room listings
-          const roomsResponse = await fetch('/api/agents/rooms', {
-            method: 'GET',
-            credentials: 'include'
-          });
-
-          if (roomsResponse.ok) {
-            const roomsData = await roomsResponse.json();
-            setRooms(roomsData);
-          }
-        } else {
-          console.warn("no rooms added");
-          // navigate("/login"); // Redirect to login if not authenticated
+ useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      // STEP 1: Fetch authenticated user profile
+      const userResponse = await fetch('https://hostelng.onrender.com/user', {
+        method: 'GET',
+        credentials: 'include', // ✅ include session cookie
+        headers: {
+          'Content-Type': 'application/json'
         }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        navigate("/agent-login"); // Redirect to login on error
-      } finally {
-        setLoading(false);
-      }
-    };
+      });
 
-    checkAuth();
-  }, [navigate]);
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        console.log("Authenticated user:", userData);
+
+        // STEP 2: Save user profile to state
+        setAgentData({
+          name: userData.name,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+          isVerified: userData.isVerified,
+          businessName: userData.businessName,
+          googleId: userData.googleId,
+          address: userData.address
+        });
+      } else {
+        console.warn("User not authenticated or session expired");
+        // navigate("/login"); // Optional redirect
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      navigate("/agent-login"); // Redirect to login on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  checkAuth();
+}, [navigate]);
 
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
