@@ -38,7 +38,7 @@ const AgentDashboard = () => {
     const checkAuth = async () => {
       try {
         // STEP 1: Fetch authenticated user profile
-        const userResponse = await fetch('/user', {
+        const userResponse = await fetch('https://hostelng.onrender.com//user', {
           method: 'GET',
           credentials: 'include', // ✅ include session cookie
           headers: {
