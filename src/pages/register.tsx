@@ -13,31 +13,33 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  try {
-    const response = await fetch("https://hostelng.onrender.com/create-user/", {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
+  fetch('https://hostelng.onrender.com/create-user', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(text || 'Submission failed');
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('User created successfully:', data);
+      window.location.href = '/agent-dashboard';
+    })
+    .catch(error => {
+      console.error('Failed to create user:', error.message);
+      alert('Failed to register. ' + error.message);
     });
-
-    // ✅ If status is 200, redirect
-    if (response.status === 200) {
-      console.log('User successfully created');
-      window.location.href = '/dashboard';
-    } else {
-      const errorText = await response.text();
-      throw new Error(`Unexpected response: ${response.status} - ${errorText}`);
-    }
-  } catch (error) {
-    console.error('Error creating user:', error);
-    alert(error);
-  }
 };
 
 
