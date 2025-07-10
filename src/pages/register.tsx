@@ -17,7 +17,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   try {
-    const response = await fetch('/create-user', {
+    const response = await fetch('https://hostelng.onrender.com/create-user', {
       method: 'POST',
       credentials: 'include',
       headers: {
