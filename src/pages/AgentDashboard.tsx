@@ -426,3 +426,4 @@ useEffect(() => {
     </div>
   );
 };
+export default AgentDashboard;
