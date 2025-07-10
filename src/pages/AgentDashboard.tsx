@@ -171,7 +171,7 @@ useEffect(() => {
   const handleDeleteRoom = async (roomId: number) => {
     try {
       // STEP 1: Send deletion request to backend with cookie authentication
-      const response = await fetch(/api/rooms/${roomId}, {
+      const response = await fetch(`/api/rooms/${roomId}, {
         method: 'DELETE',
         credentials: 'include' // ✅ Include session cookie
       });
