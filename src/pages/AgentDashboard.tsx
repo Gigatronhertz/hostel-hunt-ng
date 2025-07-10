@@ -5,11 +5,6 @@
 // It includes authentication checks, data fetching, and room management functionality
 // =============================================================================
 
-
-
-
-
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,8 +19,6 @@ import RoomCard, { Room } from "@/components/dashboard/RoomCard";
 import RoomForm, { RoomFormData } from "@/components/dashboard/RoomForm";
 import { MediaFile } from "@/components/MediaUpload";
 
-//import AgentRegistration from "@/components/auth/AgentRegistration";
-
 const AgentDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -39,73 +32,67 @@ const AgentDashboard = () => {
   const [rooms, setRooms] = useState<Room[]>([]);          // Agent's room listings
 
   // =============================================================================
-  // AUTHENTICATION CHECK - BACKEND HANDLES REGISTRATION REDIRECT
+  // AUTHENTICATION CHECK - USING FETCH WITH CREDENTIALS
   // =============================================================================
-  // 1. Make auth check request - backend will redirect if registration needed
-  // 2. If auth successful: fetch profile and rooms data
-  // 3. Show dashboard with data or empty state
-useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      // STEP 1: Fetch authenticated user profile
-      const userResponse = await fetch('/user', {
-        method: 'GET',
-        credentials: 'include', // ✅ include session cookie
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-
-        // Optional: log user data
-        console.log("Authenticated user:", userData);
-
-        // STEP 2: Save user profile to state
-        setAgentData({
-          name: userData.name,
-          email: userData.email,
-          phoneNumber: userData.phoneNumber,
-          isVerified: userData.isVerified,
-          businessName: userData.businessName,
-          googleId: userData.googleId,
-          address: userData.address
-        });
-
-        // STEP 3: Fetch the agent's room listings
-        const roomsResponse = await fetch('/api/agents/rooms', {
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // STEP 1: Fetch authenticated user profile
+        const userResponse = await fetch('/user', {
           method: 'GET',
-          credentials: 'include'
+          credentials: 'include', // ✅ include session cookie
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
 
-        if (roomsResponse.ok) {
-          const roomsData = await roomsResponse.json();
-          setRooms(roomsData);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          console.log("Authenticated user:", userData);
+
+          // STEP 2: Save user profile to state
+          setAgentData({
+            name: userData.name,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber,
+            isVerified: userData.isVerified,
+            businessName: userData.businessName,
+            googleId: userData.googleId,
+            address: userData.address
+          });
+
+          // STEP 3: Fetch the agent's room listings
+          const roomsResponse = await fetch('/api/agents/rooms', {
+            method: 'GET',
+            credentials: 'include'
+          });
+
+          if (roomsResponse.ok) {
+            const roomsData = await roomsResponse.json();
+            setRooms(roomsData);
+          }
+        } else {
+          console.warn("User not authenticated or session expired");
+          navigate("/login"); // Redirect to login if not authenticated
         }
-      } else {
-        console.warn("User not authenticated or session expired");
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        navigate("/login"); // Redirect to login on error
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Auth check failed:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  checkAuth();
-}, []);
-
+    checkAuth();
+  }, [navigate]);
 
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
   // =============================================================================
-  // Handles the creation of new room listings with file uploads using cookies
   const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
     console.log("Creating room:", { ...formData, images, videos });
 
     try {
-      // STEP 1: Create FormData object for multipart upload
       const uploadData = new FormData();
       
       // Add form fields
@@ -123,21 +110,18 @@ useEffect(() => {
         uploadData.append('videos', vid.file);
       });
 
-      // STEP 2: Send room creation request to backend with cookie authentication
       const response = await fetch('/api/rooms', {
         method: 'POST',
-        credentials: 'include', // ✅ Include session cookie
+        credentials: 'include',
         body: uploadData
       });
 
       if (response.ok) {
-        // STEP 3: Show success message to user
         toast({
           title: "Room Created!",
           description: "Your room has been successfully listed with media files.",
         });
         
-        // STEP 4: Refresh the rooms list to show the new room
         const roomsResponse = await fetch('/api/agents/rooms', {
           method: 'GET',
           credentials: 'include'
@@ -148,10 +132,8 @@ useEffect(() => {
           setRooms(roomsData);
         }
         
-        // STEP 5: Switch to rooms tab to show the newly created room
         setActiveTab("rooms");
       } else {
-        // Handle creation failure
         const errorData = await response.json();
         toast({
           title: "Error",
@@ -172,58 +154,50 @@ useEffect(() => {
   // =============================================================================
   // ROOM DELETION HANDLER (COOKIE-BASED)
   // =============================================================================
-  // Handles the deletion of existing room listings using cookie authentication
   const handleDeleteRoom = async (roomId: number) => {
-    // try {
-    //   // STEP 1: Send deletion request to backend with cookie authentication
-    //   const response = await fetch('/api/rooms/${roomId}', {
-    //     method: 'DELETE',
-    //     credentials: 'include' // ✅ Include session cookie
-    //   });
+    try {
+      const response = await fetch(`/api/rooms/${roomId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
       
-    //   if (response.ok) {
-    //     // STEP 2: Remove the room from local state immediately
-    //     // This provides immediate feedback without waiting for a server refresh
-    //     setRooms(rooms.filter(room => room.id !== roomId));
-    //     toast({
-    //       title: "Room Deleted",
-    //       description: "Room has been removed from your listings.",
-    //     });
-    //   } else {
-    //     // Handle deletion failure
-    //     const errorData = await response.json();
-    //     toast({
-    //       title: "Error",
-    //       description: errorData.message || "Failed to delete room. Please try again.",
-    //       variant: "destructive"
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Room deletion error:", error);
-    //   toast({
-    //     title: "Error",
-    //     description: "An unexpected error occurred. Please try again.",
-    //     variant: "destructive"
-    //   });
-    // }
+      if (response.ok) {
+        setRooms(rooms.filter(room => room.id !== roomId));
+        toast({
+          title: "Room Deleted",
+          description: "Room has been removed from your listings.",
+        });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "Failed to delete room. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Room deletion error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // =============================================================================
   // LOGOUT HANDLER (COOKIE-BASED)
   // =============================================================================
-  // Handles user logout by clearing session cookie and redirecting
   const handleLogout = async () => {
     try {
-      // STEP 1: Send logout request to backend to clear session cookie
       await fetch('/auth/logout', {
         method: 'POST',
-        credentials: 'include' // ✅ Include session cookie for logout
+        credentials: 'include'
       });
     } catch (error) {
       console.error("Logout error:", error);
     }
     
-    // STEP 2: Show logout message and redirect regardless of API response
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
@@ -232,29 +206,8 @@ useEffect(() => {
   };
 
   // =============================================================================
-  // REGISTRATION SUCCESS HANDLER
-  // =============================================================================
-  // Called when agent completes registration form
-  const handleRegistrationSuccess = () => {
-    // STEP 1: Refetch agent profile after successful registration
-    fetch('/api/agents/profile', {
-      method: 'GET',
-      credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(profileData => {
-      setAgentData(profileData);
-      setActiveTab("overview"); // Switch to overview tab
-    })
-    .catch(error => {
-      console.error("Failed to fetch profile after registration:", error);
-    });
-  };
-
-  // =============================================================================
   // LOADING STATE DISPLAY
   // =============================================================================
-  // Show loading spinner while initializing dashboard data
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -269,7 +222,6 @@ useEffect(() => {
   // =============================================================================
   // CALCULATE DASHBOARD STATISTICS
   // =============================================================================
-  // Calculate total views and booking requests across all rooms
   const totalViews = rooms.reduce((sum, room) => sum + room.views, 0);
   const totalBookingRequests = rooms.reduce((sum, room) => sum + room.bookingRequests, 0);
 
@@ -278,16 +230,13 @@ useEffect(() => {
   // =============================================================================
   return (
     <div className="min-h-screen bg-background">
-      {/* =============================================================================
-          HEADER SECTION
-          ============================================================================= */}
+      {/* HEADER SECTION */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
             Hostel.ng
           </Link>
           <div className="flex items-center space-x-4">
-            {/* Display agent name if available */}
             <span className="text-sm text-muted-foreground">
               Welcome, {agentData?.name || "Agent"}
             </span>
@@ -299,13 +248,11 @@ useEffect(() => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Back to home navigation */}
         <Link to="/" className="inline-flex items-center text-primary hover:underline mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
 
-        {/* Dashboard title and description */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Agent Dashboard</h1>
           <p className="text-muted-foreground">
@@ -313,29 +260,21 @@ useEffect(() => {
           </p>
         </div>
 
-        {/* =============================================================================
-            DASHBOARD TABS - BACKEND HANDLES REGISTRATION REDIRECT
-            ============================================================================= */}
-        {/* Always show dashboard - backend redirects if registration needed */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="rooms">My Rooms</TabsTrigger>
-              <TabsTrigger value="add-room">Add Room</TabsTrigger>
-            </TabsList>
-          
-          {/* =============================================================================
-              OVERVIEW TAB - Dashboard Statistics and Recent Activity
-              ============================================================================= */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="rooms">My Rooms</TabsTrigger>
+            <TabsTrigger value="add-room">Add Room</TabsTrigger>
+          </TabsList>
+        
+          {/* OVERVIEW TAB */}
           <TabsContent value="overview" className="space-y-6">
-            {/* Display dashboard statistics */}
             <DashboardStats
               totalRooms={rooms.length}
               totalViews={totalViews}
               totalBookingRequests={totalBookingRequests}
             />
 
-            {/* Recent activity section */}
             <Card>
               <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
@@ -343,7 +282,6 @@ useEffect(() => {
               <CardContent>
                 <div className="space-y-4">
                   {rooms.length > 0 ? (
-                    // Show recent rooms activity
                     rooms.slice(0, 3).map((room) => (
                       <div key={room.id} className="flex items-center space-x-4">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -356,7 +294,6 @@ useEffect(() => {
                       </div>
                     ))
                   ) : (
-                    // Show empty state when no rooms exist
                     <div className="text-center py-8 text-muted-foreground">
                       <p>No rooms listed yet. Start by adding your first room!</p>
                       <Button 
@@ -372,9 +309,7 @@ useEffect(() => {
             </Card>
           </TabsContent>
           
-          {/* =============================================================================
-              ROOMS TAB - Display All Agent's Room Listings
-              ============================================================================= */}
+          {/* ROOMS TAB */}
           <TabsContent value="rooms" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">My Rooms</h2>
@@ -386,7 +321,6 @@ useEffect(() => {
             
             <div className="grid gap-6">
               {rooms.length > 0 ? (
-                // Display all rooms using the RoomCard component
                 rooms.map((room) => (
                   <RoomCard
                     key={room.id}
@@ -395,7 +329,6 @@ useEffect(() => {
                   />
                 ))
               ) : (
-                // Show empty state when no rooms exist
                 <div className="text-center py-12">
                   <p className="text-muted-foreground mb-4">No rooms listed yet</p>
                   <Button onClick={() => setActiveTab("add-room")}>
@@ -407,23 +340,21 @@ useEffect(() => {
             </div>
           </TabsContent>
           
-          {/* =============================================================================
-              ADD ROOM TAB - Room Creation Form
-              ============================================================================= */}
+          {/* ADD ROOM TAB */}
           <TabsContent value="add-room" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Add New Room</CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Room creation form component handles all form logic */}
                 <RoomForm onSubmit={handleCreateRoom} />
               </CardContent>
             </Card>
           </TabsContent>
-          </Tabs>
+        </Tabs>
       </div> 
     </div>
   );
 };
+
 export default AgentDashboard;
