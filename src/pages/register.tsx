@@ -26,20 +26,20 @@ const handleSubmit = async (e: React.FormEvent) => {
       body: JSON.stringify(formData)
     });
 
-    if (!response.ok) {
-      throw new Error('Submission failed');
+    // ✅ If status is 200, redirect
+    if (response.status === 200) {
+      console.log('User successfully created');
+      window.location.href = '/dashboard';
+    } else {
+      const errorText = await response.text();
+      throw new Error(`Unexpected response: ${response.status} - ${errorText}`);
     }
-
-    const result = await response.json();
-    console.log('User created:', result);
-
-    // ✅ Redirect to dashboard
-    window.location.href = '/agent-dashboard';
   } catch (error) {
-    console.error(error);
-    alert('Failed to create user. Please try again.');
+    console.error('Error creating user:', error);
+    alert('Something went wrong. Please try again.');
   }
 };
+
 
 
   return (
