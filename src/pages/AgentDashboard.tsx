@@ -78,67 +78,82 @@ const AgentDashboard = () => {
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
   // =============================================================================
-   const handleCreateRoom = async (formData: RoomFormData, images: MediaFile[], videos: MediaFile[]) => {
-  //   console.log("Creating room:", { ...formData, images, videos });
+const handleCreateRoom = async (
+  formData: RoomFormData,
+  images: MediaFile[],
+  videos: MediaFile[]
+) => {
+  const cloudName = "dw45dvti5";
+  const unsignedUploadPreset = "hostel.ng"; // ← Create in Cloudinary dashboard
 
-  //   try {
-  //     const uploadData = new FormData();
-      
-  //     // Add form fields
-  //     Object.entries(formData).forEach(([key, value]) => {
-  //       uploadData.append(key, value.toString());
-  //     });
+  try {
+    // Function to upload a file to Cloudinary
+    const uploadToCloudinary = async (file: File, resourceType: "image" | "video") => {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", unsignedUploadPreset);
 
-  //     // Add image files
-  //     images.forEach((img) => {
-  //       uploadData.append('images', img.file);
-  //     });
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
+        method: "POST",
+        body: data,
+      });
 
-  //     // Add video files
-  //     videos.forEach((vid) => {
-  //       uploadData.append('videos', vid.file);
-  //     });
+      const json = await res.json();
+      if (json.secure_url) return json.secure_url;
+      throw new Error("Upload failed: " + json.error?.message);
+    };
 
-  //     const response = await fetch('/api/rooms', {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       body: uploadData
-  //     });
+    // Upload images
+    const imageUrls = await Promise.all(
+      images.map((img) => uploadToCloudinary(img.file, "image"))
+    );
 
-  //     if (response.ok) {
-  //       toast({
-  //         title: "Room Created!",
-  //         description: "Your room has been successfully listed with media files.",
-  //       });
-        
-  //       const roomsResponse = await fetch('/api/agents/rooms', {
-  //         method: 'GET',
-  //         credentials: 'include'
-  //       });
-        
-  //       if (roomsResponse.ok) {
-  //         const roomsData = await roomsResponse.json();
-  //         setRooms(roomsData);
-  //       }
-        
-  //       setActiveTab("rooms");
-  //     } else {
-  //       const errorData = await response.json();
-  //       toast({
-  //         title: "Error",
-  //         description: errorData.message || "Failed to create room. Please try again.",
-  //         variant: "destructive"
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Room creation error:", error);
-  //     toast({
-  //       title: "Error",
-  //       description: "An unexpected error occurred. Please try again.",
-  //       variant: "destructive"
-  //     });
-  //   }
-   };
+    // Upload videos
+    const videoUrls = await Promise.all(
+      videos.map((vid) => uploadToCloudinary(vid.file, "video"))
+    );
+
+    // Construct payload
+    const payload = {
+      ...formData,
+      amenities: JSON.stringify(formData.amenities),
+      images: imageUrls,
+      videos: videoUrls,
+    };
+
+    const response = await fetch("/create-room", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      toast({
+        title: "Room Created!",
+        description: "Your room has been listed with Cloudinary media.",
+      });
+      setActiveTab("rooms");
+    } else {
+      const errorData = await response.json();
+      toast({
+        title: "Error",
+        description: errorData.message || "Failed to create room.",
+        variant: "destructive",
+      });
+    }
+  } catch (error: any) {
+    console.error("Error creating room:", error);
+    toast({
+      title: "Upload Error",
+      description: error.message || "Something went wrong.",
+      variant: "destructive",
+    });
+  }
+};
+
 
   // =============================================================================
   // // ROOM DELETION HANDLER (COOKIE-BASED)
