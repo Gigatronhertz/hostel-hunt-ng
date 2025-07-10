@@ -34,7 +34,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.log('User created:', result);
 
     // ✅ Redirect to dashboard
-    window.location.href = '/dashboard';
+    window.location.href = '/agent-dashboard';
   } catch (error) {
     console.error(error);
     alert('Failed to create user. Please try again.');
