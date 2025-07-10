@@ -143,7 +143,7 @@ const AgentDashboard = () => {
   // =============================================================================
   // // ROOM DELETION HANDLER (COOKIE-BASED)
   // // =============================================================================
-  // const handleDeleteRoom = async (roomId: number) => {
+   const handleDeleteRoom = async (roomId: number) => {
   //   try {
   //     const response = await fetch(`/api/rooms/${roomId}`, {
   //       method: 'DELETE',
@@ -172,7 +172,7 @@ const AgentDashboard = () => {
   //       variant: "destructive"
   //     });
   //   }
-  // };
+   };
 
   // =============================================================================
   // LOGOUT HANDLER (COOKIE-BASED)
