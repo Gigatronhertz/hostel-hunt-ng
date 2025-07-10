@@ -1,5 +1,3 @@
-import { useLocation } from "react-router-dom";
-
 import { useState } from 'react';
 
 const Register = () => {
@@ -19,8 +17,9 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://example.com/api/register', {
+      const response = await fetch('/create-user', {
         method: 'POST',
+        credentials: 'include', // ✅ send cookies if needed
         headers: {
           'Content-Type': 'application/json'
         },
@@ -28,11 +27,12 @@ const Register = () => {
       });
 
       if (!response.ok) throw new Error('Submission failed');
-      const data = await response.json();
-      alert('Registered successfully!');
-      console.log(data);
+
+      const result = await response.json();
+      alert('User created successfully!');
+      console.log(result);
     } catch (error) {
-      alert('An error occurred.');
+      alert('Failed to create user.');
       console.error(error);
     }
   };
