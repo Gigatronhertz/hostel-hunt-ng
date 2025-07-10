@@ -39,51 +39,58 @@ const AgentDashboard = () => {
   // 1. Make auth check request - backend will redirect if registration needed
   // 2. If auth successful: fetch profile and rooms data
   // 3. Show dashboard with data or empty state
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Backend auth check - backend handles registration redirect
-        const authResponse = await fetch('/auth/login', {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      // STEP 1: Fetch authenticated user profile
+      const userResponse = await fetch('/user', {
+        method: 'GET',
+        credentials: 'include', // ✅ include session cookie
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+
+        // Optional: log user data
+        console.log("Authenticated user:", userData);
+
+        // STEP 2: Save user profile to state
+        setAgentData({
+          name: userData.name,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+          isVerified: userData.isVerified,
+          businessName: userData.businessName,
+          googleId: userData.googleId,
+          address: userData.address
         });
 
-        if (authResponse.ok) {
-          // Try to fetch profile and rooms
-          const [profileResponse, roomsResponse] = await Promise.all([
-            fetch('/api/agents/profile', {
-              method: 'GET',
-              credentials: 'include'
-            }),
-            fetch('/api/agents/rooms', {
-              method: 'GET', 
-              credentials: 'include'
-            })
-          ]);
+        // STEP 3: Fetch the agent's room listings
+        const roomsResponse = await fetch('/api/agents/rooms', {
+          method: 'GET',
+          credentials: 'include'
+        });
 
-          if (profileResponse.ok) {
-            const profileData = await profileResponse.json();
-            setAgentData(profileData);
-          }
-
-          if (roomsResponse.ok) {
-            const roomsData = await roomsResponse.json();
-            setRooms(roomsData);
-          }
+        if (roomsResponse.ok) {
+          const roomsData = await roomsResponse.json();
+          setRooms(roomsData);
         }
-        // If auth fails, just show empty dashboard - backend handles redirects
-      } catch (error) {
-        console.error("Auth check error:", error);
-      } finally {
-        setLoading(false);
+      } else {
+        console.warn("User not authenticated or session expired");
       }
-    };
+    } catch (error) {
+      console.error("Auth check failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    checkAuth();
-  }, []);
+  checkAuth();
+}, []);
+
 
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
