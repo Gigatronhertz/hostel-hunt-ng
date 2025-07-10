@@ -52,13 +52,13 @@ const AgentDashboard = () => {
 
         // STEP 2: Save user profile to state
         setAgentData({
-          name: userData.name,
-          email: userData.email,
-          phoneNumber: userData.phoneNumber,
-          isVerified: userData.isVerified,
-          businessName: userData.businessName,
-          googleId: userData.googleId,
-          address: userData.address
+          name: userData.user.name,
+          email: userData.user.email,
+          phoneNumber: userData.user.phoneNumber,
+          isVerified: userData.user.isVerified,
+          businessName: userData.user.businessName,
+          googleId: userData.user.googleId,
+          address: userData.user.address
         });
       } else {
         console.warn("User not authenticated or session expired");
