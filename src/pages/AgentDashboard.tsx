@@ -61,26 +61,26 @@ const AgentDashboard = () => {
             address: userData.address
           });
 
-          // STEP 3: Fetch the agent's room listings
-          const roomsResponse = await fetch('/api/agents/rooms', {
-            method: 'GET',
-            credentials: 'include'
-          });
+      //     // STEP 3: Fetch the agent's room listings
+      //     const roomsResponse = await fetch('/api/agents/rooms', {
+      //       method: 'GET',
+      //       credentials: 'include'
+      //     });
 
-          if (roomsResponse.ok) {
-            const roomsData = await roomsResponse.json();
-            setRooms(roomsData);
-          }
-        } else {
-          console.warn("User not authenticated or session expired");
-          navigate("/login"); // Redirect to login if not authenticated
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        navigate("/login"); // Redirect to login on error
-      } finally {
-        setLoading(false);
-      }
+      //     if (roomsResponse.ok) {
+      //       const roomsData = await roomsResponse.json();
+      //       setRooms(roomsData);
+      //     }
+      //   } else {
+      //     console.warn("User not authenticated or session expired");
+      //     navigate("/login"); // Redirect to login if not authenticated
+      //   }
+      // } catch (error) {
+      //   console.error("Auth check failed:", error);
+      //   navigate("/login"); // Redirect to login on error
+      // } finally {
+      //   setLoading(false);
+      // }
     };
 
     checkAuth();
