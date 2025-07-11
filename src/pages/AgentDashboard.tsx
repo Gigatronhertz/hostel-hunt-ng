@@ -128,7 +128,7 @@ const handleCreateRoom = async (
       },
       credentials: "include",
       body: JSON.stringify(payload),
-      console.log(payload);
+   
     });
 
     if (response.ok) {
@@ -136,6 +136,7 @@ const handleCreateRoom = async (
         title: "Room Created!",
         description: "Your room has been listed with Cloudinary media.",
       });
+         console.log(payload);
       setActiveTab("rooms");
     } else {
       const errorData = await response.json();
