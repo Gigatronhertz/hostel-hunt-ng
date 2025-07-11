@@ -128,6 +128,7 @@ const handleCreateRoom = async (
       },
       credentials: "include",
       body: JSON.stringify(payload),
+      console.log(payload);
     });
 
     if (response.ok) {
