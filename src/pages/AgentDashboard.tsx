@@ -461,7 +461,8 @@ const handleUpdateRoom = async (
             <div className="grid gap-6">
               {rooms.length > 0 ? (
                 rooms.map((room) => (
-                <RoomCard room={room} onDelete={(id) => handleDeleteRoom(Number(id))} />
+               <RoomCard room={room} onDelete={(id) => handleDeleteRoom(id)} />
+
                 ))
               ) : (
                 <div className="text-center py-12">
