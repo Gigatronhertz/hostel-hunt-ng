@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Wifi, Zap, Droplets, Users, GraduationCap, Bed } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 const Index = () => {
   const [selectedCampus, setSelectedCampus] = useState("");
+  const [featuredRooms, setFeaturedRooms] = useState([]);
   const navigate = useNavigate();
 
   // Expanded campuses list to match Hostels page
@@ -32,52 +33,30 @@ const Index = () => {
   //   queryKey: ['featured-rooms'],
   //   queryFn: () => supabase.from('rooms').select('*').eq('featured', true).limit(6)
   // });
-  const featuredRooms = [
-    {
-      id: 1,
-      name: "Unity Lodge - Single Room",
-      campus: "University of Lagos",
-      location: "Akoka, Lagos",
-      yearlyPrice: 540000,
-      roomType: "Single Room",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=250&fit=crop",
-      rating: 4.8
-    },
-    {
-      id: 2,
-      name: "Scholar's Haven",
-      campus: "University of Ibadan",
-      location: "Bodija, Ibadan",
-      yearlyPrice: 456000,
-      roomType: "Two Bedroom",
-      bedCount: 2,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=250&fit=crop",
-      rating: 4.6
-    },
-    {
-      id: 5,
-      name: "Elite Residence",
-      campus: "University of Lagos",
-      location: "Yaba, Lagos",
-      yearlyPrice: 660000,
-      roomType: "One Bedroom",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=250&fit=crop",
-      rating: 4.9
-    },
-    {
-      id: 6,
-      name: "Campus View",
-      campus: "University of Ibadan",
-      location: "UI Gate, Ibadan",
-      yearlyPrice: 380000,
-      roomType: "Single Room",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop",
-      rating: 4.4
+
+
+useEffect(() => {
+  const fetchRooms = async () => {
+    try {
+      const res = await fetch("https://hostelng.onrender.com/all-rooms", {
+        credentials: "include", // only if you're using cookies/session
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch rooms");
+      }
+
+      const data = await res.json();
+      console.log("Fetched rooms:", data); // ✅ Just for debugging
+      setFeaturedRooms(data); // Update state
+    } catch (error) {
+      console.error("Error fetching rooms:", error);
     }
-  ];
+  };
+
+  fetchRooms();
+}, []);
+  
 
   const handleSearchRooms = () => {
     // BACKEND INTEGRATION: Filter rooms by campus using Supabase
@@ -87,6 +66,11 @@ const Index = () => {
       navigate('/rooms');
     }
   };
+
+
+
+
+  
 
   return (
     <div className="min-h-screen bg-background">
