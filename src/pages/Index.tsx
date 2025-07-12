@@ -36,8 +36,6 @@ const Index = () => {
   // });
 
 
-import { useState, useEffect } from "react";
-// ... other imports
 
 const Hostels = () => {
   const [searchParams] = useSearchParams();
