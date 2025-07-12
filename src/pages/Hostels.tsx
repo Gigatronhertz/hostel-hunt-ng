@@ -241,8 +241,8 @@ const Hostels = () => {
             <Link key={room._id} to={`/room/${room._id}`}>
               <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <div className="relative overflow-hidden rounded-t-lg">
-                <img
-  src={room.image || "/placeholder.jpg"}
+<img
+  src={room.images[0]}  // Changed from room.image to room.images[0]
   alt={room.name}
   className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
 />
