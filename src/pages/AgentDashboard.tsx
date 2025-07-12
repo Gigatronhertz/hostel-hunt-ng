@@ -119,46 +119,54 @@ const handleCreateRoom = async (
   videos: MediaFile[]
 ) => {
   const cloudName = "dw45dvti5";
-  const unsignedUploadPreset = "hostel.ng"; // ← Create in Cloudinary dashboard
+  const unsignedUploadPreset = "hostel.ng";
 
   try {
-    // Function to upload a file to Cloudinary
+    // Upload function
     const uploadToCloudinary = async (file: File, resourceType: "image" | "video") => {
       const data = new FormData();
       data.append("file", file);
       data.append("upload_preset", unsignedUploadPreset);
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
-        method: "POST",
-        body: data,
-      });
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
 
       const json = await res.json();
-  if (json.secure_url && json.public_id) {
-    return {
-      url: json.secure_url,
-      public_id: json.public_id
-    };
-  }
+      if (json.secure_url && json.public_id) {
+        return {
+          url: json.secure_url,
+          public_id: json.public_id,
+        };
+      }
       throw new Error("Upload failed: " + json.error?.message);
     };
 
-    // Upload images
-    const imageUrls = await Promise.all(
+    // Upload media
+    const uploadedImages = await Promise.all(
       images.map((img) => uploadToCloudinary(img.file, "image"))
     );
-
-    // Upload videos
-    const videoUrls = await Promise.all(
+    const uploadedVideos = await Promise.all(
       videos.map((vid) => uploadToCloudinary(vid.file, "video"))
     );
 
-    // Construct payload
+    // Collect public_ids separately
+    const public_ids = [
+      ...uploadedImages.map((media) => media.public_id),
+      ...uploadedVideos.map((media) => media.public_id),
+    ];
+
+    // Payload to backend
     const payload = {
       ...formData,
       amenities: JSON.stringify(formData.amenities),
-      images: imageUrls,
-      videos: videoUrls,
+      images: uploadedImages,
+      videos: uploadedVideos,
+      public_ids, // Include public_ids for backend cleanup/reference
     };
 
     const response = await fetch("https://hostelng.onrender.com/create-rooms", {
@@ -168,7 +176,6 @@ const handleCreateRoom = async (
       },
       credentials: "include",
       body: JSON.stringify(payload),
-   
     });
 
     if (response.ok) {
@@ -176,7 +183,7 @@ const handleCreateRoom = async (
         title: "Room Created!",
         description: "Your room has been listed with Cloudinary media.",
       });
-         console.log(payload);
+      console.log(payload);
       setActiveTab("rooms");
     } else {
       const errorData = await response.json();
