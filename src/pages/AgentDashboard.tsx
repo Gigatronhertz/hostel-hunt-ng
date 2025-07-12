@@ -293,7 +293,8 @@ const handleUpdateRoom = async (
   // =============================================================================
   // // ROOM DELETION HANDLER (COOKIE-BASED)
   // // =============================================================================
-   const handleDeleteRoom = async (roomId: number) => {
+  const handleDeleteRoom = async (roomId: number | string) => {
+  console.log("Dashboard → Deleting room ID:", roomId);
     try {
  fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
   method: 'DELETE',
