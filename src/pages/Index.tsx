@@ -310,5 +310,6 @@ const Hostels = () => {
     </div>
   );
 };
+}
 
 export default Index;
