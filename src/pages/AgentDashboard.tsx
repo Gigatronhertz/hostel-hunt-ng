@@ -201,34 +201,34 @@ const handleCreateRoom = async (
   // // ROOM DELETION HANDLER (COOKIE-BASED)
   // // =============================================================================
    const handleDeleteRoom = async (roomId: number) => {
-  //   try {
-  //     const response = await fetch(`/api/rooms/${roomId}`, {
-  //       method: 'DELETE',
-  //       credentials: 'include'
-  //     });
+    try {
+      const response = await fetch(`/api/rooms/${roomId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
       
-  //     if (response.ok) {
-  //       setRooms(rooms.filter(room => room.id !== roomId));
-  //       toast({
-  //         title: "Room Deleted",
-  //         description: "Room has been removed from your listings.",
-  //       });
-  //     } else {
-  //       const errorData = await response.json();
-  //       toast({
-  //         title: "Error",
-  //         description: errorData.message || "Failed to delete room. Please try again.",
-  //         variant: "destructive"
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Room deletion error:", error);
-  //     toast({
-  //       title: "Error",
-  //       description: "An unexpected error occurred. Please try again.",
-  //       variant: "destructive"
-  //     });
-  //   }
+      if (response.ok) {
+        setRooms(rooms.filter(room => room.id !== roomId));
+        toast({
+          title: "Room Deleted",
+          description: "Room has been removed from your listings.",
+        });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "Failed to delete room. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Room deletion error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    }
    };
 
   // =============================================================================
