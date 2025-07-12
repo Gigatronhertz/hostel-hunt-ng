@@ -113,10 +113,9 @@ const RoomCard = ({ room, onDelete }: RoomCardProps) => {
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
               <Eye className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="sm">
-              <Edit className="w-4 h-4" />
-            </Button>
+        <Button variant="outline" size="sm" onClick={() => onEdit(room)}>
+  <Edit className="w-4 h-4" />
+</Button>
            <Button 
   variant="outline" 
   size="sm"
