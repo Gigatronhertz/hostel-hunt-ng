@@ -1,10 +1,6 @@
 // =============================================================================
 // AGENT DASHBOARD - Main Dashboard Component for Authenticated Agents
 // =============================================================================
-// This component serves as the main hub for agents to manage their room listings
-// It includes authentication checks, data fetching, and room management functionality
-// =============================================================================
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,259 +8,185 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus } from "lucide-react";
-
-// Import refactored dashboard components
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import RoomCard, { Room } from "@/components/dashboard/RoomCard";
 import RoomForm from "@/components/dashboard/RoomForm";
+
+// Cloudinary Configuration
+const CLOUDINARY_CONFIG = {
+  cloudName: "dw45dvti5",
+  uploadPreset: "hostel.ng",
+  apiUrl: "https://api.cloudinary.com/v1_1"
+};
 
 const AgentDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // =============================================================================
-  // COMPONENT STATE MANAGEMENT
-  // =============================================================================
-  const [activeTab, setActiveTab] = useState("overview");  // Current active tab
-  const [loading, setLoading] = useState(true);            // Loading state for initial data fetch
-  const [formLoading, setFormLoading] = useState(false);   // Loading state for form submissions
-  const [agentData, setAgentData] = useState(null);        // Current agent's profile data
-  const [rooms, setRooms] = useState<Room[]>([]);          // Agent's room listings
-  const [editingRoom, setEditingRoom] = useState<Room | null>(null); // Room being edited
+  const [activeTab, setActiveTab] = useState("overview");
+  const [loading, setLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
+  const [agentData, setAgentData] = useState(null);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
 
-  // =============================================================================
-  // AUTHENTICATION CHECK - USING FETCH WITH CREDENTIALS
-  // =============================================================================
- useEffect(() => {
-  const checkAuth = async () => {
-    try {
-      // STEP 1: Fetch authenticated user profile
-      const userResponse = await fetch('https://hostelng.onrender.com/user', {
-        method: 'GET',
-        credentials: 'include', // ✅ include session cookie
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        console.log("Authenticated user:", userData);
-
-        // STEP 2: Save user profile to state
-        setAgentData({
-          name: userData.user.name,
-          email: userData.user.email,
-          phoneNumber: userData.user.phoneNumber,
-          isVerified: userData.user.isVerified,
-          businessName: userData.user.businessName,
-          googleId: userData.user.googleId,
-          address: userData.user.address
-        });
-      } else {
-        console.warn("User not authenticated or session expired");
-        navigate("/agent-login"); // Redirect to login
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error);
-      navigate("/agent-login"); // Redirect to login on error
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  checkAuth();
-}, [navigate]);
-
-  // =============================================================================
-  // FETCH ROOMS EFFECT
-  // =============================================================================
+  // Authentication check
   useEffect(() => {
-    // Only fetch rooms if agentData is available
+    const checkAuth = async () => {
+      try {
+        const userResponse = await fetch('https://hostelng.onrender.com/user', {
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setAgentData(userData.user);
+        } else {
+          navigate("/agent-login");
+        }
+      } catch (error) {
+        navigate("/agent-login");
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  // Fetch rooms
+  useEffect(() => {
     const fetchRooms = async () => {
       if (!agentData) return;
-
       try {
         const response = await fetch("https://hostelng.onrender.com/agent-rooms", {
           method: "GET",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: { "Content-Type": "application/json" }
         });
-
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
-          setRooms(data.rooms || []); // Adjust if structure differs
-        } else {
-          console.warn("Failed to fetch rooms: Non-OK response");
+          setRooms(data.rooms || []);
         }
       } catch (error) {
         console.error("Room fetch error:", error);
       }
     };
-
     fetchRooms();
   }, [agentData]);
 
-  // =============================================================================
-  // ROOM MANAGEMENT HANDLERS
-  // =============================================================================
-  
-  // Handle editing a room
-  const handleEditRoom = (room: Room) => {
-    setEditingRoom(room);
-    setActiveTab("add-room");
-  };
+  // Cloudinary upload helper
+  const uploadToCloudinary = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
+    
+    const resourceType = file.type.startsWith('image/') ? 'image' : 'video';
+    const uploadUrl = `${CLOUDINARY_CONFIG.apiUrl}/${CLOUDINARY_CONFIG.cloudName}/${resourceType}/upload`;
 
-  // Cancel editing
-  const handleCancelEdit = () => {
-    setEditingRoom(null);
-  };
-
-  const CLOUD_NAME = "dw45dvti5";
-  const UPLOAD_PRESET = "hostel.ng";
-  // Handle room creation/update
-const handleRoomSubmit = async (roomData: any) => {
-  // Validate media files for new rooms
-  if (!editingRoom && (!roomData.files || roomData.files.length === 0)) {
-    toast({
-      title: "Error",
-      description: "Please upload at least one image or video for your room.",
-      variant: "destructive"
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      body: formData
     });
-    return;
-  }
 
-  console.log("📝 Starting room submission with data:", roomData);
-  setFormLoading(true);
-  
-  try {
-    // Cloudinary configuration
-
-    
-    // Upload files to Cloudinary if they exist
-    let mediaUrls: Array<{url: string, public_id: string, type: string}> = [];
-    
-    if (roomData.files && roomData.files.length > 0) {
-      mediaUrls = await Promise.all(
-        roomData.files.map(async (file: File) => {
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('upload_preset', uploadPreset);
-          formData.append('cloud_name', cloudName);
-          
-          const resourceType = file.type.startsWith('image/') ? 'image' : 'video';
-          const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-          
-          const response = await fetch(uploadUrl, {
-            method: 'POST',
-            body: formData
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Cloudinary upload failed');
-          }
-
-          const data = await response.json();
-          return {
-            url: data.secure_url,
-            public_id: data.public_id,
-            type: resourceType
-          };
-        })
-      );
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Cloudinary upload failed');
     }
 
-    // Prepare the payload for your backend
-    const payload = {
-      name: roomData.name,
-      campus: roomData.campus,
-      location: roomData.location,
-      yearlyPrice: roomData.yearlyPrice,
-      roomType: roomData.roomType,
-      bedCount: roomData.bedCount,
-      description: roomData.description,
-      amenities: JSON.stringify(roomData.amenities),
-      media: mediaUrls, // Array of Cloudinary URLs and public_ids
-      ...(editingRoom && { public_ids: roomData.public_ids }) // Include existing public_ids for updates
-    };
+    return await response.json();
+  };
 
-    // Determine the API endpoint and method
-    const url = editingRoom 
-      ? `https://hostelng.onrender.com/update-room/${roomData._id}`
-      : "https://hostelng.onrender.com/create-rooms";
-    
-    const method = editingRoom ? "PUT" : "POST";
-    
-    // Send to your backend
-    const response = await fetch(url, {
-      method,
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      console.log("✅ Room saved successfully:", result);
-      
+  // Handle room submission with Cloudinary
+  const handleRoomSubmit = async (roomData: any) => {
+    if (!editingRoom && (!roomData.files || roomData.files.length === 0)) {
       toast({
-        title: editingRoom ? "Room Updated!" : "Room Created!",
-        description: editingRoom 
-          ? "Your room listing has been updated successfully."
-          : "Your room listing has been created successfully.",
-      });
-
-      // Reset editing state
-      setEditingRoom(null);
-
-      // Refresh rooms list
-      const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
-        method: "GET",
-        credentials: "include"
-      });
-
-      if (roomsResponse.ok) {
-        const roomsData = await roomsResponse.json();
-        setRooms(roomsData.rooms || []);
-      }
-
-      // Switch back to overview tab
-      setActiveTab("overview");
-    } else {
-      const errorData = await response.json();
-      console.error("❌ Room submission failed:", errorData);
-      
-      toast({
-        title: editingRoom ? "Update Failed" : "Creation Failed",
-        description: errorData.message || "Failed to save room. Please try again.",
+        title: "Error",
+        description: "Please upload at least one image or video for your room.",
         variant: "destructive"
       });
+      return;
     }
-  } catch (error) {
-    console.error("❌ Room submission error:", error);
-    toast({
-      title: "Error",
-      description: error instanceof Error 
-        ? error.message 
-        : "An unexpected error occurred. Please try again.",
-      variant: "destructive"
-    });
-  } finally {
-    setFormLoading(false);
-  }
-};
 
-  // =============================================================================
-  // ROOM DELETION HANDLER (COOKIE-BASED)
-  // =============================================================================
+    setFormLoading(true);
+    
+    try {
+      // Upload files to Cloudinary
+      const mediaUrls = roomData.files?.length > 0
+        ? await Promise.all(
+            roomData.files.map(async (file: File) => {
+              const data = await uploadToCloudinary(file);
+              return {
+                url: data.secure_url,
+                public_id: data.public_id,
+                type: data.resource_type
+              };
+            })
+          )
+        : [];
+
+      // Prepare payload
+      const payload = {
+        ...roomData,
+        amenities: JSON.stringify(roomData.amenities),
+        media: mediaUrls,
+        ...(editingRoom && { public_ids: roomData.public_ids })
+      };
+
+      // Send to backend
+      const url = editingRoom 
+        ? `https://hostelng.onrender.com/update-room/${roomData._id}`
+        : "https://hostelng.onrender.com/create-rooms";
+      
+      const response = await fetch(url, {
+        method: editingRoom ? "PUT" : "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: editingRoom ? "Room Updated!" : "Room Created!",
+          description: editingRoom 
+            ? "Your room listing has been updated successfully."
+            : "Your room listing has been created successfully.",
+        });
+
+        setEditingRoom(null);
+        const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
+          method: "GET",
+          credentials: "include"
+        });
+        if (roomsResponse.ok) {
+          setRooms((await roomsResponse.json()).rooms || []);
+        }
+        setActiveTab("overview");
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: editingRoom ? "Update Failed" : "Creation Failed",
+          description: errorData.message || "Failed to save room.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error 
+          ? error.message 
+          : "An unexpected error occurred.",
+        variant: "destructive"
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  // Room deletion handler
   const handleDeleteRoom = async (roomId: string) => {
-    console.log("Dashboard → Deleting room ID:", roomId);
     try {
       const response = await fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
         method: 'DELETE',
@@ -273,51 +195,25 @@ const handleRoomSubmit = async (roomData: any) => {
       
       if (response.ok) {
         setRooms(rooms.filter(room => room._id !== roomId));
-        toast({
-          title: "Room Deleted",
-          description: "Room has been removed from your listings.",
-        });
+        toast({ title: "Room Deleted", description: "Room has been removed." });
       } else {
         const errorData = await response.json();
         toast({
           title: "Error",
-          description: errorData.message || "Failed to delete room. Please try again.",
+          description: errorData.message || "Failed to delete room.",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error("Room deletion error:", error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: "An unexpected error occurred.",
         variant: "destructive"
       });
     }
-   };
-
-  // =============================================================================
-  // LOGOUT HANDLER (COOKIE-BASED)
-  // =============================================================================
-  const handleLogout = async () => {
-    try {
-      await fetch('/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-    
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    navigate("/");
   };
 
-  // =============================================================================
-  // LOADING STATE DISPLAY
-  // =============================================================================
+  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -329,18 +225,13 @@ const handleRoomSubmit = async (roomData: any) => {
     );
   }
 
-  // =============================================================================
-  // CALCULATE DASHBOARD STATISTICS
-  // =============================================================================
+  // Calculate stats
   const totalViews = rooms.reduce((sum, room) => sum + room.views, 0);
   const totalBookingRequests = rooms.reduce((sum, room) => sum + room.bookingRequests, 0);
 
-  // =============================================================================
-  // MAIN DASHBOARD RENDER
-  // =============================================================================
   return (
     <div className="min-h-screen bg-background">
-      {/* HEADER SECTION */}
+      {/* Header */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
@@ -350,13 +241,14 @@ const handleRoomSubmit = async (roomData: any) => {
             <span className="text-sm text-muted-foreground">
               Welcome, {agentData?.name || "Agent"}
             </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
+            <Button variant="outline" size="sm" onClick={() => navigate("/")}>
               Logout
             </Button>
           </div>
         </div>
       </header>
 
+      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Link to="/" className="inline-flex items-center text-primary hover:underline mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -370,6 +262,7 @@ const handleRoomSubmit = async (roomData: any) => {
           </p>
         </div> 
 
+        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -379,49 +272,42 @@ const handleRoomSubmit = async (roomData: any) => {
             </TabsTrigger>
           </TabsList>
         
-          {/* OVERVIEW TAB */}
+          {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <DashboardStats
               totalRooms={rooms.length}
               totalViews={totalViews}
               totalBookingRequests={totalBookingRequests}
             />
-
+            {/* Recent Activity */}
             <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
+              <CardHeader><CardTitle>Recent Activity</CardTitle></CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {rooms.length > 0 ? (
-                    rooms.slice(0, 3).map((room) => (
-                      <div key={room._id} className="flex items-center space-x-4">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <div>
-                          <p className="text-sm font-medium">{room.name} - {room.views} views</p>
-                          <p className="text-xs text-muted-foreground">
-                            {room.bookingRequests} booking requests
-                          </p>
-                        </div>
+                {rooms.length > 0 ? (
+                  rooms.slice(0, 3).map((room) => (
+                    <div key={room._id} className="flex items-center space-x-4 py-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div>
+                        <p className="text-sm font-medium">{room.name} - {room.views} views</p>
+                        <p className="text-xs text-muted-foreground">
+                          {room.bookingRequests} booking requests
+                        </p>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <p>No rooms listed yet. Start by adding your first room!</p>
-                      <Button 
-                        className="mt-4" 
-                        onClick={() => setActiveTab("add-room")}
-                      >
-                        Add Your First Room
-                      </Button>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No rooms listed yet. Start by adding your first room!</p>
+                    <Button className="mt-4" onClick={() => setActiveTab("add-room")}>
+                      Add Your First Room
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
           
-          {/* ROOMS TAB */}
+          {/* Rooms Tab */}
           <TabsContent value="rooms" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">My Rooms</h2>
@@ -438,7 +324,10 @@ const handleRoomSubmit = async (roomData: any) => {
                     key={room._id}
                     room={room} 
                     onDelete={handleDeleteRoom} 
-                    onEdit={handleEditRoom}
+                    onEdit={() => {
+                      setEditingRoom(room);
+                      setActiveTab("add-room");
+                    }}
                   />
                 ))
               ) : (
@@ -453,14 +342,17 @@ const handleRoomSubmit = async (roomData: any) => {
             </div>
           </TabsContent>
           
-          {/* ADD/EDIT ROOM TAB */}
+          {/* Add/Edit Room Tab */}
           <TabsContent value="add-room" className="space-y-6">
             <RoomForm 
               onSubmit={handleRoomSubmit}
               loading={formLoading}
               editMode={!!editingRoom}
               initialData={editingRoom}
-              onCancel={editingRoom ? handleCancelEdit : undefined}
+              onCancel={editingRoom ? () => {
+                setEditingRoom(null);
+                setActiveTab("rooms");
+              } : undefined}
             />
           </TabsContent>
         </Tabs>
