@@ -5,12 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Wifi, Zap, Droplets, Users, GraduationCap, Bed } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAgentAuth } from "@/contexts/AgentAuthContext";
 
 const Index = () => {
   const [selectedCampus, setSelectedCampus] = useState("");
   const navigate = useNavigate();
-  const { isAuthenticated, agentData } = useAgentAuth();
 
   // Expanded campuses list to match Hostels page
   const campuses = [
@@ -34,48 +32,53 @@ const Index = () => {
   //   queryKey: ['featured-rooms'],
   //   queryFn: () => supabase.from('rooms').select('*').eq('featured', true).limit(6)
   // });
+  const featuredRooms = [
+    {
+      id: 1,
+      name: "Unity Lodge - Single Room",
+      campus: "University of Lagos",
+      location: "Akoka, Lagos",
+      yearlyPrice: 540000,
+      roomType: "Single Room",
+      bedCount: 1,
+      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=250&fit=crop",
+      rating: 4.8
+    },
+    {
+      id: 2,
+      name: "Scholar's Haven",
+      campus: "University of Ibadan",
+      location: "Bodija, Ibadan",
+      yearlyPrice: 456000,
+      roomType: "Two Bedroom",
+      bedCount: 2,
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=250&fit=crop",
+      rating: 4.6
+    },
+    {
+      id: 5,
+      name: "Elite Residence",
+      campus: "University of Lagos",
+      location: "Yaba, Lagos",
+      yearlyPrice: 660000,
+      roomType: "One Bedroom",
+      bedCount: 1,
+      image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=250&fit=crop",
+      rating: 4.9
+    },
+    {
+      id: 6,
+      name: "Campus View",
+      campus: "University of Ibadan",
+      location: "UI Gate, Ibadan",
+      yearlyPrice: 380000,
+      roomType: "Single Room",
+      bedCount: 1,
+      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop",
+      rating: 4.4
+    }
+  ];
 
-
-
-const Hostels = () => {
-  const [searchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCampus, setSelectedCampus] = useState(searchParams.get('campus') || "");
-  const [priceRange, setPriceRange] = useState("");
-  const [roomType, setRoomType] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // ✅ NEW: Room data state
-  const [allRooms, setAllRooms] = useState([]);
-
-  // ✅ NEW: Fetch room data on mount
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const res = await fetch("https://hostelng.onrender.com/all-rooms", {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch rooms");
-        }
-
-        const data = await res.json();
-        console.log("Fetched rooms:", data); // ✅ Log the rooms
-        setAllRooms(data);
-      } catch (error) {
-        console.error("Error fetching rooms:", error);
-      }
-    };
-
-    fetchRooms();
-  }, []);
-
-
-
-
-  
- 
   const handleSearchRooms = () => {
     // BACKEND INTEGRATION: Filter rooms by campus using Supabase
     if (selectedCampus) {
@@ -103,18 +106,9 @@ const Hostels = () => {
             <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
               Contact
             </Link>
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-muted-foreground">Welcome, {agentData?.name}</span>
-                <Link to="/agent-dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-                  Dashboard
-                </Link>
-              </div>
-            ) : (
-              <Link to="/agent-login" className="text-muted-foreground hover:text-primary transition-colors">
-                Agent Login
-              </Link>
-            )}
+            <Link to="/agent-login" className="text-muted-foreground hover:text-primary transition-colors">
+              Agent Login
+            </Link>
           </nav>
         </div>
       </header>
@@ -214,7 +208,7 @@ const Hostels = () => {
           {/* Grid with 2 columns on all screen sizes */}
           <div className="grid grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto">
             {featuredRooms.map((room) => (
-              <Link key={room._id} to={`/room/${room._id}`}>
+              <Link key={room.id} to={`/room/${room.id}`}>
                 <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div className="relative overflow-hidden rounded-t-lg">
                     <img
@@ -310,6 +304,5 @@ const Hostels = () => {
     </div>
   );
 };
-}
 
 export default Index;
