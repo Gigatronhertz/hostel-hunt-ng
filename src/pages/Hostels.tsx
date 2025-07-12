@@ -238,7 +238,7 @@ const Hostels = () => {
         {/* Rooms Grid - 2 columns on mobile, 3 on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {filteredRooms.map((room) => (
-            <Link key={room._id} to={`/room/${room.id}`}>
+            <Link key={room._id} to={`/room/${room._id}`}>
               <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <div className="relative overflow-hidden rounded-t-lg">
 <img
