@@ -130,8 +130,7 @@ const RoomCard = ({ room, onDelete }: RoomCardProps) => {
         </div>
       </CardContent>
     </Card>
-  );
-};
+
 
 export default RoomCard;
 export type { Room };
