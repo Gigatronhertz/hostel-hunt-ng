@@ -202,7 +202,7 @@ const handleCreateRoom = async (
   // // =============================================================================
    const handleDeleteRoom = async (roomId: number) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}`, {
+      const response = await fetch(`/api/rooms/${room.Id}`, {
         method: 'DELETE',
         credentials: 'include'
       });
