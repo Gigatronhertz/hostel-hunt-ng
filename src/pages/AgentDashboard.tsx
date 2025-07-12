@@ -75,6 +75,41 @@ const AgentDashboard = () => {
   checkAuth();
 }, [navigate]);
 
+
+  //------------------------------------------------
+
+  ///////////////////////////////////
+
+  useEffect(() => {
+  // Only fetch rooms if agentData is available
+  const fetchRooms = async () => {
+    if (!agentData) return;
+
+    try {
+      const response = await fetch("https://hostelng.onrender.com/rooms", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+    console.log(data);
+        setRooms(data.rooms || []); // Adjust if structure differs
+      } else {
+        console.warn("Failed to fetch rooms: Non-OK response");
+      }
+    } catch (error) {
+      console.error("Room fetch error:", error);
+    }
+  };
+
+  fetchRooms();
+}, [agentData]);
+
+
   // =============================================================================
   // ROOM CREATION HANDLER (COOKIE-BASED)
   // =============================================================================
