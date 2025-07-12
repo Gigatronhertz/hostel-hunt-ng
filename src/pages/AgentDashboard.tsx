@@ -166,7 +166,7 @@ const AgentDashboard = () => {
         ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         : "https://hostelng.onrender.com/rooms";
       
-      const method = editingRoom ? "PATCH" : "POST";
+      const method = editingRoom ? "PUT" : "POST";
       
       const response = await fetch(url, {
         method,
