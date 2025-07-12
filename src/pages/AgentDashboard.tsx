@@ -196,6 +196,99 @@ const handleCreateRoom = async (
   }
 };
 
+  ////////////////////////////////////////////
+  /////////////////////
+//room update 
+  //////////////////////
+const handleUpdateRoom = async (
+  roomId: number,
+  formData: RoomFormData,
+  images: MediaFile[] = [],
+  videos: MediaFile[] = []
+) => {
+  const cloudName = "dw45dvti5";
+  const unsignedUploadPreset = "hostel.ng";
+
+  try {
+    // Helper: Upload to Cloudinary
+    const uploadToCloudinary = async (
+      file: File,
+      resourceType: "image" | "video"
+    ) => {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", unsignedUploadPreset);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      const json = await res.json();
+      if (json.secure_url && json.public_id) {
+        return {
+          url: json.secure_url,
+          public_id: json.public_id,
+        };
+      }
+      throw new Error("Upload failed: " + json.error?.message);
+    };
+
+    // Upload new media (if any)
+    const newImageData = await Promise.all(
+      images.map((img) => uploadToCloudinary(img.file, "image"))
+    );
+    const newVideoData = await Promise.all(
+      videos.map((vid) => uploadToCloudinary(vid.file, "video"))
+    );
+
+    // Construct payload
+    const payload = {
+      ...formData,
+      amenities: JSON.stringify(formData.amenities),
+      images: newImageData,   // Can be merged with existing on the backend
+      videos: newVideoData,
+    };
+
+    const response = await fetch(
+      `https://hostelng.onrender.com/update-room/${roomId}`,
+      {
+        method: "PATCH", // or "PUT" depending on your backend
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (response.ok) {
+      toast({
+        title: "Room Updated",
+        description: "Your room information has been updated successfully.",
+      });
+      setActiveTab("rooms");
+    } else {
+      const errorData = await response.json();
+      toast({
+        title: "Update Failed",
+        description: errorData.message || "Could not update the room.",
+        variant: "destructive",
+      });
+    }
+  } catch (error: any) {
+    console.error("Room update error:", error);
+    toast({
+      title: "Upload Error",
+      description: error.message || "Something went wrong.",
+      variant: "destructive",
+    });
+  }
+};
+
 
   // =============================================================================
   // // ROOM DELETION HANDLER (COOKIE-BASED)
