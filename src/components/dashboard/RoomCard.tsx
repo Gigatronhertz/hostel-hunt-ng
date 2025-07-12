@@ -114,11 +114,14 @@ const RoomCard = ({ room, onDelete }: RoomCardProps) => {
             <Button variant="outline" size="sm">
               <Edit className="w-4 h-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onDelete(room.id)}
-            >
+           <Button 
+  variant="outline" 
+  size="sm"
+  onClick={() => {
+    console.log("RoomCard → Deleting room ID:", room.id); // ✅ Add this
+    onDelete(room.id); // This must be defined
+  }}
+>
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
