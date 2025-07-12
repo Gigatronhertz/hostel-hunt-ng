@@ -28,7 +28,7 @@ interface Room {
   imageCount: number;
   videoCount: number;
 }
-console.log("RoomCard rendered with room:", Room);
+
 
 
 interface RoomCardProps {
