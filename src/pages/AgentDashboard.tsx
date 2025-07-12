@@ -295,7 +295,7 @@ const handleUpdateRoom = async (
   // // =============================================================================
    const handleDeleteRoom = async (roomId: number) => {
     try {
- fetch(`https://hostelng.onrender.com/delete-room/${roomId}`, {
+ fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
   method: 'DELETE',
   credentials: 'include',
 })
