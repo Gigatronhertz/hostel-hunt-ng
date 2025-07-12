@@ -35,128 +35,7 @@ const Hostels = () => {
   ];
 
   // Expanded rooms data with new campuses
-  const allRooms = [
-    {
-      id: 1,
-      name: "Unity Lodge - Single Room",
-      campus: "University of Lagos",
-      location: "Akoka, Lagos",
-      exactLocation: "23 Unity Road, Akoka",
-      yearlyPrice: 540000,
-      inspectionFee: 5000,
-      roomType: "Single Room",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "24/7 Power", "Water Supply", "Security", "Laundry"],
-      rating: 4.8,
-      description: "Modern single room with excellent facilities near UNILAG"
-    },
-    {
-      id: 2,
-      name: "Scholar's Haven - Two Bedroom",
-      campus: "University of Ibadan",
-      location: "Bodija, Ibadan",
-      exactLocation: "15 Academic Road, Bodija",
-      yearlyPrice: 456000,
-      inspectionFee: 4000,
-      roomType: "Two Bedroom",
-      bedCount: 2,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "Security", "Study Room", "24/7 Power"],
-      rating: 4.6,
-      description: "Spacious two-bedroom apartment perfect for studying at UI"
-    },
-    {
-      id: 3,
-      name: "Campus View - One Bedroom",
-      campus: "Ahmadu Bello University",
-      location: "Samaru, Zaria",
-      exactLocation: "12 Campus Road, Samaru",
-      yearlyPrice: 504000,
-      inspectionFee: 4500,
-      roomType: "One Bedroom",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "Laundry", "24/7 Power", "Parking"],
-      rating: 4.7,
-      description: "Beautiful one-bedroom with view of ABU campus"
-    },
-    {
-      id: 4,
-      name: "Green Valley - Shared Room",
-      campus: "University of Nigeria, Nsukka",
-      location: "Nsukka, Enugu",
-      exactLocation: "45 University Road, Nsukka",
-      yearlyPrice: 420000,
-      inspectionFee: 3500,
-      roomType: "Shared Room",
-      bedCount: 3,
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "Security", "Water Supply", "Study Room"],
-      rating: 4.5,
-      description: "Affordable shared room with 3 beds at UNN"
-    },
-    {
-      id: 5,
-      name: "Elite Residence - One Bedroom",
-      campus: "University of Lagos",
-      location: "Yaba, Lagos",
-      exactLocation: "78 Herbert Macaulay Way, Yaba",
-      yearlyPrice: 660000,
-      inspectionFee: 6000,
-      roomType: "One Bedroom",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "24/7 Power", "Water Supply", "Gym", "Security", "Parking"],
-      rating: 4.9,
-      description: "Premium one-bedroom with luxury amenities near UNILAG"
-    },
-    {
-      id: 6,
-      name: "Budget Comfort - Shared Room",
-      campus: "University of Ibadan",
-      location: "Agbowo, Ibadan",
-      exactLocation: "23 Agbowo Road, UI",
-      yearlyPrice: 336000,
-      inspectionFee: 3000,
-      roomType: "Shared Room",
-      bedCount: 2,
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "Security", "Water Supply"],
-      rating: 4.2,
-      description: "Affordable shared room with 2 beds at UI"
-    },
-    {
-      id: 7,
-      name: "Agric Lodge - Single Room",
-      campus: "University of Agriculture, Abeokuta",
-      location: "Abeokuta, Ogun",
-      exactLocation: "10 Campus Gate, UNAAB",
-      yearlyPrice: 380000,
-      inspectionFee: 3500,
-      roomType: "Single Room",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "Security", "Water Supply", "Study Room"],
-      rating: 4.3,
-      description: "Comfortable single room close to UNAAB campus"
-    },
-    {
-      id: 8,
-      name: "Port City Residence",
-      campus: "University of Port Harcourt",
-      location: "Choba, Port Harcourt",
-      exactLocation: "25 University Road, Choba",
-      yearlyPrice: 520000,
-      inspectionFee: 4500,
-      roomType: "One Bedroom",
-      bedCount: 1,
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=300&fit=crop",
-      amenities: ["WiFi", "24/7 Power", "Security", "Laundry", "Parking"],
-      rating: 4.6,
-      description: "Modern one-bedroom near UNIPORT with great amenities"
-    }
-  ];
+
 
   const getAmenityIcon = (amenity: string) => {
     switch (amenity.toLowerCase()) {
@@ -170,6 +49,31 @@ const Hostels = () => {
         return <Users className="w-3 h-3" />;
     }
   };
+
+  
+  // ✅ NEW: Room data state
+  const [allRooms, setAllRooms] = useState([]);
+   useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch("https://hostelng.onrender.com/all-rooms", {
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch rooms");
+        }
+
+        const data = await res.json();
+        console.log("Fetched rooms:", data); // ✅ Log the rooms
+        setAllRooms(data);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   const filteredRooms = allRooms.filter(room => {
     const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -334,7 +238,7 @@ const Hostels = () => {
         {/* Rooms Grid - 2 columns on mobile, 3 on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {filteredRooms.map((room) => (
-            <Link key={room.id} to={`/room/${room.id}`}>
+            <Link key={room._id} to={`/room/${room._id}`}>
               <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img
