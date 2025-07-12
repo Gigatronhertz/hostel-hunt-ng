@@ -196,11 +196,11 @@ useEffect(() => {
               <Link key={room.id} to={`/room/${room.id}`}>
                 <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div className="relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={room.image}
-                      alt={room.name}
-                      className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                   <img
+  src={room.images[0]}  // Changed from room.image to room.images[0]
+  alt={room.name}
+  className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+/>
                     <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium">
                       ⭐ {room.rating}
                     </div>
