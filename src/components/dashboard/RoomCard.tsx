@@ -34,6 +34,7 @@ interface Room {
 interface RoomCardProps {
   room: Room;
   onDelete: (roomId: number | string) => void;
+  onEdit={(room) => setEditRoomData(room)}
 }
 
 const RoomCard = ({ room, onDelete }: RoomCardProps) => {
