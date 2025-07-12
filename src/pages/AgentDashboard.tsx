@@ -293,7 +293,7 @@ const handleUpdateRoom = async (
   // =============================================================================
   // // ROOM DELETION HANDLER (COOKIE-BASED)
   // // =============================================================================
-  const handleDeleteRoom = async (roomId: number | string) => {
+  const handleDeleteRoom = async (roomId: string) => {
   console.log("Dashboard → Deleting room ID:", roomId);
     try {
  fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
@@ -301,7 +301,7 @@ const handleUpdateRoom = async (
   credentials: 'include',
 })
       if (response.ok) {
-        setRooms(rooms.filter(room => room.id !== roomId));
+        setRooms(rooms.filter(room => room._id !== roomId));
         toast({
           title: "Room Deleted",
           description: "Room has been removed from your listings.",
@@ -422,7 +422,7 @@ const handleUpdateRoom = async (
                 <div className="space-y-4">
                   {rooms.length > 0 ? (
                     rooms.slice(0, 3).map((room) => (
-                      <div key={room.id} className="flex items-center space-x-4">
+                      <div key={room._id} className="flex items-center space-x-4">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <div>
                           <p className="text-sm font-medium">{room.name} - {room.views} views</p>
