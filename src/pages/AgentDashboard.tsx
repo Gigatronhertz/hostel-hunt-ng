@@ -164,7 +164,7 @@ const AgentDashboard = () => {
     try {
       const url = editingRoom 
         ? `https://hostelng.onrender.com/update-room/${roomData._id}`
-        : "https://hostelng.onrender.com/rooms";
+        : "https://hostelng.onrender.com/create-rooms";
       
       const method = editingRoom ? "PUT" : "POST";
       
