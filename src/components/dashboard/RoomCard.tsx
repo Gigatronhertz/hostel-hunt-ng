@@ -120,8 +120,8 @@ const RoomCard = ({ room, onDelete }: RoomCardProps) => {
   variant="outline" 
   size="sm"
   onClick={() => {
-    console.log("RoomCard → Deleting room ID:", room.id); // ✅ Add this
-    onDelete(room.id); // This must be defined
+    console.log("RoomCard → Deleting room ID:", Room.id); // ✅ Add this
+    onDelete(Room.id); // This must be defined
   }}
 >
               <Trash2 className="w-4 h-4" />
