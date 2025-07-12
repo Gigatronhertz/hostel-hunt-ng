@@ -66,7 +66,7 @@ const Hostels = () => {
 
         const data = await res.json();
         console.log("Fetched rooms:", data); // ✅ Log the rooms
-        setAllRooms(data);
+        setAllRooms(data.rooms);
       } catch (error) {
         console.error("Error fetching rooms:", error);
       }
