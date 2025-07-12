@@ -150,7 +150,7 @@ const RoomForm = ({ onSubmit }: RoomFormProps) => {
           </Select>
         </div>
         
-        <div>
+{/*         <div>
           <Label htmlFor="bedCount">Number of Beds</Label>
           <Select value={formData.bedCount.toString()} onValueChange={(value) => setFormData({...formData, bedCount: parseInt(value)})}>
             <SelectTrigger>
@@ -163,7 +163,7 @@ const RoomForm = ({ onSubmit }: RoomFormProps) => {
               <SelectItem value="4">4 Beds</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
       </div>
       
       <div>
