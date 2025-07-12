@@ -134,7 +134,12 @@ const handleCreateRoom = async (
       });
 
       const json = await res.json();
-      if (json.secure_url) return json.secure_url;
+  if (json.secure_url && json.public_id) {
+    return {
+      url: json.secure_url,
+      public_id: json.public_id
+    };
+  }
       throw new Error("Upload failed: " + json.error?.message);
     };
 
