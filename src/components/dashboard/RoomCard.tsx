@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 interface Room {
-  id: number;
+  id: number | string;
   name: string;
   campus: string;
   location: string;
@@ -33,7 +33,7 @@ interface Room {
 
 interface RoomCardProps {
   room: Room;
-  onDelete: (roomId: number) => void;
+  onDelete: (roomId: number | string) => void;
 }
 
 const RoomCard = ({ room, onDelete }: RoomCardProps) => {
