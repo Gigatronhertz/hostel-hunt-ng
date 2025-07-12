@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 interface Room {
-  id: number | string;
+  id:  string;
   name: string;
   campus: string;
   location: string;
@@ -120,8 +120,8 @@ const RoomCard = ({ room, onDelete }: RoomCardProps) => {
   variant="outline" 
   size="sm"
   onClick={() => {
-    console.log("RoomCard → Deleting room ID:", room.id); // ✅ Add this
-    onDelete(room.id); // This must be defined
+    console.log("RoomCard → Deleting room ID:", room._id); // ✅ Add this
+    onDelete(room._id); // This must be defined
   }}
 >
               <Trash2 className="w-4 h-4" />
