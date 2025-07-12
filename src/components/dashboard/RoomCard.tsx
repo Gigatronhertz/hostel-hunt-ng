@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 interface Room {
-  id:  string;
+  _id: string;
   name: string;
   campus: string;
   location: string;
@@ -37,7 +37,7 @@ interface RoomCardProps {
 onEdit: (room: Room) => void; 
 }
 
-const RoomCard = ({ room, onDelete }: RoomCardProps) => {
+const RoomCard = ({ room, onDelete, onEdit }: RoomCardProps) => {
   const getAmenityIcon = (amenityId: string) => {
     const amenity = availableAmenities.find(a => a.id === amenityId);
     return amenity?.icon;
@@ -114,7 +114,7 @@ const RoomCard = ({ room, onDelete }: RoomCardProps) => {
             <Button variant="outline" size="sm">
               <Eye className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => onEdit(room)}>
               <Edit className="w-4 h-4" />
             </Button>
            <Button 

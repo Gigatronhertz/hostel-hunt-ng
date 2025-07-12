@@ -5,10 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Wifi, Zap, Droplets, Users, GraduationCap, Bed } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAgentAuth } from "@/contexts/AgentAuthContext";
 
 const Index = () => {
   const [selectedCampus, setSelectedCampus] = useState("");
   const navigate = useNavigate();
+  const { isAuthenticated, agentData } = useAgentAuth();
 
   // Expanded campuses list to match Hostels page
   const campuses = [
@@ -106,9 +108,18 @@ const Index = () => {
             <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
               Contact
             </Link>
-            <Link to="/agent-login" className="text-muted-foreground hover:text-primary transition-colors">
-              Agent Login
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-muted-foreground">Welcome, {agentData?.name}</span>
+                <Link to="/agent-dashboard" className="text-muted-foreground hover:text-primary transition-colors">
+                  Dashboard
+                </Link>
+              </div>
+            ) : (
+              <Link to="/agent-login" className="text-muted-foreground hover:text-primary transition-colors">
+                Agent Login
+              </Link>
+            )}
           </nav>
         </div>
       </header>
