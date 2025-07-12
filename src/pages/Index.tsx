@@ -48,7 +48,8 @@ useEffect(() => {
 
       const data = await res.json();
       console.log("Fetched rooms:", data); // ✅ Just for debugging
-      setFeaturedRooms(data); // Update state
+     setFeaturedRooms(data.rooms); // ✅ correct
+ // Update state
     } catch (error) {
       console.error("Error fetching rooms:", error);
     }
