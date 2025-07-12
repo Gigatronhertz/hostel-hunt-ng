@@ -29,12 +29,7 @@ const AgentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");  // Current active tab
   const [loading, setLoading] = useState(true);            // Loading state for initial data fetch
   const [agentData, setAgentData] = useState(null);        // Current agent's profile data
-  const [rooms, setRooms] = useState<Room[]>([]);     
-  const [editRoomData, setEditRoomData] = useState<Room | null>(null);
-const [showEditModal, setShowEditModal] = useState(false);
-
-  
-  // Agent's room listings
+  const [rooms, setRooms] = useState<Room[]>([]);          // Agent's room listings
 
   // =============================================================================
   // AUTHENTICATION CHECK - USING FETCH WITH CREDENTIALS
@@ -212,46 +207,94 @@ const handleCreateRoom = async (
   /////////////////////
 //room update 
   //////////////////////
-const handleBasicRoomUpdate = async (roomId: string, formData: Partial<Room>) => {
+const handleUpdateRoom = async (
+  roomId: number,
+  formData: RoomFormData,
+  images: MediaFile[] = [],
+  videos: MediaFile[] = []
+) => {
+  const cloudName = "dw45dvti5";
+  const unsignedUploadPreset = "hostel.ng";
+
   try {
-    const response = await fetch(`https://hostelng.onrender.com/update-room/${roomId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(formData),
-    });
+    // Helper: Upload to Cloudinary
+    const uploadToCloudinary = async (
+      file: File,
+      resourceType: "image" | "video"
+    ) => {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", unsignedUploadPreset);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      const json = await res.json();
+      if (json.secure_url && json.public_id) {
+        return {
+          url: json.secure_url,
+          public_id: json.public_id,
+        };
+      }
+      throw new Error("Upload failed: " + json.error?.message);
+    };
+
+    // Upload new media (if any)
+    const newImageData = await Promise.all(
+      images.map((img) => uploadToCloudinary(img.file, "image"))
+    );
+    const newVideoData = await Promise.all(
+      videos.map((vid) => uploadToCloudinary(vid.file, "video"))
+    );
+
+    // Construct payload
+    const payload = {
+      ...formData,
+      amenities: JSON.stringify(formData.amenities),
+      images: newImageData,   // Can be merged with existing on the backend
+      videos: newVideoData,
+    };
+
+    const response = await fetch(
+      `https://hostelng.onrender.com/update-room/${roomId}`,
+      {
+        method: "PATCH", // or "PUT" depending on your backend
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (response.ok) {
       toast({
         title: "Room Updated",
-        description: "Your room info was updated.",
+        description: "Your room information has been updated successfully.",
       });
-
-      // Update in UI
-      const updatedRoom = await response.json();
-      setRooms((prev) =>
-        prev.map((room) => (room._id === roomId ? updatedRoom : room))
-      );
-      setShowEditModal(false);
+      setActiveTab("rooms");
     } else {
       const errorData = await response.json();
       toast({
-        title: "Error",
-        description: errorData.message || "Update failed.",
+        title: "Update Failed",
+        description: errorData.message || "Could not update the room.",
         variant: "destructive",
       });
     }
   } catch (error: any) {
+    console.error("Room update error:", error);
     toast({
-      title: "Error",
-      description: error.message,
+      title: "Upload Error",
+      description: error.message || "Something went wrong.",
       variant: "destructive",
     });
   }
 };
-
 
 
   // =============================================================================
@@ -425,14 +468,7 @@ const handleBasicRoomUpdate = async (roomId: string, formData: Partial<Room>) =>
             <div className="grid gap-6">
               {rooms.length > 0 ? (
                 rooms.map((room) => (
-              <RoomCard
-  room={room}
-  onDelete={(id) => handleDeleteRoom(id)}
-  onEdit={(room) => {
-    setEditRoomData(room);         // ✅ Open modal with this room’s data
-    setShowEditModal(true);        // ✅ Show modal
-  }}
-/>
+               <RoomCard room={room} onDelete={(id) => handleDeleteRoom(id)} />
 
                 ))
               ) : (
@@ -459,65 +495,9 @@ const handleBasicRoomUpdate = async (roomId: string, formData: Partial<Room>) =>
             </Card>
           </TabsContent>
         </Tabs>
-        {showEditModal && editRoomData && (
-  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-    <div className="bg-white p-6 rounded-xl shadow-xl w-[90%] max-w-md space-y-4">
-      <h2 className="text-xl font-semibold">Edit Room</h2>
-
-      <input
-        type="text"
-        className="w-full border px-3 py-2 rounded"
-        placeholder="Room name"
-        value={editRoomData.name}
-        onChange={(e) =>
-          setEditRoomData({ ...editRoomData, name: e.target.value })
-        }
-      />
-
-      <input
-        type="text"
-        className="w-full border px-3 py-2 rounded"
-        placeholder="Location"
-        value={editRoomData.location}
-        onChange={(e) =>
-          setEditRoomData({ ...editRoomData, location: e.target.value })
-        }
-      />
-
-      <input
-        type="number"
-        className="w-full border px-3 py-2 rounded"
-        placeholder="Yearly Price"
-        value={editRoomData.yearlyPrice}
-        onChange={(e) =>
-          setEditRoomData({ ...editRoomData, yearlyPrice: parseInt(e.target.value) })
-        }
-      />
-
-      <div className="flex justify-end gap-2">
-        <Button variant="ghost" onClick={() => setShowEditModal(false)}>
-          Cancel
-        </Button>
-        <Button
-          onClick={() =>
-            handleBasicRoomUpdate(editRoomData._id, {
-              name: editRoomData.name,
-              location: editRoomData.location,
-              yearlyPrice: editRoomData.yearlyPrice,
-            })
-          }
-        >
-          Save
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
-
       </div> 
     </div>
   );
-  
 };
 
 export default AgentDashboard;
