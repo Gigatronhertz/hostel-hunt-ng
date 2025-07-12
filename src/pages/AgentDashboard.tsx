@@ -295,11 +295,10 @@ const handleUpdateRoom = async (
   // // =============================================================================
    const handleDeleteRoom = async (roomId: number) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
+ fetch(`https://hostelng.onrender.com/delete-room/${roomId}`, {
+  method: 'DELETE',
+  credentials: 'include',
+})
       if (response.ok) {
         setRooms(rooms.filter(room => room.id !== roomId));
         toast({
