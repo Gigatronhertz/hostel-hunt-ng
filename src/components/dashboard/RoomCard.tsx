@@ -28,6 +28,8 @@ interface Room {
   imageCount: number;
   videoCount: number;
 }
+console.log("RoomCard rendered with room:", room);
+
 
 interface RoomCardProps {
   room: Room;
