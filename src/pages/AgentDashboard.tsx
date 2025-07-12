@@ -123,105 +123,142 @@ const AgentDashboard = () => {
     setEditingRoom(null);
   };
 
+  const CLOUD_NAME = "dw45dvti5";
+  const UPLOAD_PRESET = "hostel.ng";
   // Handle room creation/update
-  const handleRoomSubmit = async (roomData: any) => {
-    // If editing and no new files, skip media upload requirement
-    if (!editingRoom && (!roomData.files || roomData.files.length === 0)) {
-      toast({
-        title: "Error",
-        description: "Please upload at least one image or video for your room.",
-        variant: "destructive"
-      });
-      return;
-    }
+const handleRoomSubmit = async (roomData: any) => {
+  // Validate media files for new rooms
+  if (!editingRoom && (!roomData.files || roomData.files.length === 0)) {
+    toast({
+      title: "Error",
+      description: "Please upload at least one image or video for your room.",
+      variant: "destructive"
+    });
+    return;
+  }
 
-    console.log("📝 Starting room submission with data:", roomData);
-    setFormLoading(true);
-    
-    const formData = new FormData();
-    
-    // Add room data fields
-    formData.append("name", roomData.name);
-    formData.append("campus", roomData.campus);
-    formData.append("location", roomData.location);
-    formData.append("yearlyPrice", roomData.yearlyPrice.toString());
-    formData.append("roomType", roomData.roomType);
-    formData.append("bedCount", roomData.bedCount.toString());
-    formData.append("description", roomData.description);
-    formData.append("amenities", JSON.stringify(roomData.amenities));
+  console.log("📝 Starting room submission with data:", roomData);
+  setFormLoading(true);
+  
+  try {
+    // Cloudinary configuration
 
-    // Only add files if they exist (for updates, files are optional)
+    
+    // Upload files to Cloudinary if they exist
+    let mediaUrls: Array<{url: string, public_id: string, type: string}> = [];
+    
     if (roomData.files && roomData.files.length > 0) {
-      roomData.files.forEach((file: File) => {
-        if (file.type.startsWith('image/')) {
-          formData.append('images', file);
-        } else if (file.type.startsWith('video/')) {
-          formData.append('videos', file);
-        }
-      });
+      mediaUrls = await Promise.all(
+        roomData.files.map(async (file: File) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', uploadPreset);
+          formData.append('cloud_name', cloudName);
+          
+          const resourceType = file.type.startsWith('image/') ? 'image' : 'video';
+          const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+          
+          const response = await fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cloudinary upload failed');
+          }
+
+          const data = await response.json();
+          return {
+            url: data.secure_url,
+            public_id: data.public_id,
+            type: resourceType
+          };
+        })
+      );
     }
 
-    try {
-      const url = editingRoom 
-        ? `https://hostelng.onrender.com/update-room/${roomData._id}`
-        : "https://hostelng.onrender.com/create-rooms";
+    // Prepare the payload for your backend
+    const payload = {
+      name: roomData.name,
+      campus: roomData.campus,
+      location: roomData.location,
+      yearlyPrice: roomData.yearlyPrice,
+      roomType: roomData.roomType,
+      bedCount: roomData.bedCount,
+      description: roomData.description,
+      amenities: JSON.stringify(roomData.amenities),
+      media: mediaUrls, // Array of Cloudinary URLs and public_ids
+      ...(editingRoom && { public_ids: roomData.public_ids }) // Include existing public_ids for updates
+    };
+
+    // Determine the API endpoint and method
+    const url = editingRoom 
+      ? `https://hostelng.onrender.com/update-room/${roomData._id}`
+      : "https://hostelng.onrender.com/create-rooms";
+    
+    const method = editingRoom ? "PUT" : "POST";
+    
+    // Send to your backend
+    const response = await fetch(url, {
+      method,
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log("✅ Room saved successfully:", result);
       
-      const method = editingRoom ? "PUT" : "POST";
-      
-      const response = await fetch(url, {
-        method,
-        credentials: "include",
-        body: formData
+      toast({
+        title: editingRoom ? "Room Updated!" : "Room Created!",
+        description: editingRoom 
+          ? "Your room listing has been updated successfully."
+          : "Your room listing has been created successfully.",
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ Room saved successfully:", result);
-        
-        toast({
-          title: editingRoom ? "Room Updated!" : "Room Created!",
-          description: editingRoom 
-            ? "Your room listing has been updated successfully."
-            : "Your room listing has been created successfully.",
-        });
+      // Reset editing state
+      setEditingRoom(null);
 
-        // Reset editing state
-        setEditingRoom(null);
+      // Refresh rooms list
+      const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
+        method: "GET",
+        credentials: "include"
+      });
 
-        // Refresh rooms list
-        const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
-          method: "GET",
-          credentials: "include"
-        });
-
-        if (roomsResponse.ok) {
-          const roomsData = await roomsResponse.json();
-          setRooms(roomsData.rooms || []);
-        }
-
-        // Switch back to overview tab
-        setActiveTab("overview");
-      } else {
-        const errorData = await response.json();
-        console.error("❌ Room submission failed:", errorData);
-        
-        toast({
-          title: editingRoom ? "Update Failed" : "Creation Failed",
-          description: errorData.message || "Failed to save room. Please try again.",
-          variant: "destructive"
-        });
+      if (roomsResponse.ok) {
+        const roomsData = await roomsResponse.json();
+        setRooms(roomsData.rooms || []);
       }
-    } catch (error) {
-      console.error("❌ Room submission error:", error);
+
+      // Switch back to overview tab
+      setActiveTab("overview");
+    } else {
+      const errorData = await response.json();
+      console.error("❌ Room submission failed:", errorData);
+      
       toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        title: editingRoom ? "Update Failed" : "Creation Failed",
+        description: errorData.message || "Failed to save room. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setFormLoading(false);
     }
-  };
+  } catch (error) {
+    console.error("❌ Room submission error:", error);
+    toast({
+      title: "Error",
+      description: error instanceof Error 
+        ? error.message 
+        : "An unexpected error occurred. Please try again.",
+      variant: "destructive"
+    });
+  } finally {
+    setFormLoading(false);
+  }
+};
 
   // =============================================================================
   // ROOM DELETION HANDLER (COOKIE-BASED)
