@@ -86,7 +86,7 @@ const AgentDashboard = () => {
     if (!agentData) return;
 
     try {
-      const response = await fetch("https://hostelng.onrender.com/rooms", {
+      const response = await fetch("https://hostelng.onrender.com/agent-rooms", {
         method: "GET",
         credentials: "include",
         headers: {
