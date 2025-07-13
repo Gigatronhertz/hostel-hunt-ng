@@ -379,7 +379,7 @@ const Hostels = () => {
                       </span>
                       <span className="text-xs font-normal text-muted-foreground block">per year</span>
                     <span className="text-xs text-muted-foreground hidden md:block">
-  Inspection: ₦{(room.inspectionFee ?? 0).toLocaleString()}
+  Inspection: ₦{(room.inspectionFee ?? 5000).toLocaleString()}
 </span>
                     </div>
                     <Button size="sm" variant="outline" className="text-xs md:text-sm">
