@@ -6,16 +6,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap, Bed, Menu } from "lucide-react";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap, Bed, Menu, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hostels = () => {
-  const [searchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "");
   const [selectedCampus, setSelectedCampus] = useState(searchParams.get('campus') || "");
-  const [priceRange, setPriceRange] = useState("");
-  const [roomType, setRoomType] = useState("");
+  const [priceRange, setPriceRange] = useState(searchParams.get('priceRange') || "");
+  const [roomType, setRoomType] = useState(searchParams.get('roomType') || "");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('pageNum') || '1'));
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalRooms, setTotalRooms] = useState(0);
 
   // Expanded campuses list with new universities
   const campuses = [
@@ -50,13 +55,85 @@ const Hostels = () => {
     }
   };
 
-  
-  // ✅ NEW: Room data state
+  // Room data state
   const [allRooms, setAllRooms] = useState([]);
-   useEffect(() => {
+
+  // Update URL params when filters or page changes
+  const updateURLParams = (updates: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(searchParams);
+    
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value && value !== "") {
+        newParams.set(key, value);
+      } else {
+        newParams.delete(key);
+      }
+    });
+
+    // Reset to page 1 when filters change (except when changing page itself)
+    if (!updates.pageNum && (updates.search !== undefined || updates.campus !== undefined || updates.priceRange !== undefined || updates.roomType !== undefined)) {
+      newParams.set('pageNum', '1');
+      setCurrentPage(1);
+    }
+
+    setSearchParams(newParams);
+  };
+
+  // Handle filter changes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    updateURLParams({ search: value });
+  };
+
+  const handleCampusChange = (value: string) => {
+    setSelectedCampus(value);
+    updateURLParams({ campus: value });
+  };
+
+  const handlePriceRangeChange = (value: string) => {
+    setPriceRange(value);
+    updateURLParams({ priceRange: value });
+  };
+
+  const handleRoomTypeChange = (value: string) => {
+    setRoomType(value);
+    updateURLParams({ roomType: value });
+  };
+
+  // Handle page changes
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    updateURLParams({ pageNum: page.toString() });
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setSelectedCampus("");
+    setPriceRange("");
+    setRoomType("");
+    setCurrentPage(1);
+    setSearchParams(new URLSearchParams());
+  };
+
+  // Fetch rooms with pagination and filtering
+  useEffect(() => {
     const fetchRooms = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch("https://hostelng.onrender.com/all-rooms", {
+        // Build query parameters
+        const queryParams = new URLSearchParams();
+        queryParams.set('page', currentPage.toString());
+        queryParams.set('limit', '12'); // 12 items per page for grid layout
+
+        if (searchTerm) queryParams.set('search', searchTerm);
+        if (selectedCampus) queryParams.set('campus', selectedCampus);
+        if (priceRange) queryParams.set('priceRange', priceRange);
+        if (roomType) queryParams.set('roomType', roomType);
+
+        const res = await fetch(`https://hostelng.onrender.com/all-rooms?${queryParams.toString()}`, {
           credentials: "include",
         });
 
@@ -65,31 +142,34 @@ const Hostels = () => {
         }
 
         const data = await res.json();
-        console.log("Fetched rooms:", data); // ✅ Log the rooms
-        setAllRooms(data.rooms);
+        console.log("Fetched rooms:", data);
+        
+        // Handle both paginated and non-paginated responses
+        if (data.rooms) {
+          setAllRooms(data.rooms);
+          setTotalPages(data.totalPages || 1);
+          setTotalRooms(data.total || data.rooms.length);
+        } else {
+          // Fallback for non-paginated response
+          setAllRooms(data);
+          setTotalPages(1);
+          setTotalRooms(data.length);
+        }
       } catch (error) {
         console.error("Error fetching rooms:", error);
+        setAllRooms([]);
+        setTotalPages(1);
+        setTotalRooms(0);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchRooms();
-  }, []);
+  }, [currentPage, searchTerm, selectedCampus, priceRange, roomType]);
 
-  const filteredRooms = allRooms.filter(room => {
-    const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         room.location.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCampus = !selectedCampus || room.campus === selectedCampus;
-    
-    const matchesPrice = !priceRange || 
-      (priceRange === "under-400k" && room.yearlyPrice < 400000) ||
-      (priceRange === "400k-550k" && room.yearlyPrice >= 400000 && room.yearlyPrice <= 550000) ||
-      (priceRange === "above-550k" && room.yearlyPrice > 550000);
-
-    const matchesRoomType = !roomType || room.roomType === roomType;
-
-    return matchesSearch && matchesCampus && matchesPrice && matchesRoomType;
-  });
+  // Use allRooms directly since filtering is done on backend
+  const displayRooms = allRooms;
 
   return (
     <div className="min-h-screen bg-background">
@@ -171,12 +251,12 @@ const Hostels = () => {
               <Input
                 placeholder="Search rooms..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-10"
               />
             </div>
             
-            <Select value={selectedCampus} onValueChange={setSelectedCampus}>
+            <Select value={selectedCampus} onValueChange={handleCampusChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select campus" />
               </SelectTrigger>
@@ -189,7 +269,7 @@ const Hostels = () => {
               </SelectContent>
             </Select>
 
-            <Select value={roomType} onValueChange={setRoomType}>
+            <Select value={roomType} onValueChange={handleRoomTypeChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Room type" />
               </SelectTrigger>
@@ -201,7 +281,7 @@ const Hostels = () => {
               </SelectContent>
             </Select>
             
-            <Select value={priceRange} onValueChange={setPriceRange}>
+            <Select value={priceRange} onValueChange={handlePriceRangeChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Price range (yearly)" />
               </SelectTrigger>
@@ -214,12 +294,7 @@ const Hostels = () => {
             
             <Button 
               variant="outline" 
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCampus("");
-                setPriceRange("");
-                setRoomType("");
-              }}
+              onClick={clearAllFilters}
             >
               <Filter className="w-4 h-4 mr-2" />
               Clear Filters
@@ -230,14 +305,24 @@ const Hostels = () => {
         {/* Results */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold">
-            {filteredRooms.length} room{filteredRooms.length !== 1 ? 's' : ''} found
+            {isLoading ? "Loading..." : `${totalRooms} room${totalRooms !== 1 ? 's' : ''} found`}
             {selectedCampus && ` around ${selectedCampus}`}
+            {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
           </h2>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="ml-2">Loading rooms...</span>
+          </div>
+        )}
+
         {/* Rooms Grid - 2 columns on mobile, 3 on desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-          {filteredRooms.map((room) => (
+        {!isLoading && (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+            {displayRooms.map((room) => (
             <Link key={room._id} to={`/room/${room._id}`}>
               <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <div className="relative overflow-hidden rounded-t-lg">
@@ -304,23 +389,52 @@ const Hostels = () => {
                 </CardContent>
               </Card>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {filteredRooms.length === 0 && (
+        {/* Pagination */}
+        {!isLoading && totalPages > 1 && (
+          <div className="mt-8 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                    className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                    className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+
+        {!isLoading && displayRooms.length === 0 && (
           <div className="text-center py-12">
             <h3 className="text-lg font-semibold mb-2">No rooms found</h3>
             <p className="text-muted-foreground mb-4">
               Try adjusting your search criteria or selecting a different campus.
             </p>
-            <Button 
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCampus("");
-                setPriceRange("");
-                setRoomType("");
-              }}
-            >
+            <Button onClick={clearAllFilters}>
               Clear All Filters
             </Button>
           </div>
