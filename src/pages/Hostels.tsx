@@ -126,7 +126,7 @@ const Hostels = () => {
         // Build query parameters
         const queryParams = new URLSearchParams();
         queryParams.set('page', currentPage.toString());
-        queryParams.set('limit', '12'); // 12 items per page for grid layout
+        queryParams.set('limit', '5'); // 12 items per page for grid layout
 
         if (searchTerm) queryParams.set('search', searchTerm);
         if (selectedCampus) queryParams.set('campus', selectedCampus);
