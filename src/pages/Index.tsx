@@ -193,7 +193,7 @@ useEffect(() => {
           {/* Grid with 2 columns on all screen sizes */}
           <div className="grid grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto">
             {featuredRooms.map((room) => (
-              <Link key={room.id} to={`/room/${room.id}`}>
+              <Link key={room._id} to={`/room/${room._id}`}>
                 <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div className="relative overflow-hidden rounded-t-lg">
                    <img
