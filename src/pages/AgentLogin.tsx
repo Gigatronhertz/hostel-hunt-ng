@@ -61,7 +61,31 @@ const AgentLogin = () => {
       }
 
       // Redirect to dashboard
-      window.location.href = "/dashboard";
+     // Make an authenticated request before redirecting
+fetch("https://hostelng.onrender.com/dashboard", {
+  method: "GET",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  },
+  credentials: "include" // optional, only if backend requires cookie auth too
+})
+  .then(async (res) => {
+    if (!res.ok) {
+      throw new Error("Failed to fetch dashboard data");
+    }
+
+    const data = await res.json();
+    console.log("[OAuth] Dashboard data:", data);
+
+    // ✅ Now redirect after confirmation
+    window.location.href = "/dashboard";
+  })
+  .catch((err) => {
+    console.error("[OAuth] Error fetching dashboard data:", err);
+    alert("Login succeeded but fetching dashboard failed.");
+  });
+
     };
 
     window.addEventListener("message", handleMessage);
