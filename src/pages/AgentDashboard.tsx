@@ -34,19 +34,29 @@ const AgentDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          navigate("/agent-login");
+          return;
+        }
+
         const userResponse = await fetch('https://hostelng.onrender.com/user', {
           method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json' 
+          }
         });
 
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setAgentData(userData.user);
         } else {
+          localStorage.removeItem('authToken');
           navigate("/agent-login");
         }
       } catch (error) {
+        localStorage.removeItem('authToken');
         navigate("/agent-login");
       } finally {
         setLoading(false);
@@ -60,10 +70,15 @@ const AgentDashboard = () => {
     const fetchRooms = async () => {
       if (!agentData) return;
       try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
         const response = await fetch("https://hostelng.onrender.com/agent-rooms", {
           method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" }
+          headers: { 
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json" 
+          }
         });
         if (response.ok) {
           const data = await response.json();
@@ -164,10 +179,11 @@ const AgentDashboard = () => {
         ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         : "https://hostelng.onrender.com/create-rooms";
   
+      const token = localStorage.getItem('authToken');
       const response = await fetch(url, {
         method: editingRoom ? "PUT" : "POST",
-        credentials: "include",
         headers: {
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
@@ -184,9 +200,13 @@ const AgentDashboard = () => {
         setEditingRoom(null);
         setActiveTab("rooms");
   
+        const token = localStorage.getItem('authToken');
         const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
         });
   
         if (roomsResponse.ok) {
@@ -216,9 +236,13 @@ const AgentDashboard = () => {
   // Room deletion handler
   const handleDeleteRoom = async (roomId: string) => {
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       });
       
       if (response.ok) {

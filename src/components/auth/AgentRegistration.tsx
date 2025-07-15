@@ -42,13 +42,18 @@ export const AgentRegistration = ({ onSuccess }: AgentRegistrationProps) => {
     setLoading(true);
 
     try {
-      // STEP 1: Send registration data to backend with cookie authentication
+      // STEP 1: Send registration data to backend with JWT authentication
       // Backend endpoint: POST /api/agents/register
-      // Uses session cookie from Google OAuth for authentication
-      const response = await fetch('/api/agents/register', {
+      // Uses JWT token from localStorage for authentication
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch('https://hostelng.onrender.com/api/agents/register', {
         method: 'POST',
-        credentials: 'include', // ✅ Include session cookie
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)

@@ -13,14 +13,54 @@ import { ArrowLeft, Building2, Users, TrendingUp } from "lucide-react";
 
 const AgentLogin = () => {
   // =============================================================================
-  // GOOGLE OAUTH AUTHENTICATION HANDLER
+  // POPUP-BASED GOOGLE OAUTH AUTHENTICATION HANDLER
   // =============================================================================
-  // Single authentication method - Google OAuth only
-  // Backend handles the complete OAuth flow and redirects to dashboard
+  // JWT token-based authentication using popup window
   const handleGoogleAuth = () => {
-    // Backend will handle OAuth and redirect to dashboard
-    // Dashboard will then check auth status with backend
-    window.location.href = "https://hostelng.onrender.com/auth/google";
+    const width = 500;
+    const height = 600;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    const popup = window.open(
+      "https://hostelng.onrender.com/auth/google?popup=true",
+      "GoogleOAuthPopup",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    // Listen for JWT token from popup
+    const handleMessage = (event: MessageEvent) => {
+      if (
+        event.origin !== "https://hostelng.onrender.com" ||
+        !event.data.token
+      ) {
+        return;
+      }
+
+      // Save JWT token to localStorage
+      localStorage.setItem("authToken", event.data.token);
+
+      // Cleanup event listener
+      window.removeEventListener("message", handleMessage);
+      
+      // Close popup if still open
+      if (popup && !popup.closed) {
+        popup.close();
+      }
+
+      // Redirect to dashboard
+      window.location.href = "/dashboard";
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    // Handle popup blocking or manual close
+    const checkClosed = setInterval(() => {
+      if (popup && popup.closed) {
+        clearInterval(checkClosed);
+        window.removeEventListener("message", handleMessage);
+      }
+    }, 1000);
   };
 
   // =============================================================================

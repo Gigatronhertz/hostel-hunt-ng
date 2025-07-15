@@ -36,9 +36,20 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
   const checkAuth = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/user', {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        setAgentData(null);
+        setIsAuthenticated(false);
+        return;
+      }
+
+      const response = await fetch('https://hostelng.onrender.com/user', {
         method: 'GET',
-        credentials: 'include', // Include cookies
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.ok) {
@@ -46,11 +57,14 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
         setAgentData(userData);
         setIsAuthenticated(true);
       } else {
+        // Token is invalid, clear it
+        localStorage.removeItem('authToken');
         setAgentData(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      localStorage.removeItem('authToken');
       setAgentData(null);
       setIsAuthenticated(false);
     } finally {
@@ -60,14 +74,28 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
 
   const logout = async () => {
     try {
-      await fetch('/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
+      const token = localStorage.getItem('authToken');
+      
+      if (token) {
+        await fetch('https://hostelng.onrender.com/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+      
+      // Clear token and state
+      localStorage.removeItem('authToken');
       setAgentData(null);
       setIsAuthenticated(false);
     } catch (error) {
       console.error('Logout failed:', error);
+      // Still clear local state even if logout request fails
+      localStorage.removeItem('authToken');
+      setAgentData(null);
+      setIsAuthenticated(false);
     }
   };
 

@@ -16,10 +16,11 @@ const Register = () => {
 const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
+  const token = localStorage.getItem('authToken');
   fetch('https://hostelng.onrender.com/onboard', {
     method: 'POST',
-    credentials: 'include',
     headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(formData)
