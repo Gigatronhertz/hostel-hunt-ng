@@ -55,9 +55,13 @@ const AgentLogin = () => {
       // Cleanup
       window.removeEventListener("message", handleMessage);
 
-      if (popup && !popup.closed) {
-        popup.close();
-        console.log("[OAuth] Popup closed");
+      try {
+        if (popup && !popup.closed) {
+          popup.close();
+          console.log("[OAuth] Popup closed");
+        }
+      } catch (err) {
+        console.warn("[OAuth] Could not close popup:", err);
       }
 
       // Redirect to dashboard
