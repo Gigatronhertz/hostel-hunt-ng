@@ -81,7 +81,7 @@ const AgentLogin = () => {
       if (data.onboarded) {
         navigate("/agent-dashboard");
       } else {
-        navigate("/onboard");
+        navigate("/register");
       }
   
     } catch (error) {
