@@ -62,6 +62,8 @@ const AgentLogin = () => {
   };
 
   const verifyTokenAndRedirect = async (token: string) => {
+
+    console.log(token);
     try {
       const response = await fetch("https://hostelng.onrender.com/dashboard", {
         method: "GET",
