@@ -55,12 +55,12 @@ const AgentLogin = () => {
     window.addEventListener("message", handleMessage);
 
     // Handle popup blocking or manual close
-    const checkClosed = setInterval(() => {
-      if (popup && popup.closed) {
-        clearInterval(checkClosed);
-        window.removeEventListener("message", handleMessage);
-      }
-    }, 1000);
+    // const checkClosed = setInterval(() => {
+    //   if (popup && popup.closed) {
+    //     clearInterval(checkClosed);
+    //     window.removeEventListener("message", handleMessage);
+    //   }
+    // }, 1000);
   };
 
   // =============================================================================
