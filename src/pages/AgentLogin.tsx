@@ -79,7 +79,7 @@ fetch("https://hostelng.onrender.com/dashboard", {
     console.log("[OAuth] Dashboard data:", data);
 
     // ✅ Now redirect after confirmation
-   // window.location.href = "/agent-dashboard";
+    window.location.href = "/agent-dashboard";
   })
   .catch((err) => {
     console.error("[OAuth] Error fetching dashboard data:", err);
