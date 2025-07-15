@@ -1,9 +1,7 @@
-
 // =============================================================================
 // SIMPLIFIED AGENT LOGIN - Google OAuth Only
 // =============================================================================
 // Simplified authentication flow: Google OAuth → Backend handles everything → Dashboard
-// No more complex JWT management or manual forms
 // =============================================================================
 
 import { Link } from "react-router-dom";
@@ -15,37 +13,51 @@ const AgentLogin = () => {
   // =============================================================================
   // POPUP-BASED GOOGLE OAUTH AUTHENTICATION HANDLER
   // =============================================================================
-  // JWT token-based authentication using popup window
   const handleGoogleAuth = () => {
     const width = 500;
     const height = 600;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
 
+    const popupUrl = "https://hostelng.onrender.com/auth/google?popup=true";
+
+    console.log("[OAuth] Opening popup at:", popupUrl);
+
     const popup = window.open(
-      "https://hostelng.onrender.com/auth/google?popup=true",
+      popupUrl,
       "GoogleOAuthPopup",
       `width=${width},height=${height},left=${left},top=${top}`
     );
 
-    // Listen for JWT token from popup
+    // Message event handler
     const handleMessage = (event: MessageEvent) => {
-      if (
-        event.origin !== "https://hostel-hunt-ng.vercel.app" || // ✅ correct: your frontend origin
-        !event.data.token
-      ) {
+      console.log("[OAuth] Message received:", event);
+
+      // Security: ensure the message is from your backend
+      if (event.origin !== "https://hostel-hunt-ng.vercel.app") {
+        console.warn("[OAuth] Message origin mismatch:", event.origin);
         return;
       }
 
-      // Save JWT token to localStorage
-      localStorage.setItem("authToken", event.data.token);
+      const { token } = event.data;
 
-      // Cleanup event listener
+      if (!token) {
+        console.warn("[OAuth] No token found in message data");
+        return;
+      }
+
+      console.log("[OAuth] JWT received:", token);
+
+      // Store the JWT
+      localStorage.setItem("authToken", token);
+      console.log("[OAuth] Token saved to localStorage");
+
+      // Cleanup
       window.removeEventListener("message", handleMessage);
-      
-      // Close popup if still open
+
       if (popup && !popup.closed) {
         popup.close();
+        console.log("[OAuth] Popup closed");
       }
 
       // Redirect to dashboard
@@ -53,14 +65,6 @@ const AgentLogin = () => {
     };
 
     window.addEventListener("message", handleMessage);
-
-    // Handle popup blocking or manual close
-    // const checkClosed = setInterval(() => {
-    //   if (popup && popup.closed) {
-    //     clearInterval(checkClosed);
-    //     window.removeEventListener("message", handleMessage);
-    //   }
-    // }, 1000);
   };
 
   // =============================================================================
@@ -68,55 +72,34 @@ const AgentLogin = () => {
   // =============================================================================
   return (
     <div className="min-h-screen bg-background">
-      {/* =============================================================================
-          HEADER SECTION
-          ============================================================================= */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">
-            Hostel.ng
-          </Link>
+          <Link to="/" className="text-2xl font-bold text-primary">Hostel.ng</Link>
           <nav className="hidden md:flex space-x-6">
-            <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">
-              Browse Rooms
-            </Link>
-            <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-              Contact
-            </Link>
+            <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">Browse Rooms</Link>
+            <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">About</Link>
+            <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
           </nav>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Back to home navigation */}
         <Link to="/" className="inline-flex items-center text-primary hover:underline mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
 
         <div className="max-w-md mx-auto">
-          {/* Page title and description */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold mb-2">Agent Portal</h1>
-            <p className="text-muted-foreground">
-              Login or register to manage your room listings
-            </p>
+            <p className="text-muted-foreground">Login or register to manage your room listings</p>
           </div>
 
-          {/* =============================================================================
-              SIMPLIFIED GOOGLE OAUTH SECTION
-              ============================================================================= */}
           <Card>
             <CardHeader>
               <CardTitle>Welcome Agent</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* =============================================================================
-                  BUSINESS MODEL INFORMATION SECTION
-                  ============================================================================= */}
               <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-700">
                 <p className="font-medium mb-2">Hostel.ng Business Model:</p>
                 <ul className="text-xs space-y-1">
@@ -127,9 +110,6 @@ const AgentLogin = () => {
                 </ul>
               </div>
 
-              {/* =============================================================================
-                  PLATFORM BENEFITS SECTION
-                  ============================================================================= */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div className="flex flex-col items-center space-y-2">
                   <Building2 className="h-8 w-8 text-primary" />
@@ -148,15 +128,7 @@ const AgentLogin = () => {
                 </div>
               </div>
 
-              {/* =============================================================================
-                  GOOGLE OAUTH BUTTON - SINGLE AUTHENTICATION METHOD
-                  ============================================================================= */}
-              <Button 
-                onClick={handleGoogleAuth} 
-                className="w-full py-6"
-                size="lg"
-              >
-                {/* Google logo SVG */}
+              <Button onClick={handleGoogleAuth} className="w-full py-6" size="lg">
                 <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -172,7 +144,6 @@ const AgentLogin = () => {
             </CardContent>
           </Card>
 
-          {/* Support link */}
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Need help? <Link to="/contact" className="text-primary hover:underline">Contact Support</Link></p>
           </div>
