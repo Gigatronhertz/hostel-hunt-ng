@@ -120,7 +120,7 @@ const Hostels = () => {
         if (priceRange) queryParams.set('priceRange', priceRange);
         if (roomType) queryParams.set('roomType', roomType);
 
-        const res = await fetch(`https://hostelng.onrender.com/all-rooms?${queryParams}`);
+        const res = await fetch(`https://hostelng.onrender.com/all-rooms?${queryParams}`, { credentials: "include" });
         const data = await res.json();
 
         if (data.rooms) {

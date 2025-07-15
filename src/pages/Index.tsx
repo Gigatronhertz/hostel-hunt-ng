@@ -38,7 +38,9 @@ const Index = () => {
 useEffect(() => {
   const fetchRooms = async () => {
     try {
-      const res = await fetch("https://hostelng.onrender.com/all-rooms");
+      const res = await fetch("https://hostelng.onrender.com/all-rooms", {
+        credentials: "include", // only if you're using cookies/session
+      });
 
       if (!res.ok) {
         throw new Error("Failed to fetch rooms");

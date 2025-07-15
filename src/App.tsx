@@ -10,12 +10,10 @@ import HostelDetail from "./pages/HostelDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import AgentLogin from "./pages/AgentLogin";
-import Dashboard from "./pages/Dashboard";
 import AgentDashboard from "./pages/AgentDashboard";
 import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/register";
-import AuthDebugger from "./components/AuthDebugger";
 
 
 const queryClient = new QueryClient();
@@ -26,7 +24,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthDebugger />
         <div className="min-h-screen flex flex-col">
           <div className="flex-1 flex flex-col">
             <Routes>
@@ -37,7 +34,6 @@ const App = () => (
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/agent-login" element={<AgentLogin />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/agent-dashboard" element={<AgentDashboard />} />
               <Route path="/docs" element={<Documentation />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

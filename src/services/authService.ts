@@ -1,38 +1,29 @@
 // =============================================================================
-// JWT-BASED AUTHENTICATION SERVICE
+// SIMPLIFIED AUTHENTICATION SERVICE - Cookie-Based Session Management
 // =============================================================================
-// This service handles authentication using JWT tokens stored in localStorage
-// All API calls use Authorization headers with Bearer tokens
+// This service handles authentication using session cookies instead of JWT tokens
+// All API calls use 'credentials: include' to send cookies automatically
 // =============================================================================
-
-import { getAuthHeaders, removeAuthToken } from '@/utils/authUtils';
 
 // =============================================================================
 // AUTHENTICATION CHECK FUNCTION
 // =============================================================================
-// Checks if user is authenticated by validating JWT token
+// Checks if user is authenticated by hitting the auth endpoint
 export const checkAuthentication = async (): Promise<boolean> => {
   try {
-    const token = localStorage.getItem('authToken');
-    if (!token) return false;
-
-    const response = await fetch('https://hostelng.onrender.com/auth/verify', {
+    // Backend endpoint: POST /auth/login
+    // This endpoint checks if the session cookie is valid
+    const response = await fetch('/auth/login', {
       method: 'POST',
+      credentials: 'include', // ✅ Include session cookie
       headers: {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
 
-    if (!response.ok) {
-      removeAuthToken();
-      return false;
-    }
-
-    return true;
+    return response.ok;
   } catch (error) {
     console.error('Authentication check failed:', error);
-    removeAuthToken();
     return false;
   }
 };
@@ -40,22 +31,18 @@ export const checkAuthentication = async (): Promise<boolean> => {
 // =============================================================================
 // AGENT PROFILE FETCH FUNCTION
 // =============================================================================
-// Fetches the authenticated agent's profile data using JWT token
+// Fetches the authenticated agent's profile data
 export const fetchAgentProfile = async () => {
   try {
-    const response = await fetch('https://hostelng.onrender.com/api/agents/profile', {
+    // Backend endpoint: GET /api/agents/profile
+    const response = await fetch('/api/agents/profile', {
       method: 'GET',
-      headers: getAuthHeaders()
+      credentials: 'include' // ✅ Include session cookie
     });
 
     if (response.ok) {
       return await response.json();
     }
-    
-    if (response.status === 401 || response.status === 403) {
-      removeAuthToken();
-    }
-    
     return null;
   } catch (error) {
     console.error('Failed to fetch agent profile:', error);
@@ -66,22 +53,18 @@ export const fetchAgentProfile = async () => {
 // =============================================================================
 // AGENT ROOMS FETCH FUNCTION
 // =============================================================================
-// Fetches all rooms belonging to the authenticated agent using JWT token
+// Fetches all rooms belonging to the authenticated agent
 export const fetchAgentRooms = async () => {
   try {
-    const response = await fetch('https://hostelng.onrender.com/api/agents/rooms', {
+    // Backend endpoint: GET /api/agents/rooms
+    const response = await fetch('/api/agents/rooms', {
       method: 'GET',
-      headers: getAuthHeaders()
+      credentials: 'include' // ✅ Include session cookie
     });
 
     if (response.ok) {
       return await response.json();
     }
-    
-    if (response.status === 401 || response.status === 403) {
-      removeAuthToken();
-    }
-    
     return [];
   } catch (error) {
     console.error('Failed to fetch agent rooms:', error);
@@ -92,22 +75,18 @@ export const fetchAgentRooms = async () => {
 // =============================================================================
 // LOGOUT FUNCTION
 // =============================================================================
-// Logs out the user by clearing JWT token and notifying backend
+// Logs out the user by clearing the session cookie
 export const logout = async (): Promise<boolean> => {
   try {
-    const response = await fetch('https://hostelng.onrender.com/auth/logout', {
+    // Backend endpoint: POST /auth/logout
+    const response = await fetch('/auth/logout', {
       method: 'POST',
-      headers: getAuthHeaders()
+      credentials: 'include' // ✅ Include session cookie for logout
     });
 
-    // Clear token regardless of response
-    removeAuthToken();
-    
     return response.ok;
   } catch (error) {
     console.error('Logout failed:', error);
-    // Still clear token even if request fails
-    removeAuthToken();
     return false;
   }
 };
