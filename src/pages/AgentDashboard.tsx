@@ -36,8 +36,10 @@ const AgentDashboard = () => {
       try {
         const userResponse = await fetch('https://hostelng.onrender.com/user', {
           method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
+          },
         });
 
         if (userResponse.ok) {
