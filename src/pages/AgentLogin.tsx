@@ -62,8 +62,6 @@ const AgentLogin = () => {
   };
 
   const verifyTokenAndRedirect = async (token: string) => {
-
-    console.log(token);
     try {
       const response = await fetch("https://hostelng.onrender.com/dashboard", {
         method: "GET",
@@ -72,29 +70,29 @@ const AgentLogin = () => {
           "Content-Type": "application/json",
         },
       });
-
-      // ✅ If backend redirects, follow it manually
-      if (response.redirected) {
-        window.location.href = response.url;
-       } //else {
-      //   // If backend didn't redirect (fallback), parse and decide
-      //   const text = await response.text();
-      //   if (text.includes("register")) {
-      //     navigate("/register");
-      //   } else {
-      //     navigate("/agent-dashboard");
-      //   }
-      // }
-    } catch (err) {
-      console.error(err);
-      console.log(err);
-     //
+  
+      if (!response.ok) {
+        throw new Error("Authentication failed");
+      }
+  
+      const data = await response.json();
+  
+      // 👇 Check onboarding status
+      if (data.onboarded) {
+        navigate("/agent-dashboard");
+      } else {
+        navigate("/onboard");
+      }
+  
+    } catch (error) {
+      console.error("Token verification failed:", error);
       setAuthError("Authentication failed. Please try again.");
       localStorage.removeItem("authToken");
     } finally {
       setIsAuthenticating(false);
     }
   };
+  
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
