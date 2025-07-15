@@ -63,7 +63,7 @@ const AgentLogin = () => {
       // Redirect to dashboard
      // Make an authenticated request before redirecting
 fetch("https://hostelng.onrender.com/dashboard", {
-  method: "GET",
+  method: "POST",
   headers: {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
