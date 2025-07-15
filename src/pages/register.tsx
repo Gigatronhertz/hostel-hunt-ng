@@ -20,7 +20,8 @@ const handleSubmit = (e: React.FormEvent) => {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(formData)
   })
