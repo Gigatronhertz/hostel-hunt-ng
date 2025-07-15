@@ -68,7 +68,7 @@ fetch("https://hostelng.onrender.com/dashboard", {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   },
-  credentials: "include" // optional, only if backend requires cookie auth too
+ 
 })
   .then(async (res) => {
     if (!res.ok) {
