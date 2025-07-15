@@ -76,15 +76,15 @@ const AgentLogin = () => {
       // ✅ If backend redirects, follow it manually
       if (response.redirected) {
         window.location.href = response.url;
-      } else {
-        // If backend didn't redirect (fallback), parse and decide
-        const text = await response.text();
-        if (text.includes("register")) {
-          navigate("/register");
-        } else {
-          navigate("/agent-dashboard");
-        }
-      }
+       } //else {
+      //   // If backend didn't redirect (fallback), parse and decide
+      //   const text = await response.text();
+      //   if (text.includes("register")) {
+      //     navigate("/register");
+      //   } else {
+      //     navigate("/agent-dashboard");
+      //   }
+      // }
     } catch (err) {
       console.error("Token verification failed:", err);
       setAuthError("Authentication failed. Please try again.");
