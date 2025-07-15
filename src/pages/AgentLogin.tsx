@@ -31,7 +31,7 @@ const AgentLogin = () => {
     // Listen for JWT token from popup
     const handleMessage = (event: MessageEvent) => {
       if (
-        event.origin !== "https://hostelng.onrender.com" ||
+        event.origin !== "https://hostel-hunt-ng.vercel.app" || // ✅ correct: your frontend origin
         !event.data.token
       ) {
         return;
