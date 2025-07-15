@@ -102,8 +102,8 @@ const AgentLogin = () => {
           const userData = await res.json();
           console.log("[OAuth] User verified:", userData);
 
-          // Redirect to dashboard using React Router navigation
-          window.location.href = "/agent-dashboard";
+          // Redirect to dashboard page for authentication check
+          window.location.href = "/dashboard";
         })
         .catch((err) => {
           console.error("[OAuth] Token verification failed:", err);
