@@ -1,11 +1,3 @@
-
-// =============================================================================
-// SIMPLIFIED AGENT LOGIN - Google OAuth Only
-// =============================================================================
-// Simplified authentication flow: Google OAuth → Backend handles everything → Dashboard
-// No more complex JWT management or manual forms
-// =============================================================================
-
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,14 +10,10 @@ const AgentLogin = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  // =============================================================================
-  // JWT POPUP AUTHENTICATION HANDLER
-  // =============================================================================
   const handleGoogleAuth = () => {
     setAuthError(null);
     setIsAuthenticating(true);
-    
-    // Open Google OAuth in popup
+
     const popup = window.open(
       "https://hostelng.onrender.com/auth/google",
       "googleAuth",
@@ -38,25 +26,21 @@ const AgentLogin = () => {
       return;
     }
 
-    // Listen for message from popup
+    const allowedOrigins = [
+      "https://hostelng.onrender.com", // backend
+    ];
+
     const handleMessage = (event: MessageEvent) => {
-      // Verify origin for security
-      if (event.origin !== "https://hostelng.onrender.com") {
-        return;
-      }
+      if (!allowedOrigins.includes(event.origin)) return;
 
       if (event.data.token) {
-        // Store JWT token
-        localStorage.setItem("authToken", event.data.token);
-        
-        // Verify token and redirect
-        verifyTokenAndRedirect(event.data.token);
-        
-        // Close popup
+        const token = event.data.token;
+        localStorage.setItem("authToken", token);
         popup.close();
-        
-        // Remove event listener
         window.removeEventListener("message", handleMessage);
+
+        // ✅ Proceed with verification
+        verifyTokenAndRedirect(token);
       } else if (event.data.error) {
         setAuthError(event.data.error);
         setIsAuthenticating(false);
@@ -67,7 +51,7 @@ const AgentLogin = () => {
 
     window.addEventListener("message", handleMessage);
 
-    // Handle popup closed manually
+    // Safety net in case user closes popup manually
     const checkClosed = setInterval(() => {
       if (popup.closed) {
         clearInterval(checkClosed);
@@ -77,35 +61,30 @@ const AgentLogin = () => {
     }, 1000);
   };
 
-  // Verify token with backend and redirect accordingly
   const verifyTokenAndRedirect = async (token: string) => {
     try {
       const response = await fetch("https://hostelng.onrender.com/dashboard", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
-      if (response.ok) {
-        // Backend will redirect, but we can handle it here
-        if (response.redirected) {
-          window.location.href = response.url;
-        } else {
-          // Fallback - check response and redirect accordingly
-          const data = await response.text();
-          if (data.includes("register")) {
-            navigate("/register");
-          } else {
-            navigate("/agent-dashboard");
-          }
-        }
+      // ✅ If backend redirects, follow it manually
+      if (response.redirected) {
+        window.location.href = response.url;
       } else {
-        throw new Error("Authentication failed");
+        // If backend didn't redirect (fallback), parse and decide
+        const text = await response.text();
+        if (text.includes("register")) {
+          navigate("/register");
+        } else {
+          navigate("/agent-dashboard");
+        }
       }
-    } catch (error) {
-      console.error("Token verification failed:", error);
+    } catch (err) {
+      console.error("Token verification failed:", err);
       setAuthError("Authentication failed. Please try again.");
       localStorage.removeItem("authToken");
     } finally {
@@ -113,7 +92,6 @@ const AgentLogin = () => {
     }
   };
 
-  // Check if user is already authenticated on page load
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
@@ -121,60 +99,36 @@ const AgentLogin = () => {
     }
   }, []);
 
-  // =============================================================================
-  // MAIN COMPONENT RENDER
-  // =============================================================================
   return (
     <div className="min-h-screen bg-background">
-      {/* =============================================================================
-          HEADER SECTION
-          ============================================================================= */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">
-            Hostel.ng
-          </Link>
+          <Link to="/" className="text-2xl font-bold text-primary">Hostel.ng</Link>
           <nav className="hidden md:flex space-x-6">
-            <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">
-              Browse Rooms
-            </Link>
-            <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-              Contact
-            </Link>
+            <Link to="/rooms" className="text-muted-foreground hover:text-primary">Browse Rooms</Link>
+            <Link to="/about" className="text-muted-foreground hover:text-primary">About</Link>
+            <Link to="/contact" className="text-muted-foreground hover:text-primary">Contact</Link>
           </nav>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Back to home navigation */}
         <Link to="/" className="inline-flex items-center text-primary hover:underline mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
 
         <div className="max-w-md mx-auto">
-          {/* Page title and description */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold mb-2">Agent Portal</h1>
-            <p className="text-muted-foreground">
-              Login or register to manage your room listings
-            </p>
+            <p className="text-muted-foreground">Login or register to manage your room listings</p>
           </div>
 
-          {/* =============================================================================
-              SIMPLIFIED GOOGLE OAUTH SECTION
-              ============================================================================= */}
           <Card>
             <CardHeader>
               <CardTitle>Welcome Agent</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* =============================================================================
-                  BUSINESS MODEL INFORMATION SECTION
-                  ============================================================================= */}
               <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-700">
                 <p className="font-medium mb-2">Hostel.ng Business Model:</p>
                 <ul className="text-xs space-y-1">
@@ -185,9 +139,6 @@ const AgentLogin = () => {
                 </ul>
               </div>
 
-              {/* =============================================================================
-                  PLATFORM BENEFITS SECTION
-                  ============================================================================= */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div className="flex flex-col items-center space-y-2">
                   <Building2 className="h-8 w-8 text-primary" />
@@ -206,16 +157,12 @@ const AgentLogin = () => {
                 </div>
               </div>
 
-              {/* Authentication Error Alert */}
               {authError && (
                 <Alert variant="destructive">
                   <AlertDescription>{authError}</AlertDescription>
                 </Alert>
               )}
 
-              {/* =============================================================================
-                  GOOGLE OAUTH BUTTON - SINGLE AUTHENTICATION METHOD
-                  ============================================================================= */}
               <Button 
                 onClick={handleGoogleAuth} 
                 className="w-full py-6"
@@ -229,7 +176,6 @@ const AgentLogin = () => {
                   </>
                 ) : (
                   <>
-                    {/* Google logo SVG */}
                     <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                       <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                       <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -247,7 +193,6 @@ const AgentLogin = () => {
             </CardContent>
           </Card>
 
-          {/* Support link */}
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Need help? <Link to="/contact" className="text-primary hover:underline">Contact Support</Link></p>
           </div>
