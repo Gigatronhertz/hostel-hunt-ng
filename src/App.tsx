@@ -14,6 +14,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/register";
+import AuthDebugger from "./components/AuthDebugger";
 
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthDebugger />
         <div className="min-h-screen flex flex-col">
           <div className="flex-1 flex flex-col">
             <Routes>

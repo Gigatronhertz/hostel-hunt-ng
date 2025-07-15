@@ -11,6 +11,7 @@ import { ArrowLeft, Plus } from "lucide-react";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import RoomCard, { Room } from "@/components/dashboard/RoomCard";
 import RoomForm from "@/components/dashboard/RoomForm";
+import { authenticatedFetch, isTokenValid, debugToken, removeAuthToken } from "@/utils/authUtils";
 
 // Cloudinary Configuration
 const CLOUDINARY_CONFIG = {
@@ -34,29 +35,27 @@ const AgentDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
+        console.log('[Dashboard] Checking authentication...');
+        debugToken(); // Debug current token
+        
+        if (!isTokenValid()) {
+          console.log('[Dashboard] Invalid token, redirecting...');
           navigate("/agent-login");
           return;
         }
 
-        const userResponse = await fetch('https://hostelng.onrender.com/user', {
-          method: 'GET',
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json' 
-          }
-        });
+        const userResponse = await authenticatedFetch('https://hostelng.onrender.com/user');
 
         if (userResponse.ok) {
           const userData = await userResponse.json();
-          setAgentData(userData.user);
+          console.log('[Dashboard] User data received:', userData);
+          setAgentData(userData);
         } else {
-          localStorage.removeItem('authToken');
+          console.log('[Dashboard] User fetch failed:', userResponse.status);
           navigate("/agent-login");
         }
       } catch (error) {
-        localStorage.removeItem('authToken');
+        console.error('[Dashboard] Auth check error:', error);
         navigate("/agent-login");
       } finally {
         setLoading(false);
@@ -70,22 +69,18 @@ const AgentDashboard = () => {
     const fetchRooms = async () => {
       if (!agentData) return;
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-
-        const response = await fetch("https://hostelng.onrender.com/agent-rooms", {
-          method: "GET",
-          headers: { 
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json" 
-          }
-        });
+        console.log('[Dashboard] Fetching agent rooms...');
+        const response = await authenticatedFetch("https://hostelng.onrender.com/agent-rooms");
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('[Dashboard] Rooms data:', data);
           setRooms(data.rooms || []);
+        } else {
+          console.error('[Dashboard] Failed to fetch rooms:', response.status);
         }
       } catch (error) {
-        console.error("Room fetch error:", error);
+        console.error("[Dashboard] Room fetch error:", error);
       }
     };
     fetchRooms();
@@ -179,13 +174,8 @@ const AgentDashboard = () => {
         ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         : "https://hostelng.onrender.com/create-rooms";
   
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(url, {
+      const response = await authenticatedFetch(url, {
         method: editingRoom ? "PUT" : "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(payload),
       });
   
@@ -200,14 +190,7 @@ const AgentDashboard = () => {
         setEditingRoom(null);
         setActiveTab("rooms");
   
-        const token = localStorage.getItem('authToken');
-        const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
+        const roomsResponse = await authenticatedFetch("https://hostelng.onrender.com/agent-rooms");
   
         if (roomsResponse.ok) {
           const roomsData = await roomsResponse.json();
@@ -236,13 +219,8 @@ const AgentDashboard = () => {
   // Room deletion handler
   const handleDeleteRoom = async (roomId: string) => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
-        method: 'DELETE',
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+      const response = await authenticatedFetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
+        method: 'DELETE'
       });
       
       if (response.ok) {
@@ -262,6 +240,21 @@ const AgentDashboard = () => {
         description: "An unexpected error occurred.",
         variant: "destructive"
       });
+    }
+  };
+
+  // Logout function
+  const handleLogout = async () => {
+    try {
+      console.log('[Dashboard] Logging out...');
+      await authenticatedFetch('https://hostelng.onrender.com/auth/logout', {
+        method: 'POST'
+      });
+    } catch (error) {
+      console.error('[Dashboard] Logout error:', error);
+    } finally {
+      removeAuthToken();
+      navigate('/agent-login');
     }
   };
 
@@ -293,7 +286,7 @@ const AgentDashboard = () => {
             <span className="text-sm text-muted-foreground">
               Welcome, {agentData?.name || "Agent"}
             </span>
-            <Button variant="outline" size="sm" onClick={() => navigate("/")}>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
               Logout
             </Button>
           </div>

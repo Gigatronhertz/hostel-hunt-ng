@@ -39,11 +39,42 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
       const token = localStorage.getItem('authToken');
       
       if (!token) {
+        console.log('[Auth] No token found');
         setAgentData(null);
         setIsAuthenticated(false);
         return;
       }
 
+      // Basic token validation before making request
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          console.log('[Auth] Invalid token format');
+          localStorage.removeItem('authToken');
+          setAgentData(null);
+          setIsAuthenticated(false);
+          return;
+        }
+        
+        const payload = JSON.parse(atob(parts[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        if (payload.exp && payload.exp <= currentTime) {
+          console.log('[Auth] Token expired');
+          localStorage.removeItem('authToken');
+          setAgentData(null);
+          setIsAuthenticated(false);
+          return;
+        }
+      } catch (tokenError) {
+        console.error('[Auth] Token validation error:', tokenError);
+        localStorage.removeItem('authToken');
+        setAgentData(null);
+        setIsAuthenticated(false);
+        return;
+      }
+
+      console.log('[Auth] Checking auth with backend...');
       const response = await fetch('https://hostelng.onrender.com/user', {
         method: 'GET',
         headers: {
@@ -54,17 +85,19 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
 
       if (response.ok) {
         const userData = await response.json();
+        console.log('[Auth] User authenticated:', userData);
         setAgentData(userData);
         setIsAuthenticated(true);
       } else {
+        console.log('[Auth] Auth check failed:', response.status);
         // Token is invalid, clear it
         localStorage.removeItem('authToken');
         setAgentData(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('authToken');
+      console.error('[Auth] Network error during auth check:', error);
+      // Don't remove token on network errors, just set as unauthenticated
       setAgentData(null);
       setIsAuthenticated(false);
     } finally {

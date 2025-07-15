@@ -20,7 +20,6 @@ const AgentLogin = () => {
     const top = window.screenY + (window.outerHeight - height) / 2;
 
     const popupUrl = "https://hostelng.onrender.com/auth/google?popup=true";
-
     console.log("[OAuth] Opening popup at:", popupUrl);
 
     const popup = window.open(
@@ -28,6 +27,25 @@ const AgentLogin = () => {
       "GoogleOAuthPopup",
       `width=${width},height=${height},left=${left},top=${top}`
     );
+
+    if (!popup) {
+      alert("Popup blocked. Please allow popups for this site.");
+      return;
+    }
+
+    let messageReceived = false;
+
+    // Add timeout for popup response
+    const timeout = setTimeout(() => {
+      if (!messageReceived) {
+        console.warn("[OAuth] Popup timeout");
+        window.removeEventListener("message", handleMessage);
+        if (!popup.closed) {
+          popup.close();
+        }
+        alert("Login timeout. Please try again.");
+      }
+    }, 30000); // 30 second timeout
 
     // Message event handler
     const handleMessage = (event: MessageEvent) => {
@@ -39,13 +57,21 @@ const AgentLogin = () => {
         return;
       }
 
-      const { token } = event.data;
+      const { token, error } = event.data;
+
+      if (error) {
+        console.error("[OAuth] Authentication error:", error);
+        alert(`Authentication failed: ${error}`);
+        return;
+      }
 
       if (!token) {
         console.warn("[OAuth] No token found in message data");
         return;
       }
 
+      messageReceived = true;
+      clearTimeout(timeout);
       console.log("[OAuth] JWT received:", token);
 
       // Store the JWT
@@ -54,41 +80,49 @@ const AgentLogin = () => {
 
       // Cleanup
       window.removeEventListener("message", handleMessage);
+      
+      if (popup && !popup.closed) {
+        popup.close();
+        console.log("[OAuth] Popup closed");
+      }
 
-      // if (popup && !popup.closed) {
-      //   popup.close();
-      //   console.log("[OAuth] Popup closed");
-      // }
+      // Verify token with a simple user endpoint instead of dashboard
+      fetch("https://hostelng.onrender.com/user", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error(`Auth verification failed: ${res.status}`);
+          }
 
-      // Redirect to dashboard
-     // Make an authenticated request before redirecting
-fetch("https://hostelng.onrender.com/dashboard", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  },
- 
-})
-  .then(async (res) => {
-    if (!res.ok) {
-      throw new Error("Failed to fetch dashboard data");
-    }
+          const userData = await res.json();
+          console.log("[OAuth] User verified:", userData);
 
-    const data = await res.json();
-    console.log("[OAuth] Dashboard data:", data);
-
-    // ✅ Now redirect after confirmation
-    window.location.href = "/agent-dashboard";
-  })
-  .catch((err) => {
-    console.error("[OAuth] Error fetching dashboard data:", err);
-    alert("Login succeeded but fetching dashboard failed.");
-  });
-
+          // Redirect to dashboard using React Router navigation
+          window.location.href = "/agent-dashboard";
+        })
+        .catch((err) => {
+          console.error("[OAuth] Token verification failed:", err);
+          localStorage.removeItem("authToken");
+          alert("Login succeeded but token verification failed. Please try again.");
+        });
     };
 
     window.addEventListener("message", handleMessage);
+
+    // Check if popup was closed manually
+    const checkClosed = setInterval(() => {
+      if (popup.closed && !messageReceived) {
+        clearInterval(checkClosed);
+        clearTimeout(timeout);
+        window.removeEventListener("message", handleMessage);
+        console.log("[OAuth] Popup closed by user");
+      }
+    }, 1000);
   };
 
   // =============================================================================
