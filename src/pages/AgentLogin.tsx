@@ -34,7 +34,7 @@ const AgentLogin = () => {
       console.log("[OAuth] Message received:", event);
 
       // Security: ensure the message is from your backend
-      if (event.origin !== "https://hostel-hunt-ng.vercel.app") {
+      if (event.origin !== "https://hostelng.onrender.com") {
         console.warn("[OAuth] Message origin mismatch:", event.origin);
         return;
       }
