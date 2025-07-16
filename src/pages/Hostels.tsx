@@ -27,16 +27,16 @@ const Hostels = () => {
     "University of Lagos",
     "University of Ibadan", 
     "Ahmadu Bello University",
-    "University of Nigeria, Nsukka",
+    "University of Nigeria Nsukka",
     "Obafemi Awolowo University",
     "University of Benin",
     "Federal University of Technology, Akure",
     "Lagos State University",
-    "University of Agriculture, Abeokuta",
-    "Federal University of Agriculture, Makurdi",
+    "Federal University of Agriculture Abeokuta",
+    "Federal University of Agriculture Makurdi",
     "University of Port Harcourt",
     "Federal University of Technology, Minna",
-    "Bayero University, Kano"
+    "Bayero University Kano"
   ];
 
   const getAmenityIcon = (amenity: string) => {
@@ -113,7 +113,7 @@ const Hostels = () => {
       try {
         const queryParams = new URLSearchParams();
         queryParams.set('page', currentPage.toString());
-        queryParams.set('limit', '6');
+        queryParams.set('limit', '10');
 
         if (searchTerm) queryParams.set('search', searchTerm);
         if (selectedCampus) queryParams.set('campus', selectedCampus);

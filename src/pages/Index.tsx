@@ -201,9 +201,7 @@ useEffect(() => {
   alt={room.name}
   className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
 />
-                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium">
-                      ⭐ {room.rating}
-                    </div>
+                   
                     <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 md:px-2 md:py-1 text-xs md:text-sm font-medium flex items-center gap-1">
                       <Bed className="w-2 h-2 md:w-3 md:h-3" />
                       {room.bedCount}
