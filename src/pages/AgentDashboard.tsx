@@ -27,7 +27,7 @@ const AgentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [agentData, setAgentData] = useState(null);
-  const [Requests, setRequests] = useState(null);
+
   const [rooms, setRooms] = useState<Room[]>([]);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
 
@@ -47,7 +47,8 @@ const AgentDashboard = () => {
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setAgentData(userData.user);
-          setRequests(userData.requests);
+         
+        
 
         } else {
           navigate("/agent-login");
@@ -320,7 +321,7 @@ const AgentDashboard = () => {
           <TabsContent value="overview" className="space-y-6">
             <DashboardStats
               totalRooms={rooms.length}
-              totalViews={totalViews}
+              totalViews={agentData?.totalViews}
               totalBookingRequests={totalBookingRequests}
             />
             {/* Recent Activity */}
