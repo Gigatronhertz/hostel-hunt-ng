@@ -35,6 +35,7 @@ const AgentDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('Token:', localStorage.getItem("authToken"));
         const userResponse = await fetch('https://hostelng.onrender.com/user', {
           method: 'GET',
           headers: {
@@ -47,7 +48,7 @@ const AgentDashboard = () => {
           const userData = await userResponse.json();
           setAgentData(userData.user);
           setRequests(userData.requests);
-          
+
         } else {
           navigate("/agent-login");
         }
