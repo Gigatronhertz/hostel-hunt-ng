@@ -35,7 +35,7 @@ const AgentDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log('Token:', localStorage.getItem("authToken"));
+        console.log('Token at user get:', localStorage.getItem("authToken"));
         const userResponse = await fetch('https://hostelng.onrender.com/user', {
           method: 'GET',
           headers: {
@@ -63,7 +63,9 @@ const AgentDashboard = () => {
 
   // Fetch rooms
   useEffect(() => {
+    console.log('Token at fetch rooms:', localStorage.getItem("authToken"));
     const fetchRooms = async () => {
+
       if (!agentData) return;
       try {
         const response = await fetch("https://hostelng.onrender.com/agent-rooms", {
