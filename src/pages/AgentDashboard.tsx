@@ -64,8 +64,10 @@ const AgentDashboard = () => {
       try {
         const response = await fetch("https://hostelng.onrender.com/agent-rooms", {
           method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" }
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
+          },
         });
         if (response.ok) {
           const data = await response.json();
@@ -168,8 +170,8 @@ const AgentDashboard = () => {
   
       const response = await fetch(url, {
         method: editingRoom ? "PUT" : "POST",
-        credentials: "include",
         headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
@@ -188,7 +190,10 @@ const AgentDashboard = () => {
   
         const roomsResponse = await fetch("https://hostelng.onrender.com/agent-rooms", {
           method: "GET",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
+          },
         });
   
         if (roomsResponse.ok) {
@@ -220,7 +225,10 @@ const AgentDashboard = () => {
     try {
       const response = await fetch(`https://hostelng.onrender.com/rooms/${roomId}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
       });
       
       if (response.ok) {
