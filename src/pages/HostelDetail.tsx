@@ -118,7 +118,7 @@ const HostelDetail = () => {
       {/* Header */}
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">Hostel.ng</Link>
+          <Link to="/" className="text-2xl font-bold text-primary">RentNaija</Link>
           <nav className="hidden md:flex space-x-6">
             <Link to="/rooms" className="text-muted-foreground hover:text-primary">Browse Rooms</Link>
             <Link to="/agent-login" className="text-muted-foreground hover:text-primary">Agent Login</Link>

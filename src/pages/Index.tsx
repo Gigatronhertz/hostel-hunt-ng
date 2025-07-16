@@ -79,7 +79,7 @@ useEffect(() => {
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
-            Hostel.ng
+            RentNaija
           </Link>
           <nav className="hidden md:flex space-x-6">
             <Link to="/rooms" className="text-muted-foreground hover:text-primary transition-colors">
@@ -242,7 +242,7 @@ useEffect(() => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-semibold text-lg mb-4">Hostel.ng</h3>
+              <h3 className="font-semibold text-lg mb-4">RentNaija</h3>
               <p className="text-muted-foreground">
                 Your trusted platform for finding quality student accommodation across Nigerian universities.
               </p>
@@ -277,7 +277,7 @@ useEffect(() => {
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 Hostel.ng. All rights reserved.</p>
+            <p>&copy; 2024 RentNaija. All rights reserved.</p>
           </div>
         </div>
       </footer>

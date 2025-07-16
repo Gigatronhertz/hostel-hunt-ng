@@ -15,7 +15,7 @@ import RoomForm from "@/components/dashboard/RoomForm";
 // Cloudinary Configuration
 const CLOUDINARY_CONFIG = {
   cloudName: "dw45dvti5",
-  uploadPreset: "hostel.ng",
+  uploadPreset: "RentNaija",
   apiUrl: "https://api.cloudinary.com/v1_1"
 };
 
@@ -172,6 +172,7 @@ const AgentDashboard = () => {
       };
   
       const url = editingRoom
+       // ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         : "https://hostelng.onrender.com/create-rooms";
   
@@ -280,7 +281,7 @@ const AgentDashboard = () => {
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
-            Hostel.ng
+            RentNaija
           </Link>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground">
