@@ -20,7 +20,7 @@ interface Room {
   location: string;
   yearlyPrice: number;
   roomType: string;
-  bedCount: number;
+ 
   bathrooms: number;
   views: number;
   bookingRequests: number;
@@ -60,9 +60,7 @@ const RoomCard = ({ room, onDelete, onEdit }: RoomCardProps) => {
               <MapPin className="w-3 h-3" />
               {room.location} • {room.campus}
             </p>
-            <p className="text-muted-foreground text-sm mb-2">
-              {room.roomType} • {room.bedCount} bed{room.bedCount !== 1 ? 's' : ''} • {room.bathrooms} bathroom{room.bathrooms !== 1 ? 's' : ''}
-            </p>
+         
             <p className="text-lg font-bold text-primary mb-3">
               ₦{room.yearlyPrice.toLocaleString()}/year
             </p>
