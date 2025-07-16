@@ -162,20 +162,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
               </Select>
             </div>
             
-            <div>
-              <Label htmlFor="bedCount">Number of Beds</Label>
-              <Select value={formData.bedCount} onValueChange={(value) => setFormData({...formData, bedCount: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select bed count" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 Bed</SelectItem>
-                  <SelectItem value="2">2 Beds</SelectItem>
-                  <SelectItem value="3">3 Beds</SelectItem>
-                  <SelectItem value="4">4 Beds</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+         
           </div>
           
           <div>
