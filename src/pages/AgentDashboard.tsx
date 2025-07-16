@@ -177,7 +177,7 @@ const AgentDashboard = () => {
         : "https://hostelng.onrender.com/create-rooms";
   
       const response = await fetch(url, {
-        method: editingRoom ? "PATCH" : "POST",
+        method: editingRoom ? "PUT" : "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",

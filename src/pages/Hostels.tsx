@@ -233,6 +233,10 @@ const Hostels = () => {
                     <img src={room.images[0]} alt={room.name} className="w-full h-32 md:h-48 object-cover" />
                     <CardContent className="p-2 md:p-4">
                       <h3 className="font-semibold text-sm md:text-lg mb-1">{room.name}</h3>
+                      <p className="text-muted-foreground text-xs md:text-sm mb-1 flex items-center gap-1">
+                      <GraduationCap className="w-2 h-2 md:w-3 md:h-3 flex-shrink-0" />
+                      <span className="line-clamp-1">{room.campus}</span>
+                    </p>
                       <p className="text-xs text-muted-foreground">{room.location}</p>
                       <Badge variant="outline" className="text-xs mt-2">{room.roomType}</Badge>
                       <p className="text-sm font-bold text-primary mt-2">₦{(room.yearlyPrice / 1000).toFixed(0)}k/year</p>
