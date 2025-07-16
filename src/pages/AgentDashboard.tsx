@@ -186,6 +186,7 @@ const AgentDashboard = () => {
       });
   
       if (response.ok) {
+        console.log("Updating room with data:", roomData);
         toast({
           title: editingRoom ? "Room Updated!" : "Room Created!",
           description: editingRoom
