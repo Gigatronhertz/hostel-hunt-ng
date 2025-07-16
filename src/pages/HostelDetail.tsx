@@ -38,8 +38,14 @@ const HostelDetail = () => {
   }, [id]);
 
   const handleSubmitMessage = (e: React.FormEvent) => {
+    fetch("https://hostelng.onrender.com/book-requests", {
+      method: "POST",
+      body: JSON.stringify(room.creatorId),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
 
-    
     e.preventDefault();
   
     if (!room) return;
