@@ -67,20 +67,21 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     onSubmit(roomData);
   };
 
+
   const campuses = [
     "University of Lagos",
     "University of Ibadan", 
     "Ahmadu Bello University",
-    "University of Nigeria, Nsukka",
+    "University of Nigeria Nsukka",
     "Obafemi Awolowo University",
     "University of Benin",
     "Federal University of Technology, Akure",
     "Lagos State University",
-    "Fedral University of Agriculture, Abeokuta",
-    "Federal University of Agriculture, Makurdi",
+    "Federal University of Agriculture Abeokuta",
+    "Federal University of Agriculture Makurdi",
     "University of Port Harcourt",
     "Federal University of Technology, Minna",
-    "Bayero University, Kano"
+    "Bayero University Kano"
   ];
 
   const roomTypes = [
