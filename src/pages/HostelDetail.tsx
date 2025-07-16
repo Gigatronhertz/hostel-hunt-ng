@@ -38,6 +38,8 @@ const HostelDetail = () => {
   }, [id]);
 
   const handleSubmitMessage = (e: React.FormEvent) => {
+
+    
     e.preventDefault();
   
     if (!room) return;

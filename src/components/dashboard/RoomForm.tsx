@@ -76,7 +76,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     "University of Benin",
     "Federal University of Technology, Akure",
     "Lagos State University",
-    "University of Agriculture, Abeokuta",
+    "Fedral University of Agriculture, Abeokuta",
     "Federal University of Agriculture, Makurdi",
     "University of Port Harcourt",
     "Federal University of Technology, Minna",

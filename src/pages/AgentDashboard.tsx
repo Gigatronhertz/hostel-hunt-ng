@@ -322,7 +322,7 @@ const AgentDashboard = () => {
             <DashboardStats
               totalRooms={rooms.length}
               totalViews={agentData?.totalViews}
-              totalBookingRequests={totalBookingRequests}
+              totalBookingRequests={agentData.bookingRequests}
             />
             {/* Recent Activity */}
             <Card>
@@ -335,7 +335,7 @@ const AgentDashboard = () => {
                       <div>
                         <p className="text-sm font-medium">{room.name} - {room.views} views</p>
                         <p className="text-xs text-muted-foreground">
-                          {room.bookingRequests} booking requests
+                          {room.bookingRequests||0} booking requests
                         </p>
                       </div>
                     </div>
