@@ -36,7 +36,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     if (editMode && initialData) {
       setFormData({
         name: initialData.name || '',
-        yearlyPrice: initialData.yearlyPrice?.toString() || '',
+        yearlyPrice: initialData.yearlyPrice,
         campus: initialData.campus || '',
         location: initialData.location || '',
         roomType: initialData.roomType || '',
