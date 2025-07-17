@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import AdCarousel from "@/components/AdCarousel";
 import {
   ArrowLeft, MapPin, Wifi, Zap, Droplets, Users, MessageSquare,
   GraduationCap, CreditCard, Bed, Bath, Car
@@ -37,15 +38,35 @@ const HostelDetail = () => {
     fetchRoomDetails();
   }, [id]);
 
-  const handleSubmitMessage = (e: React.FormEvent) => {
-    fetch("https://hostelng.onrender.com/book-requests", {
-      body: JSON.stringify({ creatorId: room.creatorId }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-
+  const handleSubmitMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!room) return;
+
+    try {
+      // Send booking request to backend
+      const response = await fetch("https://hostelng.onrender.com/book-requests", {
+        method: "POST",
+        body: JSON.stringify({ creatorId: room.creatorId }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send booking request");
+      }
+
+      await response.json();
+    } catch (error) {
+      console.error("Error sending booking request:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send booking request. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
   
     if (!room) return;
   
@@ -194,6 +215,11 @@ const HostelDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Ad Carousel */}
+            <div className="mb-6">
+              <AdCarousel />
+            </div>
           </div>
 
           {/* Sidebar */}

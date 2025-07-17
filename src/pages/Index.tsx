@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Wifi, Zap, Droplets, Users, GraduationCap, Bed } from "lucide-react";
+import AdCarousel from "@/components/AdCarousel";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -127,6 +128,13 @@ useEffect(() => {
               Find Rooms
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Ad Carousel */}
+      <section className="py-8 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <AdCarousel />
         </div>
       </section>
 
