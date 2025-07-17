@@ -15,7 +15,7 @@ import RoomForm from "@/components/dashboard/RoomForm";
 // Cloudinary Configuration
 const CLOUDINARY_CONFIG = {
   cloudName: "dw45dvti5",
-  uploadPreset: "RentNaija",
+  uploadPreset: "hostel.ng",
   apiUrl: "https://api.cloudinary.com/v1_1"
 };
 
