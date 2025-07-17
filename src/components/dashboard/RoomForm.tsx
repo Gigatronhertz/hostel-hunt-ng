@@ -42,7 +42,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
         roomType: initialData.roomType || '',
         bedCount: initialData.bedCount?.toString() || '',
         description: initialData.description || '',
-        amenities: initialData.amenities || []
+        amenities: initialData.amenities
       });
     }
   }, [editMode, initialData]);
