@@ -77,7 +77,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     const roomData = {
       ...formData,
       yearlyPrice: Number(formData.yearlyPrice),
-      files: newFiles, // Only new files for upload
+      //files: newFiles, // Only new files for upload
       images: existingImageUrls, // Preserve existing images
       videos: existingVideoUrls, // Preserve existing videos
       _id: editMode ? initialData?._id : undefined
