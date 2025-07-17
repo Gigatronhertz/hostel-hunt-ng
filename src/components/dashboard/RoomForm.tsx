@@ -25,7 +25,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     roomType: '',
     bedCount: '',
     description: '',
-    amenities: [] as string[]
+    amenities: [] 
   });
 
   const [roomImages, setRoomImages] = useState<any[]>([]);
