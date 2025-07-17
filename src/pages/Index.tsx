@@ -131,12 +131,7 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* Ad Carousel */}
-      <section className="py-8 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <AdCarousel />
-        </div>
-      </section>
+     
 
       {/* How It Works */}
       <section className="py-16 bg-white">
@@ -186,7 +181,13 @@ useEffect(() => {
             </Card>
           </div>
         </div>
+      </section>   <section className="py-8 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <AdCarousel />
+        </div>
       </section>
+
+
 
       {/* Featured Rooms - 2 per row on all screen sizes */}
       <section className="py-16">

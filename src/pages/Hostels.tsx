@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap, Bed, Menu, Loader2 } from "lucide-react";
+import AdCarousel from "@/components/AdCarousel";
 
 const Hostels = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -181,6 +182,12 @@ const Hostels = () => {
           </Sheet>
         </div>
       </header>
+      
+      <section className="py-8 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <AdCarousel />
+        </div>
+      </section>
 
       <div className="container mx-auto px-4 py-8">
         {/* Filters */}
