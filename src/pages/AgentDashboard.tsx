@@ -174,7 +174,7 @@ const AgentDashboard = () => {
         name: roomData.name,
         location: roomData.location,
         campus: roomData.campus,
-        yearlyPrice: roomData.yearlyPrice,
+        yearlyPrice: Number(roomData.yearlyPrice),
         roomType: roomData.roomType,
         description: roomData.description,
         amenities: JSON.stringify(roomData.amenities || []),
@@ -193,7 +193,7 @@ const AgentDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
         },
-        body: editingRoom ? JSON.stringify({ payload }) : JSON.stringify(payload),
+        body: JSON.stringify(editingRoom ? { payload } : payload),
       });
   
       if (response.ok) {
