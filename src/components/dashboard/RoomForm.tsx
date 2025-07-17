@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import MediaUpload from '@/components/MediaUpload';
 import AmenitiesSelector from '@/components/AmenitiesSelector';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MediaFile } from '@/types/media';
+import { convertUrlsToMediaFiles, parseAmenities, separateMediaFiles } from '@/utils/mediaUtils';
 
 interface RoomFormProps {
   onSubmit: (roomData: any) => void;
@@ -28,12 +30,15 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     amenities: [] 
   });
 
-  const [roomImages, setRoomImages] = useState<any[]>([]);
-  const [roomVideos, setRoomVideos] = useState<any[]>([]);
+  const [roomImages, setRoomImages] = useState<MediaFile[]>([]);
+  const [roomVideos, setRoomVideos] = useState<MediaFile[]>([]);
 
   // Pre-populate form when in edit mode
   useEffect(() => {
     if (editMode && initialData) {
+      // Parse amenities properly
+      const parsedAmenities = parseAmenities(initialData.amenities);
+      
       setFormData({
         name: initialData.name || '',
         yearlyPrice: initialData.yearlyPrice,
@@ -42,25 +47,42 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
         roomType: initialData.roomType || '',
         bedCount: initialData.bedCount?.toString() || '',
         description: initialData.description || '',
-        amenities: initialData.amenities
+        amenities: parsedAmenities
       });
+
+      // Convert existing media URLs to MediaFile objects
+      const existingImages = convertUrlsToMediaFiles(initialData.images || [], 'image');
+      const existingVideos = convertUrlsToMediaFiles(initialData.videos || [], 'video');
+      
+      setRoomImages(existingImages);
+      setRoomVideos(existingVideos);
+    } else {
+      // Reset for new room
+      setRoomImages([]);
+      setRoomVideos([]);
     }
   }, [editMode, initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Convert MediaFiles to Files
-    const allFiles = [
-      ...roomImages.map(img => img.file),
-      ...roomVideos.map(vid => vid.file)
-    ];
+    // Separate new files from existing URLs
+    const { newFiles: newImageFiles, existingUrls: existingImageUrls } = separateMediaFiles(roomImages);
+    const { newFiles: newVideoFiles, existingUrls: existingVideoUrls } = separateMediaFiles(roomVideos);
+    
+    // Get only new files for upload
+    const newFiles = [
+      ...newImageFiles.map(img => img.file),
+      ...newVideoFiles.map(vid => vid.file)
+    ].filter(Boolean);
     
     const roomData = {
       ...formData,
       yearlyPrice: Number(formData.yearlyPrice),
       bedCount: Number(formData.bedCount),
-      files: allFiles,
+      files: newFiles, // Only new files for upload
+      existingImages: existingImageUrls, // Preserve existing images
+      existingVideos: existingVideoUrls, // Preserve existing videos
       _id: editMode ? initialData?._id : undefined
     };
     
@@ -189,9 +211,12 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
                 onImagesChange={setRoomImages}
                 onVideosChange={setRoomVideos}
               />
-              {editMode && roomImages.length === 0 && roomVideos.length === 0 && (
+              {editMode && (
                 <p className="text-sm text-muted-foreground">
-                  No new files selected. Existing media will be kept.
+                  {roomImages.length > 0 || roomVideos.length > 0 
+                    ? 'Existing media shown above. Add new files to include them alongside existing ones.'
+                    : 'No media selected. Add new files or existing media will be kept.'
+                  }
                 </p>
               )}
             </div>

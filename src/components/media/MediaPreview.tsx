@@ -36,7 +36,12 @@ const MediaPreview = ({ mediaFile, onRemove }: MediaPreviewProps) => {
       </Button>
       <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2 rounded-b-lg">
         <p className="truncate">{mediaFile.name}</p>
-        <p>{formatFileSize(mediaFile.size)}</p>
+        <p>
+          {mediaFile.isExisting 
+            ? 'Existing file' 
+            : formatFileSize(mediaFile.size)
+          }
+        </p>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ export interface MediaFile {
   preview: string;
   name: string;
   size: number;
+  isExisting?: boolean; // Flag to identify existing vs new files
 }
 
 export interface MediaUploadProps {

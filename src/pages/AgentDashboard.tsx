@@ -111,6 +111,7 @@ const AgentDashboard = () => {
 
   // Handle room submission with Cloudinary
   const handleRoomSubmit = async (roomData: any) => {
+    // For new rooms, require at least one file or existing media
     if (!editingRoom && (!roomData.files || roomData.files.length === 0)) {
       toast({
         title: "Error",
@@ -127,6 +128,7 @@ const AgentDashboard = () => {
       const uploadedVideos: any[] = [];
       const public_ids: string[] = [];
   
+      // Upload new files to Cloudinary
       if (roomData.files && roomData.files.length > 0) {
         for (const file of roomData.files) {
           const formData = new FormData();
@@ -156,6 +158,17 @@ const AgentDashboard = () => {
           }
         }
       }
+
+      // Combine existing and new media
+      const finalImages = [
+        ...(roomData.existingImages || []),
+        ...uploadedImages
+      ];
+      
+      const finalVideos = [
+        ...(roomData.existingVideos || []),
+        ...uploadedVideos
+      ];
   
       const payload = {
         name: roomData.name,
@@ -163,16 +176,14 @@ const AgentDashboard = () => {
         campus: roomData.campus,
         yearlyPrice: roomData.yearlyPrice,
         roomType: roomData.roomType,
-      
         description: roomData.description,
         amenities: JSON.stringify(roomData.amenities || []),
-        images: uploadedImages,
-        videos: uploadedVideos,
+        images: finalImages,
+        videos: finalVideos,
         public_ids,
       };
   
       const url = editingRoom
-       // ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         ? `https://hostelng.onrender.com/update-room/${roomData._id}`
         : "https://hostelng.onrender.com/create-rooms";
   
@@ -182,7 +193,7 @@ const AgentDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: editingRoom ? JSON.stringify({ payload }) : JSON.stringify(payload),
       });
   
       if (response.ok) {
