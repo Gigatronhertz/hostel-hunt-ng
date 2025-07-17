@@ -192,10 +192,7 @@ const HostelDetail = () => {
               </div>
             )}
 
-            {/* Ad Carousel */}
-            <div className="mb-6">
-              <AdCarousel />
-            </div>
+        
           </div>
 
           {/* Sidebar */}
