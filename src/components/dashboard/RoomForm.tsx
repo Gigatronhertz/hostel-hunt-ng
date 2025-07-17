@@ -25,7 +25,6 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     campus: '',
     location: '',
     roomType: '',
-    bedCount: '',
     description: '',
     amenities: [] 
   });
@@ -45,7 +44,6 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
         campus: initialData.campus || '',
         location: initialData.location || '',
         roomType: initialData.roomType || '',
-        bedCount: initialData.bedCount?.toString() || '',
         description: initialData.description || '',
         amenities: parsedAmenities
       });
@@ -79,7 +77,6 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
     const roomData = {
       ...formData,
       yearlyPrice: Number(formData.yearlyPrice),
-      bedCount: Number(formData.bedCount),
       files: newFiles, // Only new files for upload
       existingImages: existingImageUrls, // Preserve existing images
       existingVideos: existingVideoUrls, // Preserve existing videos
