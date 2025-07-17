@@ -39,8 +39,7 @@ const HostelDetail = () => {
 
   const handleSubmitMessage = (e: React.FormEvent) => {
     fetch("https://hostelng.onrender.com/book-requests", {
-      method: "POST",
-      body: JSON.parse(room.creatorId),
+      body: JSON.stringify({ creatorId: room.creatorId }),
       headers: {
         "Content-Type": "application/json"
       }
