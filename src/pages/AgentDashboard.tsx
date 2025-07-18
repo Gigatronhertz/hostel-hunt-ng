@@ -177,7 +177,7 @@ const AgentDashboard = () => {
         yearlyPrice: Number(roomData.yearlyPrice),
         roomType: roomData.roomType,
         description: roomData.description,
-        amenities: JSON.stringify(roomData.amenities || []),
+       amenities: roomData.amenities || [],
         images: finalImages,
         videos: finalVideos,
         public_ids,
