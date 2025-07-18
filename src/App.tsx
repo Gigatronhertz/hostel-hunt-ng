@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import AgentPayment from "./pages/payment";
 import Hostels from "./pages/Hostels";
 import HostelDetail from "./pages/HostelDetail";
 import About from "./pages/About";
@@ -14,6 +15,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/register";
+
 
 
 const queryClient = new QueryClient();
@@ -32,6 +34,7 @@ const App = () => (
               <Route path="/rooms" element={<Hostels />} />
               <Route path="/room/:id" element={<HostelDetail />} />
               <Route path="/about" element={<About />} />
+              <Route path="/agent-payment" element={<AgentPayment />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/agent-login" element={<AgentLogin />} />
               <Route path="/agent-dashboard" element={<AgentDashboard />} />
