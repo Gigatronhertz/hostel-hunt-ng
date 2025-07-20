@@ -85,7 +85,7 @@ const AgentLogin = () => {
           navigate("/agent-dashboard");
           break;
         case !data.onboarded && !data.isPaid:
-          navigate("/register");
+//navigate("/register");
           break;
         case data.onboarded && !data.isPaid:
           navigate("/agent-payment");
