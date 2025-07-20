@@ -33,6 +33,56 @@ const AgentDashboard = () => {
 
   // Authentication check
   useEffect(() => {
+
+const paid = async () => {
+  try {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/agent-login");
+      return;
+    }
+
+    const res = await fetch("https://hostelng.onrender.com/dashboard", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      navigate("/agent-login");
+      return;
+    }
+
+    const data = await res.json();
+    const { isPaid, onboarded, user } = data;
+
+    // 👇 Redirect based on status
+    if (!onboarded) {
+      navigate("/register");
+      return;
+    }
+    if (onboarded && !isPaid) {
+      navigate("/agent-payment");
+      return;
+    }
+
+    // ✅ Set user data after checks
+    setAgentData(user);
+
+  } catch (err) {
+    navigate("/agent-login");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
     const checkAuth = async () => {
       try {
         console.log('Token at user get:', localStorage.getItem("authToken"));
@@ -60,6 +110,7 @@ const AgentDashboard = () => {
       }
     };
     checkAuth();
+    paid();
   }, [navigate]);
 
   // Fetch rooms
