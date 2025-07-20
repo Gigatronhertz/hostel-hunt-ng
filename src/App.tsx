@@ -47,7 +47,7 @@ const App = () => (
             <span>
               &copy; {new Date().getFullYear()} RentNaija &mdash;
               <a 
-                href="/docs"
+                href=""
                 className="ml-2 underline text-primary hover:text-primary/80 transition-colors"
               >
                 Docs
