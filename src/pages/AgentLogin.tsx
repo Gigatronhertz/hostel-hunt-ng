@@ -96,7 +96,7 @@ const AgentLogin = () => {
     } catch (error) {
       console.error("Token verification failed:", error);
       setAuthError("Authentication failed. Please try again.");
-      localStorage.removeItem("authToken");
+      //localStorage.removeItem("authToken");
     } finally {
       setIsAuthenticating(false);
     }
