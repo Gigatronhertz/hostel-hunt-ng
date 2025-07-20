@@ -154,7 +154,30 @@ const HostelDetail = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Section */}
           <div className="lg:col-span-2">
-         
+          <div className="mb-6">
+              <Carousel>
+                <CarouselContent>
+                  {[...(room.images || []), ...(room.videos || [])].map((url: string, i: number) => {
+                    const isVideo = url.includes(".mp4") || url.includes("video");
+                    return (
+                      <CarouselItem key={i}>
+                        <div className="relative">
+                          {isVideo ? (
+                            <video controls className="w-full h-64 md:h-80 object-cover rounded-lg">
+                              <source src={url} type="video/mp4" />
+                            </video>
+                          ) : (
+                            <img src={url} className="w-full h-64 md:h-80 object-cover rounded-lg" />
+                          )}
+                        </div>
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
 
             {/* Room Info */}
             <div className="mb-6">

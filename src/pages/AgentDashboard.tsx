@@ -55,8 +55,8 @@ const paid = async () => {
       return;
     }
 
-    const data = await res.json();
-    const { isPaid, onboarded, user } = data;
+    const paiddata = await res.json();
+    const { isPaid, onboarded, user } = paiddata;
 
     // 👇 Redirect based on status
     if (!onboarded) {

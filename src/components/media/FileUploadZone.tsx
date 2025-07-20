@@ -28,7 +28,7 @@ const FileUploadZone = ({ type, onFileSelect }: FileUploadZoneProps) => {
 
   const IconComponent = type === 'image' ? FileImage : FileVideo;
   const acceptTypes = type === 'image' ? 'image/*' : 'video/*';
-  const fileTypeText = type === 'image' ? 'PNG, JPG, WebP up to 3MB each' : 'MP4, MOV, AVI, WebM up to 10MB each';
+  const fileTypeText = type === 'image' ? 'PNG, JPG, WebP up to 3MB each' : 'MP4, MOV, AVI, WebM up to 5MB each';
   const buttonText = type === 'image' ? 'Choose Images' : 'Choose Videos';
 
   return (
