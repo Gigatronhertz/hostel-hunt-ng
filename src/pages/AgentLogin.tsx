@@ -58,7 +58,7 @@ const AgentLogin = () => {
         setIsAuthenticating(false);
         window.removeEventListener("message", handleMessage);
       }
-    }, 1000);
+    }, 2000);
   };
 
   const verifyTokenAndRedirect = async (token: string) => {
