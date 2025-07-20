@@ -58,7 +58,7 @@ const AgentLogin = () => {
         setIsAuthenticating(false);
         window.removeEventListener("message", handleMessage);
       }
-    }, 2000);
+    }, 1000);
   };
 
   const verifyTokenAndRedirect = async (token: string) => {
@@ -80,16 +80,12 @@ const AgentLogin = () => {
       const data = await response.json();
   
       // 👇 Check onboarding status
-      switch (true) {
-        case data.onboarded && data.isPaid:
-          navigate("/agent-dashboard");
-          break;
-        case !data.onboarded && !data.isPaid:
-//navigate("/register");
-          break;
-        case data.onboarded && !data.isPaid:
-          navigate("/agent-payment");
-          break;
+      if (data.onboarded && data.isPaid) {
+        navigate("/agent-dashboard");
+      } else if (!data.onboarded) {
+        navigate("/register");
+      } else if (data.onboarded && !data.isPaid) {
+        navigate("/agent-payment");
       }
      
   
