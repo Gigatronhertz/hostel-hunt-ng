@@ -82,10 +82,10 @@ const AgentLogin = () => {
       // 👇 Check onboarding status
       if (data.onboarded  && data.isPaid) {
         navigate("/agent-dashboard");
-      } else if (!data.onboarded && !data.isPaid) {
+      } else if (data.onboarded === false && !data.isPaid === false) {
         navigate("/register");
       }
-       else if (data.onboarded && !data.isPaid) {
+       else if (data.onboarded && data.isPaid=== false) {
         navigate("/agent-payment");
       }
      
