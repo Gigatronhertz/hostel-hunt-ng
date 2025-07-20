@@ -76,6 +76,7 @@ const AgentLogin = () => {
         throw new Error("Authentication failed");
       }
   
+      
       var data = await response.json();
   
       // 👇 Check onboarding status
