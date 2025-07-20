@@ -76,11 +76,11 @@ const AgentLogin = () => {
         throw new Error("Authentication failed");
       }
   
-      
+
       var data = await response.json();
   
       // 👇 Check onboarding status
-      if (data.onboarded  & data.isPaid) {
+      if (data.onboarded  && data.isPaid) {
         navigate("/agent-dashboard");
       } else if (!data.onboarded && !data.isPaid) {
         navigate("/register");
