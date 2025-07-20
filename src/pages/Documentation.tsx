@@ -21,7 +21,7 @@ const Documentation = () => {
           <div className="flex items-center gap-3">
             <BookOpen className="w-8 h-8 text-primary" />
             <div>
-              <h1 className="text-3xl font-bold text-primary">Hostel.ng API Documentation</h1>
+              <h1 className="text-3xl font-bold text-primary">RentNaija API Documentation</h1>
               <p className="text-muted-foreground">Complete API reference for the Render backend</p>
             </div>
           </div>
@@ -49,7 +49,7 @@ const Documentation = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-lg">
-                  The Hostel.ng API provides endpoints for agent authentication, room management, and file uploads.
+                  The RentNaija API provides endpoints for agent authentication, room management, and file uploads.
                   All endpoints are hosted on Render at: <code className="bg-muted px-2 py-1 rounded">https://hostelng.onrender.com</code>
                 </p>
                 

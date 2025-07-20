@@ -1,5 +1,5 @@
 
-// MongoDB Schema Definitions for Hostel.ng Platform
+// MongoDB Schema Definitions for RentNaija Platform
 // This file contains TypeScript interfaces that match the MongoDB collections
 
 // =============================================================================

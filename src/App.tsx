@@ -45,7 +45,7 @@ const App = () => (
           </div>
           <footer className="border-t bg-white p-4 text-center text-sm text-muted-foreground">
             <span>
-              &copy; {new Date().getFullYear()} Hostel.ng &mdash;
+              &copy; {new Date().getFullYear()} RentNaija &mdash;
               <a 
                 href="/docs"
                 className="ml-2 underline text-primary hover:text-primary/80 transition-colors"

@@ -4,7 +4,7 @@ import { Smile, MessageCircle } from "lucide-react";
 
 const WHATSAPP_NUMBER = "2348012345678"; // Replace with your payments WhatsApp number
 const PAYMENT_MESSAGE = encodeURIComponent(
-  "Hi! I'm ready to complete my payment as an agent on Hostel.ng. Please assist me with the next steps."
+  "Hi! I'm ready to complete my payment as an agent on RentNaija. Please assist me with the next steps."
 );
 
 export default function AgentPayment() {
@@ -22,7 +22,7 @@ export default function AgentPayment() {
         </CardHeader>
         <CardContent>
           <p className="mb-6 text-center text-lg text-muted-foreground">
-            Thank you for choosing Hostel.ng. To unlock all features and start listing your properties, please complete your agent payment.
+            Thank you for choosing RentNaija. To unlock all features and start listing your properties, please complete your agent payment.
           </p>
           <div className="flex justify-center">
             <Button
