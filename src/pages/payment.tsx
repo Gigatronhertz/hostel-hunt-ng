@@ -15,7 +15,7 @@ export default function AgentPayment() {
   useEffect(() => {
     const checkPaymentStatus = async () => {
       try {
-        const token = localStorage.getItem("token"); // Adjust if stored elsewhere
+        const token = localStorage.getItem("authToken"); // Adjust if stored elsewhere
         const response = await fetch("https://hostelng.onrender.com/dashboard", {
           method: "GET",
           headers: {
