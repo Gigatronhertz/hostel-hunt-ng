@@ -1,16 +1,49 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Smile, MessageCircle } from "lucide-react";
 
-const WHATSAPP_NUMBER = "2348012345678"; // Replace with your payments WhatsApp number
+const WHATSAPP_NUMBER = "2348152076180";
 const PAYMENT_MESSAGE = encodeURIComponent(
   "Hi! I'm ready to complete my payment as an agent on RentNaija. Please assist me with the next steps."
 );
 
 export default function AgentPayment() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Adjust if stored elsewhere
+        const response = await fetch("https://hostelng.onrender.com/dashboard", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          console.error("Failed to fetch dashboard:", response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+        if (data.isPaid) {
+          navigate("/agent-dashboard");
+        }
+      } catch (error) {
+        console.error("Error checking payment:", error);
+      }
+    };
+
+    checkPaymentStatus();
+  }, [navigate]);
+
   const handleWhatsAppClick = () => {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${PAYMENT_MESSAGE}`;
-    window.open(url, "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -42,3 +75,4 @@ export default function AgentPayment() {
     </div>
   );
 }
+
