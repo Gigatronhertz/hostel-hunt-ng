@@ -1,6 +1,58 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+
+
+
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Adjust if stored elsewhere
+        const response = await fetch("https://hostelng.onrender.com/dashboard", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        var data = await response.json();
+
+        // if (!response.ok) {
+        //   console.error("Failed to fetch dashboard:", response.statusText);
+        //   return;
+        // }
+
+      //   const data = await response.json();
+      //   if (data.isPaid) {
+      //     navigate("/agent-dashboard");
+      //   }
+      switch (true) {
+        case data.onboarded && data.isPaid:
+          navigate("/agent-dashboard");
+          break;
+        // case !data.onboarded && !data.isPaid:
+        //   navigate("/register");
+        //   break;
+        case data.onboarded && !data.isPaid:
+          navigate("/agent-payment");
+          break;
+      }
+
+      } catch (error) {
+        console.error("Error checking payment:", error);
+      }
+    };
+
+    checkPaymentStatus();
+  }, [navigate]);
+
+
+
+
   const [formData, setFormData] = useState({
     name: '',
     address: '',
