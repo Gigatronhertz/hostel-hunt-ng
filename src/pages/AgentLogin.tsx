@@ -77,7 +77,7 @@ const AgentLogin = () => {
       }
   
 
-      var data = await response.json();
+      const data = await response.json();
   
       // 👇 Check onboarding status
       switch (true) {
