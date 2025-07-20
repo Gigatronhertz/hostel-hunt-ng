@@ -79,18 +79,18 @@ const AgentLogin = () => {
 
       const data = await response.json();
   
-      // 👇 Check onboarding status
-      switch (true) {
-        case data.onboarded && data.isPaid:
-          navigate("/agent-dashboard");
-          break;
-        case !data.onboarded && !data.isPaid:
-//navigate("/register");
-          break;
-        case data.onboarded && !data.isPaid:
-          navigate("/agent-payment");
-          break;
-      }
+//       // 👇 Check onboarding status
+//       switch (true) {
+//         case data.onboarded && data.isPaid:
+//           navigate("/agent-dashboard");
+//           break;
+//         case !data.onboarded && !data.isPaid:
+// //navigate("/register");
+//           break;
+//         case data.onboarded && !data.isPaid:
+//           navigate("/agent-payment");
+//           break;
+//       }
      
   
     } catch (error) {
