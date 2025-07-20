@@ -83,9 +83,11 @@ const AgentLogin = () => {
       if (data.onboarded  && data.isPaid) {
         navigate("/agent-dashboard");
       } else if (data.onboarded === false && !data.isPaid === false) {
+        console.log("should rout regiger here ",data)
         navigate("/register");
       }
        else if (data.onboarded && data.isPaid=== false) {
+        console.log("should rout payment here ",data)
         navigate("/agent-payment");
       }
      
