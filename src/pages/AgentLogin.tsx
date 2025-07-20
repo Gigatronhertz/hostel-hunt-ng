@@ -71,22 +71,22 @@ const AgentLogin = () => {
         },
       });
   
-      // if (!response.ok) {
-      //   throw new Error("Authentication failed");
-      // }
+      if (!response.ok) {
+        throw new Error("Authentication failed");
+      }
   
-      // const data = await response.json();
+      const data = await response.json();
   
-      // 👇 Check onboarding status
-      // if (data.onboarded) {
-      //   navigate("/agent-dashboard");
-      // } else {
-      //   navigate("/register");
-      // }
+      👇 Check onboarding status
+      if (data.onboarded) {
+        navigate("/agent-dashboard");
+      } else {
+        navigate("/register");
+      }
   
     } catch (error) {
       console.error(error);
-      // setAuthError("Authentication failed. Please try again.");
+     setAuthError("Authentication failed. Please try again.");
       localStorage.removeItem("authToken");
     } finally {
       setIsAuthenticating(false);
