@@ -72,6 +72,7 @@ const AgentLogin = () => {
       });
   
       if (!response.ok) {
+        console.log(token)
         throw new Error("Authentication failed");
       }
   
