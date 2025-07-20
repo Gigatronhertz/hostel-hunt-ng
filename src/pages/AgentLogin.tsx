@@ -77,23 +77,16 @@ const AgentLogin = () => {
   
       const data = await response.json();
   
-      👇// Check onboarding status
+      // 👇 Check onboarding status
       if (data.onboarded) {
         navigate("/agent-dashboard");
       } else {
         navigate("/register");
       }
-      👇// Check onboarding status
-      if (data.isPaid) {
-        navigate("/agent-dashboard");
-      } else {
-        navigate("/agent-payment");
-      }
-
   
     } catch (error) {
-      console.error(error);
-     setAuthError("Authentication failed. Please try again.");
+      console.error("Token verification failed:", error);
+      setAuthError("Authentication failed. Please try again.");
       localStorage.removeItem("authToken");
     } finally {
       setIsAuthenticating(false);
@@ -112,7 +105,7 @@ const AgentLogin = () => {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">RentNaija</Link>
+          <Link to="/" className="text-2xl font-bold text-primary">Hostel.ng</Link>
           <nav className="hidden md:flex space-x-6">
             <Link to="/rooms" className="text-muted-foreground hover:text-primary">Browse Rooms</Link>
             <Link to="/about" className="text-muted-foreground hover:text-primary">About</Link>
@@ -139,7 +132,7 @@ const AgentLogin = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-700">
-                <p className="font-medium mb-2">RentNaija Business Model:</p>
+                <p className="font-medium mb-2">Hostel.ng Business Model:</p>
                 <ul className="text-xs space-y-1">
                   <li>• ₦5,000 monthly platform fee</li>
                   <li>• 2.5% service charge per booking</li>
