@@ -75,14 +75,18 @@ const AgentLogin = () => {
         throw new Error("Authentication failed");
       }
   
-      const data = await response.json();
+      var data = await response.json();
   
       // 👇 Check onboarding status
-      if (data.onboarded) {
+      if (data.onboarded  & data.isPaid) {
         navigate("/agent-dashboard");
-      } else {
+      } else if (!data.onboarded && !data.isPaid) {
         navigate("/register");
       }
+       else if (data.onboarded && !data.isPaid) {
+        navigate("/agent-payment");
+      }
+     
   
     } catch (error) {
       console.error("Token verification failed:", error);
