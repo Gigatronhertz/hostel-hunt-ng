@@ -77,12 +77,19 @@ const AgentLogin = () => {
   
       const data = await response.json();
   
-      👇 Check onboarding status
+      👇// Check onboarding status
       if (data.onboarded) {
         navigate("/agent-dashboard");
       } else {
         navigate("/register");
       }
+      👇// Check onboarding status
+      if (data.isPaid) {
+        navigate("/agent-dashboard");
+      } else {
+        navigate("/agent-payment");
+      }
+
   
     } catch (error) {
       console.error(error);
