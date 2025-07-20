@@ -80,13 +80,16 @@ const AgentLogin = () => {
       var data = await response.json();
   
       // 👇 Check onboarding status
-      if (data.onboarded  && data.isPaid) {
-        navigate("/agent-dashboard");
-      } else if (!data.onboarded && !data.isPaid) {
-        navigate("/register");
-      }
-       else if (data.onboarded && !data.isPaid) {
-        navigate("/agent-payment");
+      switch (true) {
+        case data.onboarded && data.isPaid:
+          navigate("/agent-dashboard");
+          break;
+        case !data.onboarded && !data.isPaid:
+          navigate("/register");
+          break;
+        case data.onboarded && !data.isPaid:
+          navigate("/agent-payment");
+          break;
       }
      
   
