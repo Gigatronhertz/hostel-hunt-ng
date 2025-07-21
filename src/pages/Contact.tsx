@@ -27,7 +27,7 @@ const Contact = () => {
     
     // BACKEND INTEGRATION: Replace with Supabase form submission
     // Example: const { error } = await supabase.from('contact_messages').insert([formData])
-    console.log("Contact form submission:", formData);
+   // console.log("Contact form submission:", formData);
 
     toast({
       title: "Message Sent!",

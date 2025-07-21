@@ -34,7 +34,7 @@ const handleSubmit = (e: React.FormEvent) => {
       return response.json();
     })
     .then(data => {
-      console.log('User created successfully:', data);
+     // console.log('User created successfully:', data);
       window.location.href = '/agent-dashboard';
     })
     .catch(error => {

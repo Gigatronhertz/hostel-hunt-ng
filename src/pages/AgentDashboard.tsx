@@ -15,7 +15,7 @@ import RoomForm from "@/components/dashboard/RoomForm";
 // Cloudinary Configuration
 const CLOUDINARY_CONFIG = {
   cloudName: "dw45dvti5",
-  uploadPreset: "RentNaija",
+  uploadPreset: "hostel.ng",
   apiUrl: "https://api.cloudinary.com/v1_1"
 };
 
@@ -85,7 +85,7 @@ const paid = async () => {
 
     const checkAuth = async () => {
       try {
-        console.log('Token at user get:', localStorage.getItem("authToken"));
+       // console.log('Token at user get:', localStorage.getItem("authToken"));
         const userResponse = await fetch('https://hostelng.onrender.com/user', {
           method: 'GET',
           headers: {
@@ -115,7 +115,7 @@ const paid = async () => {
 
   // Fetch rooms
   useEffect(() => {
-    console.log('Token at fetch rooms:', localStorage.getItem("authToken"));
+    //console.log('Token at fetch rooms:', localStorage.getItem("authToken"));
     const fetchRooms = async () => {
 
       if (!agentData) return;
@@ -248,7 +248,7 @@ const paid = async () => {
       });
   
       if (response.ok) {
-        console.log("Updating room with data:", roomData);
+       // console.log("Updating room with data:", roomData);
         toast({
           title: editingRoom ? "Room Updated!" : "Room Created!",
           description: editingRoom
