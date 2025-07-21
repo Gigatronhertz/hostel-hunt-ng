@@ -69,7 +69,7 @@ const paid = async () => {
     }
 
     // ✅ Set user data after checks
-    setAgentData(user);
+   // setAgentData(user);
 
   } catch (err) {
     navigate("/agent-login");
