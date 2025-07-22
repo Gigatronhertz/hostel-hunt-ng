@@ -386,7 +386,7 @@ const paid = async () => {
             <DashboardStats
               totalRooms={rooms.length}
               totalViews={agentData?.totalViews}
-              totalBookingRequests={agentData.bookingRequests}
+              totalBookingRequests={agentData?.bookingRequests}
             />
             {/* Recent Activity */}
             <Card>
@@ -399,7 +399,7 @@ const paid = async () => {
                       <div>
                         <p className="text-sm font-medium">{room.name} - {room.views} views</p>
                         <p className="text-xs text-muted-foreground">
-                          {agentData.bookingRequests||0} booking requests
+                          {agentData?.bookingRequests||0} booking requests
                         </p>
                       </div>
                     </div>
