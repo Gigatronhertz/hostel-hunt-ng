@@ -336,7 +336,7 @@ const paid = async () => {
 
   // Calculate stats
   const totalViews = rooms.reduce((sum, room) => sum + room.views, 0);
-  const totalBookingRequests = rooms.reduce((sum, room) => sum + room.bookingRequests, 0);
+  //const totalBookingRequests = rooms.reduce((sum, room) => sum + room.bookingRequests, 0);
 
   return (
     <div className="min-h-screen bg-background">
