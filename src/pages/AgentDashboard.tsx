@@ -224,6 +224,7 @@ const paid = async () => {
       if (typeof roomData.amenities === "string") {
         roomData.amenities = roomData.amenities.split(",").map((a: string) => a.trim());
       }
+      console.log(roomData.amenities);
   
       const payload = {
         name: roomData.name,
