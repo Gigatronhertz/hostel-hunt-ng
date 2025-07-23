@@ -221,8 +221,15 @@ const paid = async () => {
         ...uploadedVideos
       ];
 
-      if (typeof roomData.amenities === "string") {
-        roomData.amenities = roomData.amenities.split(",").map((a: string) => a.trim());
+      if (
+        Array.isArray(roomData.amenities) &&
+        roomData.amenities.length === 1 &&
+        typeof roomData.amenities[0] === "string" &&
+        roomData.amenities[0].includes(",")
+      ) {
+        roomData.amenities = roomData.amenities[0]
+          .split(",")
+          .map((a: string) => a.trim());
       }
       console.log(roomData.amenities);
   
