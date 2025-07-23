@@ -158,7 +158,7 @@ const Hostels = () => {
       {/* Header */}
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">RentNaija</Link>
+          <Link to="/" className="text-2xl font-bold text-primary">LodgeHub</Link>
           <nav className="hidden md:flex space-x-6">
             <Link to="/rooms" className="text-primary font-medium">Browse Rooms</Link>
             <Link to="/about" className="text-muted-foreground hover:text-primary">About</Link>

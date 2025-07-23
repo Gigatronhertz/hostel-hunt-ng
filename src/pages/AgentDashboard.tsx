@@ -344,7 +344,7 @@ const paid = async () => {
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
-            RentNaija
+            LodgeHub
           </Link>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground">

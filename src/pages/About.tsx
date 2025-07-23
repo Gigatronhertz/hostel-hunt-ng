@@ -16,7 +16,7 @@ const About = () => {
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
-            RentNaija
+            LodgeHub
           </Link>
           
           {/* Desktop Navigation */}
@@ -84,7 +84,7 @@ const About = () => {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             About
-            <span className="text-primary block">RentNaija</span>
+            <span className="text-primary block">LodgeHub</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Connecting Nigerian students with safe, affordable, and quality accommodation near their universities.
@@ -100,7 +100,7 @@ const About = () => {
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-muted-foreground mb-6">
                 We believe every student deserves a safe, comfortable, and affordable place to call home during their university journey. 
-                RentNaija bridges the gap between students seeking quality accommodation and verified property owners.
+                LodgeHub bridges the gap between students seeking quality accommodation and verified property owners.
               </p>
               <p className="text-lg text-muted-foreground">
                 Our platform ensures transparency, safety, and convenience in the student housing search process across Nigeria's top universities.
@@ -180,7 +180,7 @@ const About = () => {
       {/* How It Works */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">How RentNaija Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">How LodgeHub Works</h2>
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -228,7 +228,7 @@ const About = () => {
       {/* Why Choose Us */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose RentNaija?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Why Choose LodgeHub?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card>
               <CardHeader>
@@ -310,7 +310,7 @@ const About = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Find Your Perfect Room?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of students who have found their ideal accommodation through RentNaija
+            Join thousands of students who have found their ideal accommodation through LodgeHub
           </p>
           <Link to="/rooms">
             <Button size="lg" variant="secondary" className="text-primary">
@@ -325,7 +325,7 @@ const About = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-semibold text-lg mb-4">RentNaija</h3>
+              <h3 className="font-semibold text-lg mb-4">LodgeHub</h3>
               <p className="text-muted-foreground">
                 Your trusted platform for finding quality student accommodation across Nigerian universities.
               </p>
@@ -360,7 +360,7 @@ const About = () => {
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 RentNaija. All rights reserved.</p>
+            <p>&copy; 2024 LodgeHub. All rights reserved.</p>
           </div>
         </div>
       </footer>

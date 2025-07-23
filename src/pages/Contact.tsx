@@ -44,7 +44,7 @@ const Contact = () => {
       <header className="border-b bg-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
-            RentNaija
+            LodgeHub
           </Link>
           
           {/* Desktop Navigation */}
@@ -216,8 +216,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Email Us</h3>
-                    <p className="text-muted-foreground">support@RentNaija</p>
-                    <p className="text-muted-foreground">info@RentNaija</p>
+                    <p className="text-muted-foreground">support@LodgeHub</p>
+                    <p className="text-muted-foreground">info@LodgeHub</p>
                   </div>
                 </div>
                 
@@ -309,7 +309,7 @@ const Contact = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-semibold text-lg mb-4">RentNaija</h3>
+              <h3 className="font-semibold text-lg mb-4">LodgeHub</h3>
               <p className="text-muted-foreground">
                 Your trusted platform for finding quality student accommodation across Nigerian universities.
               </p>
@@ -344,7 +344,7 @@ const Contact = () => {
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 RentNaija. All rights reserved.</p>
+            <p>&copy; 2024 LodgeHub. All rights reserved.</p>
           </div>
         </div>
       </footer>
