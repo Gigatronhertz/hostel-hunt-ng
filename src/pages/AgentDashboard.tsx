@@ -220,6 +220,10 @@ const paid = async () => {
         ...(roomData.existingVideos || []),
         ...uploadedVideos
       ];
+
+      if (typeof roomData.amenities === "string") {
+        roomData.amenities = roomData.amenities.split(",").map((a: string) => a.trim());
+      }
   
       const payload = {
         name: roomData.name,
