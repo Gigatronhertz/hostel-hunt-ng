@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useGlobalLoading } from './GlobalLoadingContext';
 
 interface AgentData {
   name: string;
@@ -32,10 +33,12 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [agentData, setAgentData] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { showServerBootup, hideServerBootup } = useGlobalLoading();
 
   const checkAuth = async () => {
     try {
       setLoading(true);
+      showServerBootup();
       const response = await fetch('/user', {
         method: 'GET',
         credentials: 'include', // Include cookies
@@ -55,6 +58,7 @@ export const AgentAuthProvider: React.FC<AgentAuthProviderProps> = ({ children }
       setIsAuthenticated(false);
     } finally {
       setLoading(false);
+      hideServerBootup();
     }
   };
 
