@@ -71,7 +71,7 @@ const HostelDetail = () => {
     if (!room) return;
   
     // WhatsApp destination number (in international format, no `+`)
-    const whatsappNumber = "2348053258472"; // Replace with the correct agent/central WhatsApp number
+    const whatsappNumber = "2348152076180"; // Replace with the correct agent/central WhatsApp number
   
     // Construct message
     const message = `Hello, I'm interested in inspecting the room "${room.name}" listed for ₦${room.yearlyPrice.toLocaleString()}.\n\n` +
