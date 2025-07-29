@@ -106,6 +106,8 @@ const RoomForm: React.FC<RoomFormProps> = ({ onSubmit, loading, editMode = false
   const roomTypes = [
     "Single Room",
     "One Bedroom", 
+    "Room and Palour", 
+    "Room Selfcon", 
     "Two Bedroom",
     "Three Bedroom",
     "Shared Apartment"
