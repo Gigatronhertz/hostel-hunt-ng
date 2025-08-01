@@ -2,7 +2,7 @@
 import { MediaFile } from "@/types/media";
 
 export const validateFiles = (files: File[], type: 'image' | 'video') => {
-  const maxSize = type === 'image' ? 3 * 1024 * 1024 : 5 * 1024 * 1024; // 10MB for images, 100MB for videos
+  const maxSize = type === 'image' ? 10 * 1024 * 1024 : 15 * 1024 * 1024; // 10MB for images, 100MB for videos
   const allowedTypes = type === 'image' 
     ? ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
     : ['video/mp4', 'video/mov', 'video/avi', 'video/webm'];
@@ -19,7 +19,7 @@ export const validateFiles = (files: File[], type: 'image' | 'video') => {
 
     // Validate file size
     if (file.size > maxSize) {
-      errors.push(`File too large: ${file.name}. ${type === 'image' ? 'Images' : 'Videos'} must be under ${type === 'image' ? '3MB' : '5MB'}`);
+      errors.push(`File too large: ${file.name}. ${type === 'image' ? 'Images' : 'Videos'} must be under ${type === 'image' ? '10MB' : '15MB'}`);
       return;
     }
 
