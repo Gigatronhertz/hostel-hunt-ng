@@ -81,16 +81,21 @@ export const processVideoWithThumbnail = async (videoFile: MediaFile): Promise<M
 /**
  * Get display image for a room - uses video thumbnail if no images available
  */
-export const getRoomDisplayImage = (room: any): string | null => {
+export const getRoomDisplayImage = async (room: any): Promise<string | null> => {
   // Check if there are any images
   if (room.images && room.images.length > 0) {
     return room.images[0];
   }
   
-  // If no images but has videos, try to get video thumbnail
+  // If no images but has videos, generate thumbnail
   if (room.videos && room.videos.length > 0) {
-    // For existing rooms, we'll need to generate thumbnail on the fly
-    return room.videos[0]; // Will be handled by video thumbnail generation
+    try {
+      const thumbnail = await generateThumbnailFromUrl(room.videos[0]);
+      return thumbnail;
+    } catch (error) {
+      console.warn('Failed to generate video thumbnail:', error);
+      return null;
+    }
   }
   
   return null;

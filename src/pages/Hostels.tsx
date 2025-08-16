@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Search, MapPin, Wifi, Zap, Droplets, Users, Filter, GraduationCap, Bed, Menu, Loader2 } from "lucide-react";
 import AdCarousel from "@/components/AdCarousel";
+import RoomDisplayImage from "@/components/RoomDisplayImage";
 
 const Hostels = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -237,7 +238,7 @@ const Hostels = () => {
               <div key={room._id} ref={isLast ? lastRoomElementRef : null}>
                 <Link to={`/room/${room._id}`}>
                   <Card className="group cursor-pointer hover:shadow-lg transition">
-                    <img src={room.images[0]} alt={room.name} className="w-full h-32 md:h-48 object-cover" />
+                    <RoomDisplayImage room={room} className="w-full h-32 md:h-48 object-cover" alt={room.name} />
                     <CardContent className="p-2 md:p-4">
                       <h3 className="font-semibold text-sm md:text-lg mb-1">{room.name}</h3>
                       <p className="text-muted-foreground text-xs md:text-sm mb-1 flex items-center gap-1">
