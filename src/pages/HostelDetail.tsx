@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import AdCarousel from "@/components/AdCarousel";
+import VideoThumbnail from "@/components/VideoThumbnail";
 import {
   ArrowLeft, MapPin, Wifi, Zap, Droplets, Users, MessageSquare,
   GraduationCap, CreditCard, Bed, Bath, Car
@@ -158,16 +159,26 @@ const HostelDetail = () => {
               <Carousel>
                 <CarouselContent>
                   {[...(room.images || []), ...(room.videos || [])].map((url: string, i: number) => {
-                    const isVideo = url.includes(".mp4") || url.includes("video");
+                    const isVideo = url.includes(".mp4") || url.includes("video") || url.includes(".mov") || url.includes(".avi") || url.includes(".webm");
                     return (
                       <CarouselItem key={i}>
                         <div className="relative">
                           {isVideo ? (
-                            <video controls className="w-full h-64 md:h-80 object-cover rounded-lg">
-                              <source src={url} type="video/mp4" />
-                            </video>
+                            <VideoThumbnail
+                              videoUrl={url}
+                              alt={`${room.name} video ${i + 1}`}
+                              className="w-full h-64 md:h-80 rounded-lg"
+                              onClick={() => {
+                                // Open video in new tab or modal
+                                window.open(url, '_blank');
+                              }}
+                            />
                           ) : (
-                            <img src={url} className="w-full h-64 md:h-80 object-cover rounded-lg" />
+                            <img 
+                              src={url} 
+                              alt={`${room.name} image ${i + 1}`}
+                              className="w-full h-64 md:h-80 object-cover rounded-lg" 
+                            />
                           )}
                         </div>
                       </CarouselItem>

@@ -7,6 +7,7 @@ export interface MediaFile {
   name: string;
   size: number;
   isExisting?: boolean; // Flag to identify existing vs new files
+  thumbnail?: string; // Video thumbnail URL
 }
 
 export interface MediaUploadProps {

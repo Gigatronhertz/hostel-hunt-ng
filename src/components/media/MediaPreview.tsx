@@ -19,11 +19,28 @@ const MediaPreview = ({ mediaFile, onRemove }: MediaPreviewProps) => {
           className="w-full h-32 object-cover rounded-lg"
         />
       ) : (
-        <video
-          src={mediaFile.preview}
-          className="w-full h-48 object-cover rounded-lg"
-          controls
-        />
+        <div className="relative">
+          {mediaFile.thumbnail ? (
+            <div className="relative">
+              <img
+                src={mediaFile.thumbnail}
+                alt={`${mediaFile.name} thumbnail`}
+                className="w-full h-48 object-cover rounded-lg"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                <div className="w-12 h-12 bg-black/50 rounded-full flex items-center justify-center">
+                  <div className="w-0 h-0 border-l-[8px] border-l-white border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent ml-1"></div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <video
+              src={mediaFile.preview}
+              className="w-full h-48 object-cover rounded-lg"
+              controls
+            />
+          )}
+        </div>
       )}
       <Button
         type="button"
